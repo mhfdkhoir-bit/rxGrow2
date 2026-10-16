@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- PWA / Homescreen Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#FDF9F1">
-    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
     
     <title>rxGrow - Finance Tracker</title>
-    
-    <!-- Google Font: Space Grotesk -->
+
+    <!-- Google Fonts: Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS CDN -->
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Space Grotesk"', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['"Space Grotesk"', 'sans-serif'] },
                     boxShadow: {
-                        'brutal': '4px 4px 0px 0px #000000',
-                        'brutal-sm': '2px 2px 0px 0px #000000',
-                        'brutal-lg': '6px 6px 0px 0px #000000',
-                        'brutal-pressed': '0px 0px 0px 0px #000000',
+                        'brutal': '4px 4px 0px 0px #000',
+                        'brutal-sm': '2px 2px 0px 0px #000',
+                        'brutal-pressed': '0px 0px 0px 0px #000',
                     }
                 }
             }
@@ -37,552 +36,673 @@
     </script>
 
     <style>
-        /* Presisi Grid Rows 1:1 antara Kartu Emas dan Reksadana */
-        .card-grid-sync {
+        /* Exact Grid Constraint from Request - Ensuring Pixel Perfect Alignment */
+        .card-grid-container {
             display: grid;
-            grid-template-rows: 44px 44px 20px 44px 20px 44px;
+            grid-template-rows: 50px 48px 24px 56px 24px 56px;
+            gap: 8px;
             width: 100%;
-            gap: 4px;
         }
-
-        /* Standardize input number display */
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        
+        /* Remove default number input spinners */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; margin: 0; 
         }
-
-        /* Prevent auto underline on iOS */
-        a, button, input, span, div {
-            text-decoration: none !important;
-            -webkit-tap-highlight-color: transparent;
+        input[type=number] { -moz-appearance: textfield; }
+        
+        /* Smooth reveal for accordion */
+        .accordion-content {
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
         }
-
-        /* Soft fade animation */
-        .fade-in {
-            animation: fadeIn 0.25s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+        .accordion-content.open {
+            max-height: 2000px; 
         }
     </style>
 </head>
-<body class="bg-[#FDF9F1] min-h-screen flex flex-col items-center py-6 px-4 text-black selection:bg-black selection:text-white font-sans">
+<body class="font-sans antialiased text-black select-none bg-[#18181b]">
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[#FFE268] border-[3px] border-black shadow-brutal px-5 py-2.5 rounded-xl font-bold text-xs text-center hidden transition-all duration-200">
-        <span id="toast-text">Pesan</span>
-    </div>
-
-    <!-- Custom Modal Confirm Reset PIN -->
-    <div id="reset-modal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white border-[3px] border-black shadow-brutal-lg rounded-2xl p-5 w-full max-w-[340px] flex flex-col gap-3 text-center fade-in">
-            <div class="w-12 h-12 bg-[#FF71A4] border-[2.5px] border-black rounded-full flex items-center justify-center mx-auto shadow-brutal-sm">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
-                    <path d="M21 3v5h-5"></path>
-                </svg>
-            </div>
-            <h3 class="font-black text-lg text-black">Reset PIN Aset?</h3>
-            <p class="text-xs font-semibold text-black/70 leading-relaxed">
-                PIN akan dihapus agar Anda bisa membuat PIN baru. <br><strong class="text-black">Data keuangan Anda dijamin tetap AMAN & tidak hilang.</strong>
-            </p>
-            <div class="flex gap-2 mt-2">
-                <button onclick="closeResetModal()" class="flex-1 bg-gray-200 text-black border-[2.5px] border-black shadow-brutal-sm rounded-lg font-bold text-xs py-2.5 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                    Batal
-                </button>
-                <button onclick="executePinReset()" class="flex-1 bg-[#FF71A4] text-black border-[2.5px] border-black shadow-brutal-sm rounded-lg font-black text-xs py-2.5 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                    Ya, Reset PIN
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- 1. LOGIN / SET PIN SCREEN (FLAT PASTEL DESIGN)            -->
-    <!-- ========================================================= -->
-    <div id="login-screen" class="w-full max-w-[360px] flex flex-col gap-6 items-center fade-in my-auto">
-        
-        <!-- Header Branding -->
-        <div class="flex flex-col items-center relative mb-2">
-            <div class="bg-[#C4B5FD] border-[3px] border-black shadow-brutal rounded-xl px-6 py-2.5 relative z-10">
-                <h1 class="text-4xl font-black italic tracking-tighter">rxGrow</h1>
-            </div>
-            <div class="bg-[#FF71A4] border-[2px] border-black rounded-md px-2 py-0.5 absolute -bottom-3 -right-5 rotate-12 z-20 shadow-brutal-sm">
-                <p class="text-[9px] font-black tracking-widest text-white">by /MkhzZ</p>
-            </div>
-        </div>
-
-        <!-- Lock Card Container -->
-        <div class="w-full bg-white border-[3px] border-black shadow-brutal-lg rounded-2xl p-6 flex flex-col items-center gap-4">
+    <!-- ========================================== -->
+    <!-- VIEW 1: LOGIN / PIN SCREEN                 -->
+    <!-- ========================================== -->
+    <div id="login-view" class="fixed inset-0 bg-[#18181b] z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-[360px] bg-[#27272a] border-[3px] border-black shadow-brutal rounded-2xl p-6 flex flex-col items-center gap-5">
             
-            <!-- Lock Circle Icon -->
-            <div class="w-14 h-14 bg-[#C4B5FD] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
+            <!-- Lock Icon -->
+            <div class="w-14 h-14 bg-[#a78bfa] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm">
+                <i class="fa-solid fa-lock text-xl text-black"></i>
             </div>
 
-            <!-- Dynamic Titles -->
-            <div class="text-center flex flex-col gap-1">
-                <h2 id="pin-card-title" class="font-black text-xl tracking-tight text-black">
-                    Masukkan PIN
-                </h2>
-                <p id="pin-card-subtitle" class="text-xs font-semibold text-black/60">
-                    Sistem terkunci demi privasi Anda
-                </p>
+            <div class="text-center">
+                <h2 id="login-title" class="text-white font-bold text-2xl mb-1">Buat PIN Baru</h2>
+                <p id="login-subtitle" class="text-gray-400 text-sm font-medium">Tentukan 4 digit angka untuk mengunci aset</p>
             </div>
 
-            <!-- PIN Input Field with Toggle Eye -->
-            <div class="w-full relative flex items-center mt-1">
-                <input 
-                    type="password" 
-                    id="pin-input" 
-                    maxlength="4" 
-                    inputmode="numeric"
-                    class="w-full bg-[#FDF9F1] border-[3px] border-black shadow-brutal-sm rounded-xl text-center font-black text-2xl py-3 pr-10 outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all tracking-[0.4em]" 
-                    placeholder="••••"
-                />
-                <button 
-                    type="button" 
-                    onclick="togglePinVisibility()" 
-                    class="absolute right-3.5 text-black/70 hover:text-black p-1 transition-colors"
-                    title="Lihat / Sembunyikan PIN">
-                    <svg id="eye-icon-off" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-7 0-10-7-10-7a17.9 17.9 0 012.172-2.828m3.862-2.553A9.956 9.956 0 0112 5c7 0 10 7 10 7a17.8 17.8 0 01-2.172 2.828M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
-                    </svg>
-                    <svg id="eye-icon-on" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+            <!-- Input PIN -->
+            <div class="w-full relative">
+                <input type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="••••"
+                    class="w-full bg-[#3f3f46] text-white border-[3px] border-black shadow-brutal-sm rounded-xl text-center font-bold text-3xl py-3 tracking-[0.5em] outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all">
+                <button type="button" id="toggle-pin-btn" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-eye-slash text-lg"></i>
                 </button>
             </div>
 
-            <!-- Submit Button -->
-            <button 
-                id="pin-submit-btn" 
-                onclick="handlePinSubmit()" 
-                class="w-full bg-[#3B82F6] text-white border-[3px] border-black shadow-brutal-sm rounded-xl font-black text-sm py-3 mt-1 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all tracking-wide">
-                Buka Kunci
+            <!-- Error message container -->
+            <p id="pin-error" class="text-[#fca5a5] text-xs font-bold h-4 text-center w-full mt-1"></p>
+
+            <!-- Action Button -->
+            <button id="login-btn" class="w-full bg-[#a78bfa] text-black border-[3px] border-black shadow-brutal-sm rounded-xl font-bold text-base py-3 mt-1 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                Simpan PIN & Masuk
             </button>
 
-            <!-- Reset Link (Gambar 2 style) -->
-            <button 
-                id="reset-pin-link" 
-                onclick="openResetModal()" 
-                class="text-[11px] font-bold text-black/70 hover:text-black underline underline-offset-4 decoration-2 mt-1 transition-colors">
+            <!-- Reset Link (Hidden initially) -->
+            <button id="reset-pin-link" class="hidden text-gray-400 hover:text-white text-xs font-semibold underline underline-offset-2 mt-2">
                 Lupa PIN? Reset Sekarang
             </button>
-
         </div>
     </div>
 
-
-    <!-- ========================================================= -->
-    <!-- 2. DASHBOARD SCREEN (rxGrow by /MkhzZ)                     -->
-    <!-- ========================================================= -->
-    <div id="dashboard-screen" class="w-full max-w-[480px] flex-col gap-4 hidden fade-in my-auto">
-
-        <!-- Top Navigation Bar -->
-        <div class="w-full flex justify-between items-center mb-1">
-            <!-- Left Branding Badge -->
-            <div class="flex relative">
-                <div class="bg-[#C4B5FD] border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1 relative z-10 flex items-center justify-center">
-                    <h1 class="text-xl sm:text-2xl font-black italic tracking-tighter leading-none">rxGrow</h1>
-                </div>
-                <div class="bg-[#FF71A4] border-[2px] border-black rounded px-1.5 py-px absolute -bottom-2 -right-4 rotate-[15deg] z-20 shadow-[1.5px_1.5px_0_0_#000]">
-                    <p class="text-[7.5px] font-black tracking-widest text-white leading-none">by /MkhzZ</p>
-                </div>
-            </div>
-
-            <!-- Right Lock/Logout Button -->
-            <button 
-                onclick="lockApp()" 
-                class="bg-white border-[2.5px] border-black shadow-brutal-sm rounded-lg px-3 py-1.5 font-bold text-xs flex items-center gap-1.5 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all"
-                title="Kunci Aplikasi">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                <span>Kunci</span>
-            </button>
-        </div>
-
-        <!-- TOTAL INVESTASI CARD (Top Blue Card) -->
-        <div class="bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal w-full">
-            <div class="flex justify-center mb-1">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                    <polyline points="16 7 22 7 22 13"></polyline>
-                </svg>
-            </div>
-            <h2 class="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-1">TOTAL INVESTASI</h2>
-            <div id="grand-total" class="font-black text-3xl sm:text-4xl tracking-tight no-underline">
-                Rp0
-            </div>
-        </div>
-
-        <!-- GRID 2 KOLOM SEJAJAR PRESISI (EMAS & REKSADANA) -->
-        <div class="grid grid-cols-2 gap-3 w-full">
+    <!-- ========================================== -->
+    <!-- VIEW 2: DASHBOARD SCREEN                   -->
+    <!-- ========================================== -->
+    <div id="dashboard-view" class="hidden min-h-screen bg-[#FDF9F1] pb-10">
+        <div class="w-full max-w-[500px] mx-auto p-4 flex flex-col gap-5">
             
-            <!-- ====== KARTU KIRI: EMAS (Pastel Yellow) ====== -->
-            <div class="bg-[#FFE268] border-[3px] border-black shadow-brutal rounded-2xl p-3 w-full">
-                <div class="card-grid-sync">
-                    
-                    <!-- Row 1: Header (Judul & Ikon Pastel Emas) -->
-                    <div class="w-full h-full flex justify-between items-center">
-                        <div class="flex flex-col leading-none">
-                            <span class="text-sm font-black tracking-tight">Emas</span>
-                            <span class="text-[9px] font-bold text-black/70 mt-0.5">(Gold)</span>
-                        </div>
-                        <div class="w-8 h-8 rounded-full bg-[#FEF08A] border-2 border-black flex items-center justify-center shadow-[1.5px_1.5px_0_0_#000]">
-                            <div class="w-4 h-2.5 bg-[#F59E0B] border-[1.5px] border-black rounded-[2px]"></div>
-                        </div>
+            <!-- HEADER -->
+            <div class="flex justify-between items-center w-full pt-2">
+                <div class="flex relative">
+                    <div class="bg-[#e9d5ff] border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1 relative z-10">
+                        <h1 class="text-2xl font-bold italic tracking-tighter">rxGrow</h1>
                     </div>
-
-                    <!-- Row 2: Input Gram -->
-                    <div class="w-full h-full relative flex items-center">
-                        <input 
-                            type="text" 
-                            id="emas-gram" 
-                            value="0" 
-                            class="w-full h-full bg-white border-2 border-black shadow-[2px_2px_0_0_#000] rounded-xl text-center text-sm font-bold outline-none focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all no-underline px-2" 
-                            placeholder="0" 
-                            inputmode="decimal"
-                        />
-                        <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs pointer-events-none">g</span>
+                    <div class="bg-[#fbcfe8] border-[2px] border-black rounded px-1.5 py-0.5 absolute -bottom-2.5 -right-4 rotate-12 z-20 shadow-brutal-sm">
+                        <p class="text-[9px] font-bold tracking-wider">by /MkhzZ</p>
                     </div>
-
-                    <!-- Row 3: Label Harga Pasar -->
-                    <div class="w-full h-full flex items-end justify-center pb-0.5">
-                        <span class="text-[9px] font-extrabold text-black/80 uppercase tracking-tight text-center leading-none">HARGA PASAR</span>
-                    </div>
-
-                    <!-- Row 4: Teks Info Buyback (LogamSpot Galeri24) -->
-                    <div class="w-full h-full flex items-center">
-                        <div class="w-full h-full bg-white/70 border-[1.5px] border-black/60 rounded-xl flex flex-col items-center justify-center no-underline px-1">
-                            <span class="text-[7.5px] font-bold text-black/70 leading-none">Harga Buyback:</span>
-                            <!-- Ukuran font (text-[13px]) 100% SAMA dengan Input Keuntungan Reksadana -->
-                            <span class="text-[13px] font-extrabold text-black tracking-tight leading-none mt-0.5">Rp 2.275.000 /g</span>
-                        </div>
-                    </div>
-
-                    <!-- Row 5: Label Nilai Total -->
-                    <div class="w-full h-full flex items-end justify-center pb-0.5">
-                        <span class="text-[9px] font-extrabold text-black/80 uppercase tracking-tight text-center leading-none">NILAI TOTAL</span>
-                    </div>
-
-                    <!-- Row 6: Kotak Hitam (Auto Calculate Gram x Buyback) -->
-                    <div class="w-full h-full flex items-center">
-                        <div id="emas-total" class="w-full h-full bg-[#1E1E1E] text-white border-2 border-black shadow-[2px_2px_0_0_#000] rounded-xl flex items-center justify-center text-sm font-bold no-underline px-1 tracking-tight">
-                            Rp0
-                        </div>
-                    </div>
-
                 </div>
+                <button id="lock-btn" class="bg-white border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1.5 font-bold text-xs flex items-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                    <i class="fa-solid fa-lock"></i> Kunci
+                </button>
             </div>
 
-            <!-- ====== KARTU KANAN: REKSADANA (Pastel Pink) ====== -->
-            <div class="bg-[#FF71A4] border-[3px] border-black shadow-brutal rounded-2xl p-3 w-full">
-                <div class="card-grid-sync">
-                    
-                    <!-- Row 1: Header (Judul & Ikon Pastel Reksadana) -->
-                    <div class="w-full h-full flex justify-between items-center">
-                        <div class="flex flex-col leading-none">
-                            <span class="text-sm font-black tracking-tight">Reksadana</span>
-                            <span class="text-[9px] font-bold text-black/70 mt-0.5">(Mutual Funds)</span>
+            <!-- TOP CARD (TOTAL INVESTASI) -->
+            <div class="bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal w-full mt-2">
+                <div class="flex justify-center mb-1">
+                    <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
+                </div>
+                <h2 class="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-1">TOTAL INVESTASI</h2>
+                <div id="grand-total" class="font-bold text-4xl tracking-tight">Rp 0</div>
+            </div>
+
+            <!-- MIDDLE GRID (GOLD & REKSADANA) -->
+            <div class="grid grid-cols-2 gap-3 w-full items-start">
+                
+                <!-- GOLD CARD -->
+                <div class="bg-[#FFE268] border-[3px] border-black shadow-brutal rounded-2xl p-3">
+                    <div class="card-grid-container">
+                        <!-- Row 1: Title & Custom Gold Bar Icon -->
+                        <div class="flex justify-between items-center w-full h-full">
+                            <div class="flex flex-col leading-tight">
+                                <span class="font-bold text-sm">Emas</span>
+                                <span class="text-[10px] font-semibold opacity-80">(Gold)</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-[#FEF08A] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
+                                <!-- Flat Pastel Gold Bar SVG -->
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#FDE047" stroke="black" stroke-width="2" stroke-linejoin="round">
+                                    <polygon points="5,9 19,9 22,14 2,14" />
+                                    <rect x="2" y="14" width="20" height="4" />
+                                </svg>
+                            </div>
                         </div>
-                        <div class="w-8 h-8 rounded-full bg-[#A7F3D0] border-2 border-black flex items-center justify-center shadow-[1.5px_1.5px_0_0_#000]">
-                            <svg width="16" height="12" viewBox="0 0 24 16" fill="none">
-                                <rect x="1" y="1" width="22" height="14" rx="2" stroke="black" stroke-width="2.5" fill="#10B981"/>
-                                <circle cx="12" cy="8" r="3" stroke="black" stroke-width="2.5" fill="#A7F3D0"/>
-                            </svg>
+                        <!-- Row 2: Gram Input -->
+                        <div class="w-full h-full relative">
+                            <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-base shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2 pr-6" placeholder="0">
+                            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs pointer-events-none">g</span>
                         </div>
-                    </div>
-
-                    <!-- Row 2: Input Total Investasi (Modal) -->
-                    <div class="w-full h-full flex items-center">
-                        <input 
-                            type="text" 
-                            id="reksadana-modal" 
-                            value="0" 
-                            class="w-full h-full bg-white border-2 border-black shadow-[2px_2px_0_0_#000] rounded-xl text-center text-sm font-bold outline-none focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all no-underline px-1" 
-                            placeholder="Rp0" 
-                            inputmode="numeric"
-                        />
-                    </div>
-
-                    <!-- Row 3: Label Total Keuntungan -->
-                    <div class="w-full h-full flex items-end justify-center pb-0.5">
-                        <span class="text-[9px] font-extrabold text-black/80 uppercase tracking-tight text-center leading-none">TOTAL KEUNTUNGAN</span>
-                    </div>
-
-                    <!-- Row 4: Input Total Keuntungan (Font text-[13px] sama dengan Info Buyback) -->
-                    <div class="w-full h-full flex items-center">
-                        <input 
-                            type="text" 
-                            id="reksadana-profit" 
-                            value="0" 
-                            class="w-full h-full bg-[#86EFAC] text-black border-[1.5px] border-black shadow-[2px_2px_0_0_#000] rounded-xl text-center text-[13px] font-extrabold outline-none focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all no-underline px-1 tracking-tight" 
-                            placeholder="Rp0" 
-                            inputmode="numeric"
-                        />
-                    </div>
-
-                    <!-- Row 5: Label Nilai Total -->
-                    <div class="w-full h-full flex items-end justify-center pb-0.5">
-                        <span class="text-[9px] font-extrabold text-black/80 uppercase tracking-tight text-center leading-none">NILAI TOTAL</span>
-                    </div>
-
-                    <!-- Row 6: Kotak Hijau Pastel (Auto Calculate Modal + Keuntungan) -->
-                    <div class="w-full h-full flex items-center">
-                        <div id="reksadana-nilai-total" class="w-full h-full bg-[#86EFAC] text-black border-2 border-black shadow-[2px_2px_0_0_#000] rounded-xl flex items-center justify-center text-sm font-bold no-underline px-1 tracking-tight">
-                            Rp0
+                        <!-- Row 3: Label -->
+                        <div class="w-full h-full flex items-end justify-center pb-0.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">HARGA PASAR</span>
+                        </div>
+                        <!-- Row 4: Buyback Info Box -->
+                        <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex flex-col items-center justify-center text-[14px] font-bold text-center leading-tight">
+                            <span class="text-[9px] font-semibold">Harga Buyback:</span>
+                            <span id="gold-price-txt">Memuat...</span>
+                        </div>
+                        <!-- Row 5: Label -->
+                        <div class="w-full h-full flex items-end justify-center pb-0.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
+                        </div>
+                        <!-- Row 6: Total Box -->
+                        <div id="emas-total" class="w-full h-full bg-[#222] text-white border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-sm font-bold tracking-tight px-1">
+                            Rp 0
                         </div>
                     </div>
+                </div>
 
+                <!-- REKSADANA CARD -->
+                <div class="bg-[#FF71A4] border-[3px] border-black shadow-brutal rounded-2xl p-3">
+                    <div class="card-grid-container">
+                        <!-- Row 1: Title & Icon -->
+                        <div class="flex justify-between items-center w-full h-full">
+                            <div class="flex flex-col leading-tight">
+                                <span class="font-bold text-sm">Reksadana</span>
+                                <span class="text-[10px] font-semibold opacity-80">(Mutual Funds)</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-[#A7F3D0] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="6" width="20" height="12" rx="2" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- Row 2: Modal Input -->
+                        <div class="w-full h-full">
+                            <input type="text" id="reksa-modal" inputmode="numeric" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-base shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-1" placeholder="0">
+                        </div>
+                        <!-- Row 3: Label -->
+                        <div class="w-full h-full flex items-end justify-center pb-0.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">TOTAL KEUNTUNGAN</span>
+                        </div>
+                        <!-- Row 4: Profit Input (Pink Color) -->
+                        <div class="w-full h-full">
+                            <input type="text" id="reksa-profit" inputmode="numeric" class="w-full h-full bg-[#FBCFE8] text-black border-[3px] border-black rounded-lg text-center text-[14px] font-bold shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-1" placeholder="0">
+                        </div>
+                        <!-- Row 5: Label -->
+                        <div class="w-full h-full flex items-end justify-center pb-0.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
+                        </div>
+                        <!-- Row 6: Total Box (Green Color) -->
+                        <div id="reksa-total" class="w-full h-full bg-[#86EFAC] text-black border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-sm font-bold tracking-tight px-1">
+                            Rp 0
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- UPDATE DATE -->
+            <div class="text-left text-[11px] font-bold px-1 text-black/80">
+                Update Terakhir: <span id="update-date-txt" class="font-normal italic">Belum ada pembaruan</span>
+            </div>
+
+            <!-- SAHAM DROPDOWN CARD -->
+            <div class="bg-white border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden mt-2">
+                <!-- Accordion Header -->
+                <button id="saham-toggle" class="w-full p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-[#93C5FD] border-[2px] border-black flex items-center justify-center">
+                            <i class="fa-solid fa-chart-pie text-sm"></i>
+                        </div>
+                        <span class="font-bold text-sm">Investasi Saham</span>
+                    </div>
+                    <i id="saham-icon" class="fa-solid fa-chevron-down text-sm transition-transform duration-300"></i>
+                </button>
+                
+                <!-- Accordion Body -->
+                <div id="saham-body" class="accordion-content border-t-[3px] border-black bg-[#FDF9F1]">
+                    <div class="p-4 flex flex-col gap-3">
+                        
+                        <div id="saham-list" class="flex flex-col gap-3">
+                            <!-- Rows injected via JS -->
+                        </div>
+
+                        <!-- Add Button -->
+                        <button id="add-saham-btn" class="w-full bg-[#c4b5fd] border-[3px] border-black shadow-brutal-sm rounded-xl py-3 font-bold text-sm flex items-center justify-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all mt-2">
+                            <i class="fa-solid fa-plus"></i> Tambah Saham
+                        </button>
+                        
+                    </div>
                 </div>
             </div>
 
         </div>
-
-        <!-- Footer Info: Update Terakhir -->
-        <div class="text-left text-[11px] font-extrabold px-1 mt-1 text-black/80 w-full mb-6">
-            Update Terakhir: <span id="last-update-date" class="italic font-normal text-black">Belum ada pembaruan</span>
-        </div>
-
     </div>
 
-    <!-- SCRIPT APPLICATION LOGIC -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        /* ================= CONSTANTS & DOM ELEMENTS ================= */
-        const BUYBACK_PER_GRAM = 2275000;
-
-        // UI Screens
-        const loginScreen = document.getElementById('login-screen');
-        const dashboardScreen = document.getElementById('dashboard-screen');
+        // Global variables
+        let HARGA_BUYBACK_EMAS = 0; // Fetched automatically
         
-        // PIN Form Elements
-        const pinCardTitle = document.getElementById('pin-card-title');
-        const pinCardSubtitle = document.getElementById('pin-card-subtitle');
-        const pinInput = document.getElementById('pin-input');
-        const pinSubmitBtn = document.getElementById('pin-submit-btn');
-        const resetPinLink = document.getElementById('reset-pin-link');
-        const eyeIconOff = document.getElementById('eye-icon-off');
-        const eyeIconOn = document.getElementById('eye-icon-on');
+        let db = {
+            pin: null,
+            emasGram: '0',
+            reksaModal: '0',
+            reksaProfit: '0',
+            saham: [], 
+            lastDate: 'Belum ada pembaruan'
+        };
+
+        // DOM Elements
+        const viewLogin = document.getElementById('login-view');
+        const viewDash = document.getElementById('dashboard-view');
         
-        // Modals & Toast
-        const resetModal = document.getElementById('reset-modal');
-        const toast = document.getElementById('toast');
-        const toastText = document.getElementById('toast-text');
+        const loginTitle = document.getElementById('login-title');
+        const loginSub = document.getElementById('login-subtitle');
+        const inputPin = document.getElementById('pin-input');
+        const btnLogin = document.getElementById('login-btn');
+        const linkReset = document.getElementById('reset-pin-link');
+        const btnTogglePin = document.getElementById('toggle-pin-btn');
+        const pinError = document.getElementById('pin-error');
+        const lockBtn = document.getElementById('lock-btn');
 
-        // Financial Dashboard Elements
-        const inputEmasGram = document.getElementById('emas-gram');
-        const boxEmasTotal = document.getElementById('emas-total');
+        const inEmas = document.getElementById('emas-gram');
+        const txtEmasTot = document.getElementById('emas-total');
+        const txtGoldPrice = document.getElementById('gold-price-txt');
+        
+        const inRekModal = document.getElementById('reksa-modal');
+        const inRekProfit = document.getElementById('reksa-profit');
+        const txtRekTot = document.getElementById('reksa-total');
+        
+        const txtGrandTot = document.getElementById('grand-total');
+        const txtUpdate = document.getElementById('update-date-txt');
+        
+        const btnToggleSaham = document.getElementById('saham-toggle');
+        const bodySaham = document.getElementById('saham-body');
+        const iconSaham = document.getElementById('saham-icon');
+        const listSaham = document.getElementById('saham-list');
+        const btnAddSaham = document.getElementById('add-saham-btn');
 
-        const inputReksaModal = document.getElementById('reksadana-modal');
-        const inputReksaProfit = document.getElementById('reksadana-profit');
-        const boxReksaTotal = document.getElementById('reksadana-nilai-total');
+        // Helpers
+        const parseNum = (str) => parseInt(str.toString().replace(/[^0-9]/g, ''), 10) || 0;
+        const parseFloatNum = (str) => parseFloat(str.toString().replace(',', '.')) || 0;
+        const formatRp = (num) => 'Rp ' + (num || 0).toLocaleString('id-ID');
+        const generateDateString = () => new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-        const boxGrandTotal = document.getElementById('grand-total');
-        const txtUpdateDate = document.getElementById('last-update-date');
-
-        /* ================= INITIALIZATION & LOCALSTORAGE ================= */
-        document.addEventListener('DOMContentLoaded', () => {
-            initAuthView();
-            loadFinancialData();
-        });
-
-        function initAuthView() {
-            const storedPin = localStorage.getItem('rxgrow_pin');
-            pinInput.value = '';
-
-            if (!storedPin) {
-                // Gambar 1 state: PIN belum pernah dibuat
-                pinCardTitle.textContent = "Buat PIN Baru";
-                pinCardSubtitle.textContent = "Tentukan 4 digit angka untuk mengunci aset";
-                pinSubmitBtn.textContent = "Simpan PIN & Masuk";
-                resetPinLink.classList.add('hidden');
-            } else {
-                // Gambar 2 state: PIN sudah pernah disimpan
-                pinCardTitle.textContent = "Masukkan PIN";
-                pinCardSubtitle.textContent = "Sistem terkunci demi privasi Anda";
-                pinSubmitBtn.textContent = "Buka Kunci";
-                resetPinLink.classList.remove('hidden');
+        // Database logic
+        function loadDB() {
+            const saved = localStorage.getItem('rxGrow_db');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    db = { ...db, ...parsed };
+                } catch(e) { console.error("Error parsing DB", e); }
             }
         }
-
-        function loadFinancialData() {
-            const gram = localStorage.getItem('rxgrow_emasGram') || '0';
-            const modal = localStorage.getItem('rxgrow_reksaModal') || '0';
-            const profit = localStorage.getItem('rxgrow_reksaProfit') || '0';
-            const lastDate = localStorage.getItem('rxgrow_lastDate') || 'Belum ada pembaruan';
-
-            inputEmasGram.value = gram;
-            inputReksaModal.value = formatRupiahDisplay(modal);
-            inputReksaProfit.value = formatRupiahDisplay(profit);
-            txtUpdateDate.textContent = lastDate;
+        function saveDB() {
+            localStorage.setItem('rxGrow_db', JSON.stringify(db));
         }
 
-        /* ================= PIN AUTHENTICATION LOGIC ================= */
-        function togglePinVisibility() {
-            if (pinInput.type === 'password') {
-                pinInput.type = 'text';
-                eyeIconOff.classList.add('hidden');
-                eyeIconOn.classList.remove('hidden');
+        // ======== AUTH LOGIC ========
+        function initAuth() {
+            inputPin.value = '';
+            pinError.textContent = '';
+            
+            // Set UI to Login mode
+            document.body.classList.remove('bg-[#FDF9F1]');
+            document.body.classList.add('bg-[#18181b]');
+            viewLogin.classList.remove('hidden');
+            viewLogin.classList.add('flex');
+            viewDash.classList.add('hidden');
+
+            if (!db.pin) {
+                // Initial setup mode
+                loginTitle.textContent = "Buat PIN Baru";
+                loginSub.textContent = "Tentukan 4 digit angka untuk mengunci aset";
+                btnLogin.textContent = "Simpan PIN & Masuk";
+                linkReset.classList.add('hidden');
             } else {
-                pinInput.type = 'password';
-                eyeIconOff.classList.remove('hidden');
-                eyeIconOn.classList.add('hidden');
-            }
-        }
-
-        function handlePinSubmit() {
-            const val = pinInput.value.trim();
-            const storedPin = localStorage.getItem('rxgrow_pin');
-
-            if (val.length !== 4 || isNaN(val)) {
-                showToast("PIN harus 4 digit angka!", true);
-                return;
-            }
-
-            if (!storedPin) {
-                // Simpan PIN Baru
-                localStorage.setItem('rxgrow_pin', val);
-                showToast("PIN berhasil dibuat & disimpan!");
-                openDashboard();
-            } else {
-                // Verifikasi PIN
-                if (val === storedPin) {
-                    openDashboard();
-                } else {
-                    showToast("PIN Salah!", true);
-                    pinInput.value = '';
-                    pinInput.focus();
-                }
+                // Login mode
+                loginTitle.textContent = "Masukkan PIN";
+                loginSub.textContent = "Sistem terkunci demi privasi Anda";
+                btnLogin.textContent = "Buka Kunci";
+                linkReset.classList.remove('hidden');
             }
         }
 
         function openDashboard() {
-            loginScreen.classList.add('hidden');
-            dashboardScreen.classList.remove('hidden');
-            dashboardScreen.classList.add('flex');
-            calculateAll();
+            document.body.classList.remove('bg-[#18181b]');
+            document.body.classList.add('bg-[#FDF9F1]');
+            viewLogin.classList.add('hidden');
+            viewLogin.classList.remove('flex');
+            viewDash.classList.remove('hidden');
+            initDashboard();
         }
 
-        function lockApp() {
-            dashboardScreen.classList.add('hidden');
-            dashboardScreen.classList.remove('flex');
-            loginScreen.classList.remove('hidden');
-            initAuthView();
-        }
+        // Auth Events
+        btnTogglePin.addEventListener('click', () => {
+            const isPass = inputPin.type === 'password';
+            inputPin.type = isPass ? 'text' : 'password';
+            btnTogglePin.innerHTML = isPass ? '<i class="fa-solid fa-eye text-lg"></i>' : '<i class="fa-solid fa-eye-slash text-lg"></i>';
+        });
 
-        /* ================= RESET PIN LOGIC (WITHOUT DATA LOSS) ================= */
-        function openResetModal() {
-            resetModal.classList.remove('hidden');
-        }
-
-        function closeResetModal() {
-            resetModal.classList.add('hidden');
-        }
-
-        function executePinReset() {
-            closeResetModal();
-            // Hanya hapus PIN, data keuangan rx_ * TIDAK * DAHAPUS
-            localStorage.removeItem('rxgrow_pin');
-            showToast("PIN berhasil di-reset. Silakan buat PIN baru.");
-            initAuthView();
-        }
-
-        /* ================= FINANCIAL CALCULATIONS ================= */
-        function getRawInt(str) {
-            if (!str) return 0;
-            const parsed = parseInt(str.toString().replace(/[^0-9]/g, ''), 10);
-            return isNaN(parsed) ? 0 : parsed;
-        }
-
-        function getRawFloat(str) {
-            if (!str) return 0;
-            const parsed = parseFloat(str.toString().replace(',', '.'));
-            return isNaN(parsed) ? 0 : parsed;
-        }
-
-        function formatRupiahDisplay(val) {
-            const num = getRawInt(val);
-            if (num === 0) return '0';
-            return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-
-        function updateRealtimeDate() {
-            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        btnLogin.addEventListener('click', () => {
+            const val = inputPin.value.trim();
+            if (val.length !== 4) {
+                pinError.textContent = "PIN harus 4 digit!";
+                return;
+            }
             
-            const now = new Date();
-            const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            if (!db.pin) {
+                db.pin = val;
+                saveDB();
+                openDashboard();
+            } else {
+                if (val === db.pin) {
+                    openDashboard();
+                } else {
+                    pinError.textContent = "PIN Salah!";
+                    inputPin.value = '';
+                }
+            }
+        });
+
+        lockBtn.addEventListener('click', () => {
+            initAuth();
+        });
+
+        // Reset PIN logically without confirm popup
+        linkReset.addEventListener('click', () => {
+            db.pin = null;
+            saveDB();
+            initAuth();
+            pinError.textContent = "PIN berhasil di-reset. Silakan buat PIN baru.";
+            pinError.classList.replace('text-[#fca5a5]', 'text-green-400');
+            setTimeout(() => {
+                pinError.textContent = '';
+                pinError.classList.replace('text-green-400', 'text-[#fca5a5]');
+            }, 3000);
+        });
+
+        // ======== API FETCHING ========
+        async function fetchGoldPrice() {
+            try {
+                txtGoldPrice.textContent = "Load...";
+                const targetUrl = 'https://logamspot.id/harga/emas-galeri-24-1-gram';
+                
+                const proxies = [
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+                ];
+                
+                let html = null;
+                for (const proxy of proxies) {
+                    try {
+                        const res = await fetch(proxy);
+                        if (!res.ok) continue;
+                        if (proxy.includes('allorigins')) {
+                            const data = await res.json();
+                            html = data.contents;
+                        } else {
+                            html = await res.text();
+                        }
+                        if (html) break; 
+                    } catch (e) {
+                        console.warn(`Gold Proxy failed.`);
+                    }
+                }
+
+                if (html) {
+                    const match = html.match(/Buyback[\s\S]{0,100}?Rp\s*([\d,.]+)/i) || html.match(/Rp\s*([\d,.]+)/i);
+                    if (match && match[1]) {
+                        const parsed = parseInt(match[1].replace(/\./g, ''), 10);
+                        if (!isNaN(parsed) && parsed > 1000000) {
+                            HARGA_BUYBACK_EMAS = parsed;
+                        }
+                    }
+                }
+            } catch(e) { console.error("Error Fetch Gold", e); }
             
-            txtUpdateDate.textContent = dateStr;
-            localStorage.setItem('rxgrow_lastDate', dateStr);
+            if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2275000; // Fallback
+            txtGoldPrice.textContent = `Rp ${HARGA_BUYBACK_EMAS.toLocaleString('id-ID')} /g`;
+            calculateTotals();
         }
 
-        function calculateAll() {
-            // Emas Calculation (Gram x Buyback)
-            const gram = getRawFloat(inputEmasGram.value);
-            const emasTotal = Math.round(gram * BUYBACK_PER_GRAM);
-            boxEmasTotal.textContent = emasTotal > 0 ? formatRupiahDisplay(emasTotal) : 'Rp0';
-
-            // Reksadana Calculation (Modal + Profit)
-            const modal = getRawInt(inputReksaModal.value);
-            const profit = getRawInt(inputReksaProfit.value);
-            const reksaTotal = modal + profit;
-            boxReksaTotal.textContent = reksaTotal > 0 ? formatRupiahDisplay(reksaTotal) : 'Rp0';
-
-            // Grand Total Calculation
-            const grandTotal = emasTotal + reksaTotal;
-            boxGrandTotal.textContent = grandTotal > 0 ? formatRupiahDisplay(grandTotal) : 'Rp0';
+        async function fetchStockPrice(kode, idx) {
+            if (!kode) return;
+            const targetInput = document.querySelector(`input[data-field="harga"][data-index="${idx}"]`);
+            const symbol = kode.toUpperCase().replace('.JK', '') + '.JK';
+            const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+            
+            try {
+                if(targetInput) targetInput.placeholder = "Load...";
+                
+                const proxies = [
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+                ];
+                
+                let rawData = null;
+                for (const proxy of proxies) {
+                    try {
+                        const res = await fetch(proxy);
+                        if (!res.ok) continue;
+                        if (proxy.includes('allorigins')) {
+                            const data = await res.json();
+                            rawData = JSON.parse(data.contents);
+                        } else {
+                            rawData = await res.json();
+                        }
+                        if (rawData) break;
+                    } catch(e) { console.warn(`Stock Proxy failed.`); }
+                }
+                
+                if (rawData && rawData.chart && rawData.chart.result && rawData.chart.result[0]) {
+                    const price = rawData.chart.result[0].meta.regularMarketPrice;
+                    if (price) {
+                        db.saham[idx].harga = price;
+                        if(targetInput) {
+                            targetInput.value = price.toLocaleString('id-ID');
+                            targetInput.placeholder = "0";
+                        }
+                        saveDB();
+                        updateSahamRowUI(idx); 
+                        calculateTotals();
+                        return;
+                    }
+                }
+                if(targetInput) targetInput.placeholder = "0";
+            } catch(e) {
+                console.error('Fetch Saham Error:', e);
+                if(targetInput) targetInput.placeholder = "0";
+            }
         }
 
-        /* ================= INPUT EVENT HANDLERS ================= */
-        inputEmasGram.addEventListener('input', (e) => {
+        // ======== DASHBOARD LOGIC ========
+        function initDashboard() {
+            inEmas.value = db.emasGram == '0' ? '' : db.emasGram;
+            inRekModal.value = db.reksaModal == '0' ? '' : parseNum(db.reksaModal).toLocaleString('id-ID');
+            inRekProfit.value = db.reksaProfit == '0' ? '' : parseNum(db.reksaProfit).toLocaleString('id-ID');
+            txtUpdate.textContent = db.lastDate;
+            
+            renderSahamList();
+            calculateTotals();
+            fetchGoldPrice(); 
+        }
+
+        function calculateTotals() {
+            // Gold
+            const g = parseFloatNum(inEmas.value);
+            const totEmas = Math.round(g * HARGA_BUYBACK_EMAS);
+            txtEmasTot.textContent = formatRp(totEmas);
+
+            // Reksadana
+            const rm = parseNum(inRekModal.value);
+            const rp = parseNum(inRekProfit.value);
+            const totReksa = rm + rp;
+            txtRekTot.textContent = formatRp(totReksa);
+
+            // Saham
+            let totSaham = 0;
+            db.saham.forEach(s => {
+                totSaham += parseNum(s.lot) * 100 * parseNum(s.harga);
+            });
+
+            // Grand Total
+            txtGrandTot.textContent = formatRp(totEmas + totReksa + totSaham);
+        }
+
+        // Input Handlers
+        inEmas.addEventListener('input', (e) => {
             let val = e.target.value.replace(/[^0-9,]/g, '');
             const parts = val.split(',');
             if (parts.length > 2) val = parts[0] + ',' + parts.slice(1).join('');
-            
             e.target.value = val;
-            localStorage.setItem('rxgrow_emasGram', val);
-            calculateAll();
-        });
-
-        inputReksaModal.addEventListener('input', (e) => {
-            let raw = e.target.value.replace(/[^0-9]/g, '');
-            e.target.value = raw ? formatRupiahDisplay(raw) : '';
-            localStorage.setItem('rxgrow_reksaModal', raw || '0');
-            calculateAll();
-        });
-
-        inputReksaProfit.addEventListener('input', (e) => {
-            let raw = e.target.value.replace(/[^0-9]/g, '');
-            e.target.value = raw ? formatRupiahDisplay(raw) : '';
-            localStorage.setItem('rxgrow_reksaProfit', raw || '0');
-            calculateAll();
-            updateRealtimeDate(); // Auto update tanggal saat keuntungan diubah
-        });
-
-        pinInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handlePinSubmit();
-        });
-
-        function showToast(msg, isError = false) {
-            toastText.textContent = msg;
-            toast.classList.remove('hidden', 'bg-[#FF71A4]', 'bg-[#FFE268]');
-            toast.classList.add(isError ? 'bg-[#FF71A4]' : 'bg-[#FFE268]');
             
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 2600);
+            db.emasGram = val || '0';
+            saveDB();
+            calculateTotals();
+        });
+
+        function handleRupiahInput(e, keyName, isProfit = false) {
+            let raw = parseNum(e.target.value);
+            e.target.value = raw > 0 ? raw.toLocaleString('id-ID') : '';
+            
+            db[keyName] = raw || 0;
+            
+            if (isProfit) {
+                db.lastDate = generateDateString();
+                txtUpdate.textContent = db.lastDate;
+            }
+            
+            saveDB();
+            calculateTotals();
         }
+
+        inRekModal.addEventListener('input', (e) => handleRupiahInput(e, 'reksaModal'));
+        inRekProfit.addEventListener('input', (e) => handleRupiahInput(e, 'reksaProfit', true));
+
+        // ======== SAHAM LOGIC ========
+        btnToggleSaham.addEventListener('click', () => {
+            bodySaham.classList.toggle('open');
+            iconSaham.classList.toggle('rotate-180');
+            if (bodySaham.classList.contains('open')) {
+                bodySaham.style.padding = "16px";
+            } else {
+                bodySaham.style.padding = "0px 16px";
+            }
+        });
+
+        function updateSahamRowUI(idx) {
+            const s = db.saham[idx];
+            const lot = parseNum(s.lot);
+            const avg = parseNum(s.avg);
+            const harga = parseNum(s.harga);
+
+            const marketValue = lot * 100 * harga;
+            const pnl = (harga - avg) * lot * 100;
+
+            const totEl = document.getElementById(`saham-tot-${idx}`);
+            if(totEl) totEl.textContent = formatRp(marketValue);
+
+            const pnlEl = document.getElementById(`saham-pnl-${idx}`);
+            if(pnlEl) {
+                pnlEl.textContent = (pnl > 0 ? '+' : '') + formatRp(pnl);
+                pnlEl.className = pnl >= 0 ? 'text-sm font-bold text-green-600' : 'text-sm font-bold text-red-600';
+            }
+        }
+
+        function renderSahamList() {
+            listSaham.innerHTML = '';
+            if (db.saham.length === 0) {
+                listSaham.innerHTML = '<p class="text-center text-xs font-bold text-gray-500 py-2">Belum ada saham ditambahkan.</p>';
+                return;
+            }
+
+            db.saham.forEach((s, idx) => {
+                const lot = parseNum(s.lot);
+                const avg = parseNum(s.avg);
+                const harga = parseNum(s.harga);
+                const marketValue = lot * 100 * harga;
+                const pnl = (harga - avg) * lot * 100;
+                
+                const pnlClass = pnl >= 0 ? 'text-green-600' : 'text-red-600';
+                const pnlSign = pnl > 0 ? '+' : '';
+
+                const html = `
+                    <div class="bg-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm flex flex-col gap-2 relative mt-2">
+                        <!-- Direct delete button without confirm popup -->
+                        <button data-action="delete" data-index="${idx}" class="absolute -top-3 -right-3 w-8 h-8 bg-[#f87171] border-[3px] border-black rounded-full flex justify-center items-center text-white shadow-brutal-sm z-10 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                            <i class="fa-solid fa-times pointer-events-none"></i>
+                        </button>
+                        
+                        <div class="grid grid-cols-4 gap-2 mt-1">
+                            <div class="flex flex-col relative col-span-1">
+                                <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">KODE</span>
+                                <input data-field="kode" data-index="${idx}" value="${s.kode}" placeholder="..." class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold uppercase text-center outline-none focus:bg-yellow-50">
+                            </div>
+                            <div class="flex flex-col relative col-span-1">
+                                <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">LOT</span>
+                                <input data-field="lot" data-index="${idx}" value="${s.lot ? lot.toLocaleString('id-ID') : ''}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50">
+                            </div>
+                            <div class="flex flex-col relative col-span-1">
+                                <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">AVG</span>
+                                <input data-field="avg" data-index="${idx}" value="${s.avg ? avg.toLocaleString('id-ID') : ''}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50">
+                            </div>
+                            <div class="flex flex-col relative col-span-1">
+                                <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">LAST</span>
+                                <input data-field="harga" data-index="${idx}" value="${s.harga ? harga.toLocaleString('id-ID') : ''}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50 bg-[#e0e7ff]">
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center px-1 mt-1 border-t-2 border-dashed border-gray-300 pt-2">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-bold uppercase text-gray-500">Unrealized PnL</span>
+                                <span id="saham-pnl-${idx}" class="text-sm font-bold ${pnlClass}">${pnlSign}${formatRp(pnl)}</span>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span class="text-[9px] font-bold uppercase text-gray-500">Market Value</span>
+                                <span id="saham-tot-${idx}" class="text-sm font-bold text-blue-600">${formatRp(marketValue)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listSaham.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        btnAddSaham.addEventListener('click', () => {
+            db.saham.push({ kode: '', lot: '', avg: '', harga: '' });
+            saveDB();
+            renderSahamList();
+            calculateTotals();
+        });
+
+        // Saham Input Live Calculation
+        listSaham.addEventListener('input', (e) => {
+            const target = e.target;
+            if (target.tagName !== 'INPUT') return;
+            const idx = target.dataset.index;
+            const field = target.dataset.field;
+            
+            if (field === 'kode') {
+                db.saham[idx].kode = target.value.toUpperCase();
+            } else {
+                let raw = parseNum(target.value);
+                target.value = raw > 0 ? raw.toLocaleString('id-ID') : '';
+                db.saham[idx][field] = raw;
+                
+                updateSahamRowUI(idx);
+            }
+            saveDB();
+            calculateTotals();
+        });
+        
+        // Auto-fetch Stock Price on focus out
+        listSaham.addEventListener('focusout', (e) => {
+            const target = e.target;
+            if (target.tagName === 'INPUT' && target.dataset.field === 'kode') {
+                fetchStockPrice(target.value, target.dataset.index);
+            }
+        });
+
+        // Delete Row Logic - Instant, NO CONFIRM POPUP
+        listSaham.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-action="delete"]');
+            if (!btn) return;
+            
+            const idx = btn.dataset.index;
+            db.saham.splice(idx, 1);
+            saveDB();
+            renderSahamList();
+            calculateTotals();
+        });
+
+        // INIT APP
+        window.onload = function() {
+            loadDB();
+            initAuth();
+        };
+
     </script>
 </body>
 </html>
