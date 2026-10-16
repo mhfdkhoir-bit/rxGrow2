@@ -126,7 +126,12 @@
             </div>
 
             <!-- TOP CARD (TOTAL INVESTASI) -->
-            <div class="bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal w-full mt-2">
+            <div class="bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal w-full mt-2 relative">
+                <!-- Eye Censor Button -->
+                <button id="toggle-censor-btn" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors active:scale-95">
+                    <i class="fa-solid fa-eye text-lg" id="censor-icon"></i>
+                </button>
+
                 <div class="flex justify-center mb-1">
                     <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
                 </div>
@@ -262,6 +267,7 @@
     <script>
         // Global variables
         let HARGA_BUYBACK_EMAS = 0; // Fetched automatically
+        let isCensored = false; // State for privacy toggle
         
         let db = {
             pin: null,
@@ -302,6 +308,9 @@
         const listSaham = document.getElementById('saham-list');
         const btnAddSaham = document.getElementById('add-saham-btn');
 
+        const btnToggleCensor = document.getElementById('toggle-censor-btn');
+        const iconCensor = document.getElementById('censor-icon');
+
         // Helpers
         const parseNum = (str) => parseInt(str.toString().replace(/[^0-9]/g, ''), 10) || 0;
         const parseFloatNum = (str) => parseFloat(str.toString().replace(',', '.')) || 0;
@@ -322,12 +331,35 @@
             localStorage.setItem('rxGrow_db', JSON.stringify(db));
         }
 
+        btnToggleCensor.addEventListener('click', () => {
+            isCensored = !isCensored;
+            iconCensor.className = isCensored ? 'fa-solid fa-eye-slash text-lg' : 'fa-solid fa-eye text-lg';
+            
+            // Mask/Unmask Inputs
+            const mainInputs = [inEmas, inRekModal, inRekProfit];
+            mainInputs.forEach(input => {
+                input.type = isCensored ? 'password' : 'text';
+            });
+
+            // Mask/Unmask Saham Inputs (except Kode)
+            document.querySelectorAll('#saham-list input').forEach(input => {
+                if(input.dataset.field !== 'kode') {
+                    input.type = isCensored ? 'password' : 'text';
+                }
+            });
+
+            // Re-render display totals
+            calculateTotals();
+            if(db.saham.length > 0) {
+                db.saham.forEach((_, idx) => updateSahamRowUI(idx));
+            }
+        });
+
         // ======== AUTH LOGIC ========
         function initAuth() {
             inputPin.value = '';
             pinError.textContent = '';
             
-            // Set UI to Login mode
             document.body.classList.remove('bg-[#FDF9F1]');
             document.body.classList.add('bg-[#18181b]');
             viewLogin.classList.remove('hidden');
@@ -335,13 +367,11 @@
             viewDash.classList.add('hidden');
 
             if (!db.pin) {
-                // Initial setup mode
                 loginTitle.textContent = "Buat PIN Baru";
                 loginSub.textContent = "Tentukan 4 digit angka untuk mengunci aset";
                 btnLogin.textContent = "Simpan PIN & Masuk";
                 linkReset.classList.add('hidden');
             } else {
-                // Login mode
                 loginTitle.textContent = "Masukkan PIN";
                 loginSub.textContent = "Sistem terkunci demi privasi Anda";
                 btnLogin.textContent = "Buka Kunci";
@@ -358,7 +388,6 @@
             initDashboard();
         }
 
-        // Auth Events
         btnTogglePin.addEventListener('click', () => {
             const isPass = inputPin.type === 'password';
             inputPin.type = isPass ? 'text' : 'password';
@@ -390,7 +419,6 @@
             initAuth();
         });
 
-        // Reset PIN logically without confirm popup
         linkReset.addEventListener('click', () => {
             db.pin = null;
             saveDB();
@@ -456,24 +484,33 @@
             try {
                 if(targetInput) targetInput.placeholder = "Load...";
                 
+                // Menggunakan endpoint /raw AllOrigins dan CorsProxy.io untuk stabilitas maksimal
                 const proxies = [
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
                     `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
                 ];
                 
                 let rawData = null;
                 for (const proxy of proxies) {
                     try {
-                        const res = await fetch(proxy);
+                        const res = await fetch(proxy, { cache: "no-store" });
                         if (!res.ok) continue;
-                        if (proxy.includes('allorigins')) {
-                            const data = await res.json();
-                            rawData = JSON.parse(data.contents);
-                        } else {
-                            rawData = await res.json();
+                        
+                        const text = await res.text();
+                        try {
+                            rawData = JSON.parse(text);
+                            // Validasi stuktur JSON Yahoo Finance
+                            if (rawData && rawData.chart && rawData.chart.result) break; 
+                        } catch(e) {
+                            // Fallback jika API terbungkus string {contents: "..."}
+                            const maybeJson = JSON.parse(text);
+                            if (maybeJson.contents) {
+                                rawData = JSON.parse(maybeJson.contents);
+                                if (rawData && rawData.chart && rawData.chart.result) break;
+                            }
                         }
-                        if (rawData) break;
-                    } catch(e) { console.warn(`Stock Proxy failed.`); }
+                    } catch(e) { console.warn(`Proxy failed, trying next...`); }
                 }
                 
                 if (rawData && rawData.chart && rawData.chart.result && rawData.chart.result[0]) {
@@ -487,10 +524,10 @@
                         saveDB();
                         updateSahamRowUI(idx); 
                         calculateTotals();
-                        return;
+                        return; // Berhasil!
                     }
                 }
-                if(targetInput) targetInput.placeholder = "0";
+                if(targetInput) targetInput.placeholder = "0"; // Jika tidak ditemukan
             } catch(e) {
                 console.error('Fetch Saham Error:', e);
                 if(targetInput) targetInput.placeholder = "0";
@@ -504,6 +541,11 @@
             inRekProfit.value = db.reksaProfit == '0' ? '' : parseNum(db.reksaProfit).toLocaleString('id-ID');
             txtUpdate.textContent = db.lastDate;
             
+            // Terapkan sensor jika state sedang aktif saat di-load (opsional, by default false)
+            if(isCensored) {
+                [inEmas, inRekModal, inRekProfit].forEach(i => i.type = 'password');
+            }
+
             renderSahamList();
             calculateTotals();
             fetchGoldPrice(); 
@@ -513,13 +555,13 @@
             // Gold
             const g = parseFloatNum(inEmas.value);
             const totEmas = Math.round(g * HARGA_BUYBACK_EMAS);
-            txtEmasTot.textContent = formatRp(totEmas);
+            txtEmasTot.textContent = isCensored ? '••••••' : formatRp(totEmas);
 
             // Reksadana
             const rm = parseNum(inRekModal.value);
             const rp = parseNum(inRekProfit.value);
             const totReksa = rm + rp;
-            txtRekTot.textContent = formatRp(totReksa);
+            txtRekTot.textContent = isCensored ? '••••••' : formatRp(totReksa);
 
             // Saham
             let totSaham = 0;
@@ -528,7 +570,7 @@
             });
 
             // Grand Total
-            txtGrandTot.textContent = formatRp(totEmas + totReksa + totSaham);
+            txtGrandTot.textContent = isCensored ? 'Rp ••••••' : formatRp(totEmas + totReksa + totSaham);
         }
 
         // Input Handlers
@@ -582,12 +624,17 @@
             const pnl = (harga - avg) * lot * 100;
 
             const totEl = document.getElementById(`saham-tot-${idx}`);
-            if(totEl) totEl.textContent = formatRp(marketValue);
+            if(totEl) totEl.textContent = isCensored ? '••••••' : formatRp(marketValue);
 
             const pnlEl = document.getElementById(`saham-pnl-${idx}`);
             if(pnlEl) {
-                pnlEl.textContent = (pnl > 0 ? '+' : '') + formatRp(pnl);
-                pnlEl.className = pnl >= 0 ? 'text-sm font-bold text-green-600' : 'text-sm font-bold text-red-600';
+                if (isCensored) {
+                    pnlEl.textContent = '••••••';
+                    pnlEl.className = 'text-sm font-bold text-gray-500';
+                } else {
+                    pnlEl.textContent = (pnl > 0 ? '+' : '') + formatRp(pnl);
+                    pnlEl.className = pnl >= 0 ? 'text-sm font-bold text-green-600' : 'text-sm font-bold text-red-600';
+                }
             }
         }
 
@@ -597,6 +644,8 @@
                 listSaham.innerHTML = '<p class="text-center text-xs font-bold text-gray-500 py-2">Belum ada saham ditambahkan.</p>';
                 return;
             }
+            
+            const numInputType = isCensored ? 'password' : 'text';
 
             db.saham.forEach((s, idx) => {
                 const lot = parseNum(s.lot);
@@ -607,6 +656,9 @@
                 
                 const pnlClass = pnl >= 0 ? 'text-green-600' : 'text-red-600';
                 const pnlSign = pnl > 0 ? '+' : '';
+                const pnlDisplay = isCensored ? '••••••' : `${pnlSign}${formatRp(pnl)}`;
+                const totDisplay = isCensored ? '••••••' : formatRp(marketValue);
+                const appliedPnlClass = isCensored ? 'text-gray-500' : pnlClass;
 
                 const html = `
                     <div class="bg-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm flex flex-col gap-2 relative mt-2">
@@ -618,30 +670,30 @@
                         <div class="grid grid-cols-4 gap-2 mt-1">
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">KODE</span>
-                                <input data-field="kode" data-index="${idx}" value="${s.kode}" placeholder="..." class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold uppercase text-center outline-none focus:bg-yellow-50">
+                                <input data-field="kode" data-index="${idx}" value="${s.kode}" type="text" placeholder="..." class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold uppercase text-center outline-none focus:bg-yellow-50">
                             </div>
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">LOT</span>
-                                <input data-field="lot" data-index="${idx}" value="${s.lot ? lot.toLocaleString('id-ID') : ''}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50">
+                                <input data-field="lot" data-index="${idx}" value="${s.lot ? lot.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50">
                             </div>
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">AVG</span>
-                                <input data-field="avg" data-index="${idx}" value="${s.avg ? avg.toLocaleString('id-ID') : ''}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50">
+                                <input data-field="avg" data-index="${idx}" value="${s.avg ? avg.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50">
                             </div>
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">LAST</span>
-                                <input data-field="harga" data-index="${idx}" value="${s.harga ? harga.toLocaleString('id-ID') : ''}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50 bg-[#e0e7ff]">
+                                <input data-field="harga" data-index="${idx}" value="${s.harga ? harga.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50 bg-[#e0e7ff]">
                             </div>
                         </div>
                         
                         <div class="flex justify-between items-center px-1 mt-1 border-t-2 border-dashed border-gray-300 pt-2">
                             <div class="flex flex-col">
                                 <span class="text-[9px] font-bold uppercase text-gray-500">Unrealized PnL</span>
-                                <span id="saham-pnl-${idx}" class="text-sm font-bold ${pnlClass}">${pnlSign}${formatRp(pnl)}</span>
+                                <span id="saham-pnl-${idx}" class="text-sm font-bold ${appliedPnlClass}">${pnlDisplay}</span>
                             </div>
                             <div class="flex flex-col items-end">
                                 <span class="text-[9px] font-bold uppercase text-gray-500">Market Value</span>
-                                <span id="saham-tot-${idx}" class="text-sm font-bold text-blue-600">${formatRp(marketValue)}</span>
+                                <span id="saham-tot-${idx}" class="text-sm font-bold text-blue-600">${totDisplay}</span>
                             </div>
                         </div>
                     </div>
