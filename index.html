@@ -677,38 +677,41 @@
             calculateTotals();
         }
 
-        async function fetchStockPrice(kode, idx) {
+async function fetchStockPrice(kode, idx) {
             if (!kode) return;
             const targetInput = document.querySelector(`input[data-field="harga"][data-index="${idx}"]`);
             const symbol = kode.toUpperCase().replace('.JK', '') + '.JK';
-            const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+            
+            // Menggunakan Cloudflare Worker pribadi kamu agar secepat kilat tanpa antre
+            const workerUrl = `https://saham-proxy.m4hfud-backup.workers.dev/?symbol=${symbol}`;
             
             try {
                 if(targetInput) targetInput.placeholder = "Load...";
-                const proxies = [
-                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
-                    `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
-                ];
                 
-                let rawData = null;
-                for (const proxy of proxies) {
-                    try {
-                        const res = await fetch(proxy, { cache: "no-store", headers: { "Accept": "application/json" } });
-                        if (!res.ok) continue;
-                        const text = await res.text();
-                        try {
-                            rawData = JSON.parse(text);
-                            if (rawData?.chart?.result) break; 
-                        } catch(e) {
-                            const maybeJson = JSON.parse(text);
-                            if (maybeJson.contents) {
-                                rawData = JSON.parse(maybeJson.contents);
-                                if (rawData?.chart?.result) break;
-                            }
+                const res = await fetch(workerUrl, { cache: "no-store" });
+                if (!res.ok) throw new Error("Gagal mengambil data");
+                
+                const rawData = await res.json();
+                
+                if (rawData?.chart?.result?.[0]) {
+                    const price = rawData.chart.result[0].meta.regularMarketPrice;
+                    if (price) {
+                        db.saham[idx].harga = price;
+                        if(targetInput) {
+                            targetInput.value = isCensored ? '••••••' : price.toLocaleString('id-ID');
+                            targetInput.placeholder = "0";
                         }
-                    } catch(e) { }
+                        saveDB();
+                        updateSahamRowUI(idx); 
+                        calculateTotals();
+                        return;
+                    }
                 }
+                if(targetInput) targetInput.placeholder = "0";
+            } catch(e) {
+                if(targetInput) targetInput.placeholder = "0";
+            }
+        }
                 
                 if (rawData?.chart?.result?.[0]) {
                     const price = rawData.chart.result[0].meta.regularMarketPrice;
