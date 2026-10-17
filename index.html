@@ -24,7 +24,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class', /* Ditambahkan untuk fitur dark mode */
+            darkMode: 'class', 
             theme: {
                 extend: {
                     fontFamily: { sans: ['"Space Grotesk"', 'sans-serif'] },
@@ -155,7 +155,8 @@
         <!-- FITUR BARU: Dark Mode Toggle -->
         <div class="p-4 border-t-[3px] border-black">
             <button id="toggle-dark-mode" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                <span class="flex items-center gap-3"><i class="fa-solid fa-moon dark:hidden"></i><i class="fa-solid fa-sun hidden dark:inline text-[#FFE268]"></i> Tema Gelap</span>
+                <!-- Direvisi menjadi dinamis melalui JS -->
+                <span id="theme-text-span" class="flex items-center gap-3"><i class="fa-solid fa-moon"></i> Mode Gelap</span>
                 <div class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative border-[2px] border-black">
                     <div id="dark-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform"></div>
                 </div>
@@ -210,24 +211,33 @@
                             <div id="grand-total" class="font-bold text-4xl tracking-tight z-10">Rp 0</div>
                         </div>
 
-                        <!-- BACK FACE: ASSET ALLOCATION (PIE CHART) -->
+                        <!-- BACK FACE: ASSET ALLOCATION (MONEY CHART) -->
                         <div class="absolute inset-0 backface-hidden z-[1] rotate-y-180-static bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black rounded-2xl p-3 shadow-brutal-flipped flex items-center justify-center w-full h-full">
                             
                             <!-- INNER WRAPPER TO CENTER CONTENT -->
                             <div class="flex items-center justify-center w-full max-w-[280px]">
-                                <!-- CHART CONTAINER -->
+                                <!-- CHART CONTAINER (MONEY SHAPE) -->
                                 <div class="w-1/2 flex justify-end items-center pr-3.5">
-                                    <div class="relative w-[85px] h-[85px] rounded-full border-[3px] border-black shadow-brutal-sm-flipped bg-gray-200 dark:bg-gray-600 overflow-hidden shrink-0">
-                                        <svg viewBox="0 0 32 32" class="w-full h-full transform -rotate-90">
-                                            <!-- Emas -->
-                                            <circle id="pie-emas" r="8" cx="16" cy="16" fill="transparent" stroke="#FFE268" stroke-width="16" stroke-dasharray="0 51" class="transition-all duration-700 ease-out"></circle>
-                                            <!-- Reksadana -->
-                                            <circle id="pie-reksa" r="8" cx="16" cy="16" fill="transparent" stroke="#FF71A4" stroke-width="16" stroke-dasharray="0 51" class="transition-all duration-700 ease-out"></circle>
-                                            <!-- Saham -->
-                                            <circle id="pie-saham" r="8" cx="16" cy="16" fill="transparent" stroke="#93C5FD" stroke-width="16" stroke-dasharray="0 51" class="transition-all duration-700 ease-out"></circle>
-                                        </svg>
-                                        <!-- Donut Hole -->
-                                        <div class="absolute inset-0 m-auto w-[34px] h-[34px] bg-[#FDF9F1] dark:bg-[#52525b] rounded-full border-[3px] border-black"></div>
+                                    <!-- Money Chart (Banknote Graphic) -->
+                                    <div class="relative w-[95px] h-[60px] bg-[#bbf7d0] border-[3px] border-black rounded-md shadow-brutal-sm-flipped flex flex-col p-1 overflow-hidden shrink-0">
+                                        <!-- Inner frame (Stacked Bars) -->
+                                        <div class="w-full h-full border-[2px] border-black rounded-[2px] flex relative overflow-hidden bg-white">
+                                            <!-- Allocation Bars replacing old circle strokes -->
+                                            <div id="pie-emas" class="h-full bg-[#FFE268] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
+                                            <div id="pie-reksa" class="h-full bg-[#FF71A4] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
+                                            <div id="pie-saham" class="h-full bg-[#93C5FD] transition-all duration-700 ease-out" style="width: 0%;"></div>
+                                            
+                                            <!-- Center Seal (Rp) -->
+                                            <div class="absolute inset-0 m-auto w-7 h-7 bg-[#FDF9F1] dark:bg-[#52525b] border-[2px] border-black rounded-full shadow-[2px_2px_0px_0px_#000] flex items-center justify-center z-10 transition-colors">
+                                                <span class="font-black text-[12px] text-green-600 dark:text-green-400 tracking-tighter">Rp</span>
+                                            </div>
+
+                                            <!-- Corner accents for Banknote look -->
+                                            <div class="absolute top-0.5 left-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
+                                            <div class="absolute top-0.5 right-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
+                                            <div class="absolute bottom-0.5 left-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
+                                            <div class="absolute bottom-0.5 right-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -547,14 +557,21 @@
             localStorage.setItem('rxGrow_db', JSON.stringify(db));
         }
         
-        /* FITUR BARU: Terapkan Dark Mode di Level Root/HTML */
+        /* FITUR BARU: Terapkan Dark Mode di Level Root/HTML dan Update Text Dinamis */
         function applyTheme() {
+            const themeTextSpan = document.getElementById('theme-text-span');
             if (db.darkMode) {
                 document.documentElement.classList.add('dark');
                 darkToggleIndicator.classList.add('translate-x-[20px]');
+                if (themeTextSpan) {
+                    themeTextSpan.innerHTML = '<i class="fa-solid fa-sun text-[#FFE268]"></i> Mode Terang';
+                }
             } else {
                 document.documentElement.classList.remove('dark');
                 darkToggleIndicator.classList.remove('translate-x-[20px]');
+                if (themeTextSpan) {
+                    themeTextSpan.innerHTML = '<i class="fa-solid fa-moon"></i> Mode Gelap';
+                }
             }
         }
         
@@ -684,7 +701,7 @@
             const targetInput = document.querySelector(`input[data-field="harga"][data-index="${idx}"]`);
             const symbol = kode.toUpperCase().replace('.JK', '') + '.JK';
             
-            // Menggunakan Cloudflare Worker pribadi kamu agar secepat kilat tanpa antre
+            // Menggunakan Cloudflare Worker pribadi agar secepat kilat tanpa antre
             const workerUrl = `https://saham-proxy.m4hfud-backup.workers.dev/?symbol=${symbol}`;
             
             try {
@@ -715,6 +732,7 @@
             }
         }
 
+        /* FUNGSI YANG DIREVISI: Memanipulasi lebar bar untuk Chart Money */
         function updatePieChart(totE, totR, totS, totP) {
             const pieE = document.getElementById('pie-emas');
             const pieR = document.getElementById('pie-reksa');
@@ -732,9 +750,13 @@
                 pctE.textContent = isCensored ? '••%' : '0%';
                 pctR.textContent = isCensored ? '••%' : '0%';
                 pctS.textContent = isCensored ? '••%' : '0%';
-                pieE.style.strokeDasharray = '0 51';
-                pieR.style.strokeDasharray = '0 51';
-                pieS.style.strokeDasharray = '0 51';
+                
+                pieE.style.width = '0%';
+                pieR.style.width = '0%';
+                pieS.style.width = '0%';
+                
+                pieE.style.borderRightWidth = '0px';
+                pieR.style.borderRightWidth = '0px';
                 return;
             }
 
@@ -746,19 +768,14 @@
             pctR.textContent = isCensored ? '••%' : Math.round(pr * 100) + '%';
             pctS.textContent = isCensored ? '••%' : Math.round(ps * 100) + '%';
 
-            const C = 2 * Math.PI * 8; 
-            const lenE = pe * C;
-            const lenR = pr * C;
-            const lenS = ps * C;
+            // Menerapkan Width untuk Banknote bar secara proporsional
+            pieE.style.width = `${pe * 100}%`;
+            pieR.style.width = `${pr * 100}%`;
+            pieS.style.width = `${ps * 100}%`;
 
-            pieE.style.strokeDasharray = `${lenE} ${C}`;
-            pieE.style.strokeDashoffset = `0`;
-
-            pieR.style.strokeDasharray = `${lenR} ${C}`;
-            pieR.style.strokeDashoffset = `-${lenE}`;
-
-            pieS.style.strokeDasharray = `${lenS} ${C}`;
-            pieS.style.strokeDashoffset = `-${lenE + lenR}`;
+            // Menambah border antar bar jika terlihat (mencegah border menggantung saat nilai 0)
+            pieE.style.borderRightWidth = (pe > 0 && (pr > 0 || ps > 0)) ? '2px' : '0px';
+            pieR.style.borderRightWidth = (pr > 0 && ps > 0) ? '2px' : '0px';
         }
 
         function calculateTotals() {
@@ -973,7 +990,6 @@
                 return;
             }
             db.reksaHistory.forEach((item, idx) => {
-                // Di dark mode teks pnl normal atau gray akan terlihat, kita pasang logic class dynamic
                 const pnlClass = item.growth >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
                 const pnlSign = item.growth > 0 ? '+' : '';
                 const pDisplay = isCensored ? '••••••' : formatRp(item.profit);
@@ -1139,15 +1155,11 @@
 
         // -------------------------------------------------------------
         // PWA (Progressive Web App) INJECTION - 1 FILE MAGIC
-        // Script ini membuat manifest.json & service-worker secara dinamis 
-        // sehingga web bisa di install ke homescreen tanpa file tambahan!
         // -------------------------------------------------------------
         (function initPWA() {
-            // 1. Generate Icon (Base64 SVG)
             const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#a78bfa" rx="100"/><path fill="black" d="M149.33 213.33h42.67v85.34h128v-85.34h42.67v128h-213.34v-128z" /><circle fill="black" cx="256" cy="149.33" r="32"/></svg>`;
             const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
 
-            // 2. Buat Web Manifest
             const manifest = {
                 "name": "rxGrow - Finance Tracker",
                 "short_name": "rxGrow",
@@ -1179,7 +1191,6 @@
             linkAppleIcon.href = iconUrl;
             document.head.appendChild(linkAppleIcon);
 
-            // 3. Buat dan Daftarkan Service Worker
             const swCode = `
                 const CACHE_NAME = 'rxgrow-v1';
                 self.addEventListener('install', (e) => {
@@ -1189,7 +1200,6 @@
                     e.waitUntil(clients.claim());
                 });
                 self.addEventListener('fetch', (e) => {
-                    // Pass-through simpel, cukup agar memenuhi standar install PWA Chrome/Safari
                     e.respondWith(fetch(e.request).catch(() => new Response('App is offline.')));
                 });
             `;
