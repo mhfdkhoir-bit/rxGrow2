@@ -36,7 +36,7 @@
     </script>
 
     <style>
-        /* Exact Grid Constraint from Request - Ensuring Pixel Perfect Alignment */
+        /* Exact Grid Constraint - Ensures 100% Pixel Perfect Alignment */
         .card-grid-container {
             display: grid;
             grid-template-rows: 50px 48px 24px 56px 24px 56px;
@@ -51,14 +51,29 @@
         }
         input[type=number] { -moz-appearance: textfield; }
         
-        /* Smooth reveal for accordion */
+        /* SMOOTH REVEAL FOR ACCORDION (CSS Grid Transition) */
         .accordion-content {
-            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-            max-height: 0;
-            overflow: hidden;
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-width 0.4s ease;
+            border-top-width: 0px;
+            border-color: black;
         }
         .accordion-content.open {
-            max-height: 2000px; 
+            grid-template-rows: 1fr;
+            border-top-width: 3px;
+        }
+        .accordion-inner {
+            overflow: hidden;
+        }
+
+        /* SMOOTH ANIMATION FOR TABS */
+        @keyframes slideFadeIn {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .tab-active {
+            animation: slideFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
     </style>
 </head>
@@ -70,7 +85,6 @@
     <div id="login-view" class="fixed inset-0 bg-[#18181b] z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-[360px] bg-[#27272a] border-[3px] border-black shadow-brutal rounded-2xl p-6 flex flex-col items-center gap-5">
             
-            <!-- Lock Icon -->
             <div class="w-14 h-14 bg-[#a78bfa] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm">
                 <i class="fa-solid fa-lock text-xl text-black"></i>
             </div>
@@ -80,7 +94,6 @@
                 <p id="login-subtitle" class="text-gray-400 text-sm font-medium">Tentukan 4 digit angka untuk mengunci aset</p>
             </div>
 
-            <!-- Input PIN -->
             <div class="w-full relative">
                 <input type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="••••"
                     class="w-full bg-[#3f3f46] text-white border-[3px] border-black shadow-brutal-sm rounded-xl text-center font-bold text-3xl py-3 tracking-[0.5em] outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all">
@@ -89,17 +102,35 @@
                 </button>
             </div>
 
-            <!-- Error message container -->
             <p id="pin-error" class="text-[#fca5a5] text-xs font-bold h-4 text-center w-full mt-1"></p>
 
-            <!-- Action Button -->
             <button id="login-btn" class="w-full bg-[#a78bfa] text-black border-[3px] border-black shadow-brutal-sm rounded-xl font-bold text-base py-3 mt-1 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 Simpan PIN & Masuk
             </button>
 
-            <!-- Reset Link (Hidden initially) -->
             <button id="reset-pin-link" class="hidden text-gray-400 hover:text-white text-xs font-semibold underline underline-offset-2 mt-2">
                 Lupa PIN? Reset Sekarang
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SIDEBAR MENU & OVERLAY                     -->
+    <!-- ========================================== -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-[65] hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="sidebar" class="fixed top-0 left-0 w-[260px] h-full bg-[#FDF9F1] border-r-[3px] border-black shadow-[4px_0_0_0_#000] z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 border-b-[3px] border-black flex justify-between items-center bg-[#e9d5ff]">
+            <h2 class="font-black text-xl italic tracking-tighter">rxGrow <span class="text-xs font-bold not-italic">Menu</span></h2>
+            <button id="close-sidebar-btn" class="w-8 h-8 bg-white border-[2px] border-black rounded flex items-center justify-center shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-times text-lg"></i>
+            </button>
+        </div>
+        <div class="flex flex-col p-4 gap-4">
+            <button id="nav-home" class="w-full bg-[#FFE268] border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-house"></i> Home
+            </button>
+            <button id="nav-riwayat" class="w-full bg-[#FBCFE8] border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Reksadana
             </button>
         </div>
     </div>
@@ -112,12 +143,17 @@
             
             <!-- HEADER -->
             <div class="flex justify-between items-center w-full pt-2">
-                <div class="flex relative">
-                    <div class="bg-[#e9d5ff] border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1 relative z-10">
-                        <h1 class="text-2xl font-bold italic tracking-tighter">rxGrow</h1>
-                    </div>
-                    <div class="bg-[#fbcfe8] border-[2px] border-black rounded px-1.5 py-0.5 absolute -bottom-2.5 -right-4 rotate-12 z-20 shadow-brutal-sm">
-                        <p class="text-[9px] font-bold tracking-wider">by /MkhzZ</p>
+                <div class="flex items-center gap-3">
+                    <button id="hamburger-btn" class="bg-white border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="flex relative">
+                        <div class="bg-[#e9d5ff] border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1 relative z-10">
+                            <h1 class="text-2xl font-bold italic tracking-tighter">rxGrow</h1>
+                        </div>
+                        <div class="bg-[#fbcfe8] border-[2px] border-black rounded px-1.5 py-0.5 absolute -bottom-2.5 -right-4 rotate-12 z-20 shadow-brutal-sm">
+                            <p class="text-[9px] font-bold tracking-wider">by /MkhzZ</p>
+                        </div>
                     </div>
                 </div>
                 <button id="lock-btn" class="bg-white border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1.5 font-bold text-xs flex items-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
@@ -125,149 +161,206 @@
                 </button>
             </div>
 
-            <!-- TOP CARD (TOTAL INVESTASI) -->
-            <div class="bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal w-full mt-2 relative">
-                <!-- Eye Censor Button -->
-                <button id="toggle-censor-btn" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors active:scale-95">
-                    <i class="fa-solid fa-eye text-lg" id="censor-icon"></i>
-                </button>
-
-                <div class="flex justify-center mb-1">
-                    <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
-                </div>
-                <h2 class="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-1">TOTAL INVESTASI</h2>
-                <div id="grand-total" class="font-bold text-4xl tracking-tight">Rp 0</div>
-            </div>
-
-            <!-- MIDDLE GRID (GOLD & REKSADANA) -->
-            <div class="grid grid-cols-2 gap-3 w-full items-start">
+            <!-- ======================= -->
+            <!-- TAB 1: HOME (DASHBOARD) -->
+            <!-- ======================= -->
+            <div id="home-tab" class="flex flex-col gap-5 tab-active">
                 
-                <!-- GOLD CARD -->
-                <div class="bg-[#FFE268] border-[3px] border-black shadow-brutal rounded-2xl p-3">
-                    <div class="card-grid-container">
-                        <!-- Row 1: Title & Custom Gold Bar Icon -->
-                        <div class="flex justify-between items-center w-full h-full">
-                            <div class="flex flex-col leading-tight">
-                                <span class="font-bold text-sm">Emas</span>
-                                <span class="text-[10px] font-semibold opacity-80">(Gold)</span>
+                <!-- TOP CARD -->
+                <div class="bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal w-full mt-2 relative">
+                    <button id="toggle-censor-btn" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors active:scale-95">
+                        <i class="fa-solid fa-eye text-lg" id="censor-icon"></i>
+                    </button>
+                    <div class="flex justify-center mb-1">
+                        <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
+                    </div>
+                    <h2 class="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-1">TOTAL INVESTASI</h2>
+                    <div id="grand-total" class="font-bold text-4xl tracking-tight">Rp 0</div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 w-full items-start">
+                    
+                    <!-- EMAS -->
+                    <div class="bg-[#FFE268] border-[3px] border-black shadow-brutal rounded-2xl p-3">
+                        <div class="card-grid-container">
+                            <!-- 1. Title -->
+                            <div class="flex justify-between items-center w-full h-full">
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-bold text-sm">Emas</span>
+                                    <span class="text-[10px] font-semibold opacity-80">(Gold)</span>
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-[#FEF08A] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#FDE047" stroke="black" stroke-width="2" stroke-linejoin="round">
+                                        <polygon points="5,9 19,9 22,14 2,14" />
+                                        <rect x="2" y="14" width="20" height="4" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="w-8 h-8 rounded-full bg-[#FEF08A] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
-                                <!-- Flat Pastel Gold Bar SVG -->
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#FDE047" stroke="black" stroke-width="2" stroke-linejoin="round">
-                                    <polygon points="5,9 19,9 22,14 2,14" />
-                                    <rect x="2" y="14" width="20" height="4" />
-                                </svg>
+                            <!-- 2. Gram Input -->
+                            <div class="w-full h-full relative">
+                                <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-[16px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2 pr-6" placeholder="0">
+                                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs pointer-events-none">g</span>
+                            </div>
+                            <!-- 3. Label -->
+                            <div class="w-full h-full flex items-end justify-center pb-0.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">HARGA PASAR</span>
+                            </div>
+                            <!-- 4. Buyback Box -->
+                            <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center font-bold text-center px-1">
+                                <span id="gold-price-txt" class="text-[16px]">Memuat...</span>
+                            </div>
+                            <!-- 5. Label -->
+                            <div class="w-full h-full flex items-end justify-center pb-0.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
+                            </div>
+                            <!-- 6. Total Box -->
+                            <div id="emas-total" class="w-full h-full bg-[#222] text-white border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[16px] font-bold tracking-tight px-1">
+                                Rp 0
                             </div>
                         </div>
-                        <!-- Row 2: Gram Input -->
-                        <div class="w-full h-full relative">
-                            <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-base shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2 pr-6" placeholder="0">
-                            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs pointer-events-none">g</span>
+                    </div>
+
+                    <!-- REKSADANA -->
+                    <div class="bg-[#FF71A4] border-[3px] border-black shadow-brutal rounded-2xl p-3">
+                        <div class="card-grid-container">
+                            <!-- 1. Title -->
+                            <div class="flex justify-between items-center w-full h-full">
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-bold text-sm">Reksadana</span>
+                                    <span class="text-[10px] font-semibold opacity-80">(Mutual Funds)</span>
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-[#A7F3D0] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="6" width="20" height="12" rx="2" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <!-- 2. Modal Input (With internal Rp formatting) -->
+                            <div class="w-full h-full relative">
+                                <input type="text" id="reksa-modal" inputmode="numeric" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-[16px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
+                            </div>
+                            <!-- 3. Label -->
+                            <div class="w-full h-full flex items-end justify-center pb-0.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">TOTAL KEUNTUNGAN</span>
+                            </div>
+                            <!-- 4. Profit Input (Pink, with internal Rp formatting) -->
+                            <div class="w-full h-full relative">
+                                <input type="text" id="reksa-profit" inputmode="numeric" class="w-full h-full bg-[#FBCFE8] text-black border-[3px] border-black rounded-lg text-center text-[16px] font-bold shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
+                            </div>
+                            <!-- 5. Label -->
+                            <div class="w-full h-full flex items-end justify-center pb-0.5">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
+                            </div>
+                            <!-- 6. Total Box (Green) -->
+                            <div id="reksa-total" class="w-full h-full bg-[#86EFAC] text-black border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[16px] font-bold tracking-tight px-1">
+                                Rp 0
+                            </div>
                         </div>
-                        <!-- Row 3: Label -->
-                        <div class="w-full h-full flex items-end justify-center pb-0.5">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">HARGA PASAR</span>
+                    </div>
+
+                </div>
+
+                <div class="text-left text-[11px] font-bold px-1 text-black/80 mt-1">
+                    Update Terakhir: <span id="update-date-txt" class="font-normal italic">Belum ada pembaruan</span>
+                </div>
+
+                <!-- SAHAM DROPDOWN CARD -->
+                <div class="bg-white border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden mt-1">
+                    <!-- Header -->
+                    <button id="saham-toggle" class="w-full p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-[#93C5FD] border-[2px] border-black flex items-center justify-center">
+                                <i class="fa-solid fa-chart-pie text-sm"></i>
+                            </div>
+                            <span class="font-bold text-sm">Investasi Saham</span>
                         </div>
-                        <!-- Row 4: Buyback Info Box -->
-                        <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex flex-col items-center justify-center text-[14px] font-bold text-center leading-tight">
-                            <span class="text-[9px] font-semibold">Harga Buyback:</span>
-                            <span id="gold-price-txt">Memuat...</span>
-                        </div>
-                        <!-- Row 5: Label -->
-                        <div class="w-full h-full flex items-end justify-center pb-0.5">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
-                        </div>
-                        <!-- Row 6: Total Box -->
-                        <div id="emas-total" class="w-full h-full bg-[#222] text-white border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-sm font-bold tracking-tight px-1">
-                            Rp 0
+                        <i id="saham-icon" class="fa-solid fa-chevron-down text-sm transition-transform duration-300"></i>
+                    </button>
+                    
+                    <!-- Body (Smooth CSS Grid Expand) -->
+                    <div id="saham-body" class="accordion-content bg-[#FDF9F1]">
+                        <div class="accordion-inner">
+                            <div class="p-4 flex flex-col gap-3">
+                                <!-- Ringkasan Saham -->
+                                <div class="bg-[#222] text-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm mb-1">
+                                    <div class="flex justify-between items-center px-1">
+                                        <div class="flex flex-col">
+                                            <span class="text-[9px] font-bold uppercase text-gray-400 tracking-wider">Total Investasi Saham</span>
+                                            <span id="saham-grand-total" class="font-black text-lg text-white">Rp 0</span>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="text-[9px] font-bold uppercase text-gray-400 tracking-wider">Unrealized PnL</span>
+                                            <span id="saham-grand-pnl" class="font-black text-lg text-green-400">+Rp 0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="saham-list" class="flex flex-col gap-3"></div>
+                                <button id="add-saham-btn" class="w-full bg-[#c4b5fd] border-[3px] border-black shadow-brutal-sm rounded-xl py-3 font-bold text-sm flex items-center justify-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all mt-2">
+                                    <i class="fa-solid fa-plus"></i> Tambah Saham
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div> <!-- END TAB HOME -->
 
-                <!-- REKSADANA CARD -->
-                <div class="bg-[#FF71A4] border-[3px] border-black shadow-brutal rounded-2xl p-3">
-                    <div class="card-grid-container">
-                        <!-- Row 1: Title & Icon -->
-                        <div class="flex justify-between items-center w-full h-full">
-                            <div class="flex flex-col leading-tight">
-                                <span class="font-bold text-sm">Reksadana</span>
-                                <span class="text-[10px] font-semibold opacity-80">(Mutual Funds)</span>
-                            </div>
-                            <div class="w-8 h-8 rounded-full bg-[#A7F3D0] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="2" y="6" width="20" height="12" rx="2" />
-                                    <circle cx="12" cy="12" r="3" />
-                                </svg>
-                            </div>
-                        </div>
-                        <!-- Row 2: Modal Input -->
-                        <div class="w-full h-full">
-                            <input type="text" id="reksa-modal" inputmode="numeric" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-base shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-1" placeholder="0">
-                        </div>
-                        <!-- Row 3: Label -->
-                        <div class="w-full h-full flex items-end justify-center pb-0.5">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">TOTAL KEUNTUNGAN</span>
-                        </div>
-                        <!-- Row 4: Profit Input (Pink Color) -->
-                        <div class="w-full h-full">
-                            <input type="text" id="reksa-profit" inputmode="numeric" class="w-full h-full bg-[#FBCFE8] text-black border-[3px] border-black rounded-lg text-center text-[14px] font-bold shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-1" placeholder="0">
-                        </div>
-                        <!-- Row 5: Label -->
-                        <div class="w-full h-full flex items-end justify-center pb-0.5">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
-                        </div>
-                        <!-- Row 6: Total Box (Green Color) -->
-                        <div id="reksa-total" class="w-full h-full bg-[#86EFAC] text-black border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-sm font-bold tracking-tight px-1">
-                            Rp 0
-                        </div>
+            <!-- ========================== -->
+            <!-- TAB 2: RIWAYAT REKSADANA   -->
+            <!-- ========================== -->
+            <div id="riwayat-tab" class="hidden flex-col gap-4 mt-2">
+                <div class="flex items-center gap-3 px-1 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-[#FBCFE8] border-[3px] border-black shadow-brutal-sm flex items-center justify-center">
+                        <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-black text-lg">Riwayat Reksadana</h2>
+                        <p class="text-xs font-bold text-gray-600">Catatan perubahan keuntungan</p>
                     </div>
                 </div>
 
-            </div>
-
-            <!-- UPDATE DATE -->
-            <div class="text-left text-[11px] font-bold px-1 text-black/80">
-                Update Terakhir: <span id="update-date-txt" class="font-normal italic">Belum ada pembaruan</span>
-            </div>
-
-            <!-- SAHAM DROPDOWN CARD -->
-            <div class="bg-white border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden mt-2">
-                <!-- Accordion Header -->
-                <button id="saham-toggle" class="w-full p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition-colors">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-[#93C5FD] border-[2px] border-black flex items-center justify-center">
-                            <i class="fa-solid fa-chart-pie text-sm"></i>
-                        </div>
-                        <span class="font-bold text-sm">Investasi Saham</span>
-                    </div>
-                    <i id="saham-icon" class="fa-solid fa-chevron-down text-sm transition-transform duration-300"></i>
-                </button>
-                
-                <!-- Accordion Body -->
-                <div id="saham-body" class="accordion-content border-t-[3px] border-black bg-[#FDF9F1]">
-                    <div class="p-4 flex flex-col gap-3">
-                        
-                        <div id="saham-list" class="flex flex-col gap-3">
-                            <!-- Rows injected via JS -->
-                        </div>
-
-                        <!-- Add Button -->
-                        <button id="add-saham-btn" class="w-full bg-[#c4b5fd] border-[3px] border-black shadow-brutal-sm rounded-xl py-3 font-bold text-sm flex items-center justify-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all mt-2">
-                            <i class="fa-solid fa-plus"></i> Tambah Saham
-                        </button>
-                        
+                <div class="bg-white border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden w-full">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[340px]">
+                            <thead>
+                                <tr class="bg-[#FBCFE8] text-black border-b-[3px] border-black">
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black w-1/3">Tanggal</th>
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-right">Keuntungan</th>
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-right">Tumbuh</th>
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riwayat-tbody" class="divide-y-[3px] divide-black text-sm font-semibold bg-[#FDF9F1]">
+                                <!-- Rows injected via JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
+            </div> <!-- END TAB RIWAYAT -->
 
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- ========================================== -->
+    <!-- EDIT HISTORY MODAL                         -->
+    <!-- ========================================== -->
+    <div id="edit-history-modal" class="fixed inset-0 bg-black/60 z-[80] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="w-full max-w-[320px] bg-[#FDF9F1] border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="edit-history-card">
+            <h3 class="font-black text-lg text-center">Edit Keuntungan</h3>
+            <div class="relative w-full">
+                <!-- Using Rp inside input via JS formatting -->
+                <input type="text" id="edit-history-input" inputmode="numeric" class="w-full bg-white border-[3px] border-black rounded-xl text-center font-black text-lg shadow-brutal-sm p-3 outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all" placeholder="Rp 0">
+            </div>
+            <div class="flex gap-3 mt-2">
+                <button id="cancel-edit-btn" class="flex-1 bg-white border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">Batal</button>
+                <button id="save-edit-btn" class="flex-1 bg-[#86EFAC] border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Global variables
-        let HARGA_BUYBACK_EMAS = 0; // Fetched automatically
-        let isCensored = false; // State for privacy toggle
+        let HARGA_BUYBACK_EMAS = 0; 
+        let isCensored = false; 
         
         let db = {
             pin: null,
@@ -275,13 +368,12 @@
             reksaModal: '0',
             reksaProfit: '0',
             saham: [], 
-            lastDate: 'Belum ada pembaruan'
+            lastDate: 'Belum ada pembaruan',
+            reksaHistory: []
         };
 
-        // DOM Elements
         const viewLogin = document.getElementById('login-view');
         const viewDash = document.getElementById('dashboard-view');
-        
         const loginTitle = document.getElementById('login-title');
         const loginSub = document.getElementById('login-subtitle');
         const inputPin = document.getElementById('pin-input');
@@ -298,7 +390,6 @@
         const inRekModal = document.getElementById('reksa-modal');
         const inRekProfit = document.getElementById('reksa-profit');
         const txtRekTot = document.getElementById('reksa-total');
-        
         const txtGrandTot = document.getElementById('grand-total');
         const txtUpdate = document.getElementById('update-date-txt');
         
@@ -307,23 +398,41 @@
         const iconSaham = document.getElementById('saham-icon');
         const listSaham = document.getElementById('saham-list');
         const btnAddSaham = document.getElementById('add-saham-btn');
-
+        const txtSahamGrandTotal = document.getElementById('saham-grand-total');
+        const txtSahamGrandPnl = document.getElementById('saham-grand-pnl');
         const btnToggleCensor = document.getElementById('toggle-censor-btn');
         const iconCensor = document.getElementById('censor-icon');
 
-        // Helpers
+        const btnHamburger = document.getElementById('hamburger-btn');
+        const btnCloseSidebar = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const tabHome = document.getElementById('home-tab');
+        const tabRiwayat = document.getElementById('riwayat-tab');
+        const navHome = document.getElementById('nav-home');
+        const navRiwayat = document.getElementById('nav-riwayat');
+        const tbodyRiwayat = document.getElementById('riwayat-tbody');
+
+        const modalEdit = document.getElementById('edit-history-modal');
+        const cardEdit = document.getElementById('edit-history-card');
+        const inputEdit = document.getElementById('edit-history-input');
+        const btnCancelEdit = document.getElementById('cancel-edit-btn');
+        const btnSaveEdit = document.getElementById('save-edit-btn');
+        let currentEditIdx = -1;
+
         const parseNum = (str) => parseInt(str.toString().replace(/[^0-9]/g, ''), 10) || 0;
         const parseFloatNum = (str) => parseFloat(str.toString().replace(',', '.')) || 0;
         const formatRp = (num) => 'Rp ' + (num || 0).toLocaleString('id-ID');
         const generateDateString = () => new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const generateShortDateString = () => new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
 
-        // Database logic
         function loadDB() {
             const saved = localStorage.getItem('rxGrow_db');
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
                     db = { ...db, ...parsed };
+                    if(!db.reksaHistory) db.reksaHistory = [];
                 } catch(e) { console.error("Error parsing DB", e); }
             }
         }
@@ -331,35 +440,9 @@
             localStorage.setItem('rxGrow_db', JSON.stringify(db));
         }
 
-        btnToggleCensor.addEventListener('click', () => {
-            isCensored = !isCensored;
-            iconCensor.className = isCensored ? 'fa-solid fa-eye-slash text-lg' : 'fa-solid fa-eye text-lg';
-            
-            // Mask/Unmask Inputs
-            const mainInputs = [inEmas, inRekModal, inRekProfit];
-            mainInputs.forEach(input => {
-                input.type = isCensored ? 'password' : 'text';
-            });
-
-            // Mask/Unmask Saham Inputs (except Kode)
-            document.querySelectorAll('#saham-list input').forEach(input => {
-                if(input.dataset.field !== 'kode') {
-                    input.type = isCensored ? 'password' : 'text';
-                }
-            });
-
-            // Re-render display totals
-            calculateTotals();
-            if(db.saham.length > 0) {
-                db.saham.forEach((_, idx) => updateSahamRowUI(idx));
-            }
-        });
-
-        // ======== AUTH LOGIC ========
         function initAuth() {
             inputPin.value = '';
             pinError.textContent = '';
-            
             document.body.classList.remove('bg-[#FDF9F1]');
             document.body.classList.add('bg-[#18181b]');
             viewLogin.classList.remove('hidden');
@@ -400,7 +483,6 @@
                 pinError.textContent = "PIN harus 4 digit!";
                 return;
             }
-            
             if (!db.pin) {
                 db.pin = val;
                 saveDB();
@@ -417,35 +499,33 @@
 
         lockBtn.addEventListener('click', () => {
             initAuth();
+            switchTab('home'); 
         });
 
         linkReset.addEventListener('click', () => {
             db.pin = null;
             saveDB();
             initAuth();
-            pinError.textContent = "PIN berhasil di-reset. Silakan buat PIN baru.";
+            pinError.textContent = "PIN berhasil di-reset! Silakan buat PIN baru.";
             pinError.classList.replace('text-[#fca5a5]', 'text-green-400');
             setTimeout(() => {
                 pinError.textContent = '';
                 pinError.classList.replace('text-green-400', 'text-[#fca5a5]');
-            }, 3000);
+            }, 3500);
         });
 
-        // ======== API FETCHING ========
         async function fetchGoldPrice() {
             try {
                 txtGoldPrice.textContent = "Load...";
                 const targetUrl = 'https://logamspot.id/harga/emas-galeri-24-1-gram';
-                
                 const proxies = [
                     `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
                 ];
-                
                 let html = null;
                 for (const proxy of proxies) {
                     try {
-                        const res = await fetch(proxy);
+                        const res = await fetch(proxy, { cache: "no-store" });
                         if (!res.ok) continue;
                         if (proxy.includes('allorigins')) {
                             const data = await res.json();
@@ -454,9 +534,7 @@
                             html = await res.text();
                         }
                         if (html) break; 
-                    } catch (e) {
-                        console.warn(`Gold Proxy failed.`);
-                    }
+                    } catch (e) { }
                 }
 
                 if (html) {
@@ -468,9 +546,9 @@
                         }
                     }
                 }
-            } catch(e) { console.error("Error Fetch Gold", e); }
+            } catch(e) { console.error(e); }
             
-            if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2275000; // Fallback
+            if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2275000; 
             txtGoldPrice.textContent = `Rp ${HARGA_BUYBACK_EMAS.toLocaleString('id-ID')} /g`;
             calculateTotals();
         }
@@ -483,12 +561,9 @@
             
             try {
                 if(targetInput) targetInput.placeholder = "Load...";
-                
-                // Menggunakan endpoint /raw AllOrigins dan CorsProxy.io untuk stabilitas maksimal
                 const proxies = [
-                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
                     `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
                 ];
                 
                 let rawData = null;
@@ -496,90 +571,139 @@
                     try {
                         const res = await fetch(proxy, { cache: "no-store" });
                         if (!res.ok) continue;
-                        
                         const text = await res.text();
                         try {
                             rawData = JSON.parse(text);
-                            // Validasi stuktur JSON Yahoo Finance
-                            if (rawData && rawData.chart && rawData.chart.result) break; 
+                            if (rawData?.chart?.result) break; 
                         } catch(e) {
-                            // Fallback jika API terbungkus string {contents: "..."}
                             const maybeJson = JSON.parse(text);
                             if (maybeJson.contents) {
                                 rawData = JSON.parse(maybeJson.contents);
-                                if (rawData && rawData.chart && rawData.chart.result) break;
+                                if (rawData?.chart?.result) break;
                             }
                         }
-                    } catch(e) { console.warn(`Proxy failed, trying next...`); }
+                    } catch(e) { }
                 }
                 
-                if (rawData && rawData.chart && rawData.chart.result && rawData.chart.result[0]) {
+                if (rawData?.chart?.result?.[0]) {
                     const price = rawData.chart.result[0].meta.regularMarketPrice;
                     if (price) {
                         db.saham[idx].harga = price;
                         if(targetInput) {
-                            targetInput.value = price.toLocaleString('id-ID');
+                            targetInput.value = isCensored ? '••••••' : price.toLocaleString('id-ID');
                             targetInput.placeholder = "0";
                         }
                         saveDB();
                         updateSahamRowUI(idx); 
                         calculateTotals();
-                        return; // Berhasil!
+                        return;
                     }
                 }
-                if(targetInput) targetInput.placeholder = "0"; // Jika tidak ditemukan
+                if(targetInput) targetInput.placeholder = "0";
             } catch(e) {
-                console.error('Fetch Saham Error:', e);
                 if(targetInput) targetInput.placeholder = "0";
             }
         }
 
-        // ======== DASHBOARD LOGIC ========
-        function initDashboard() {
-            inEmas.value = db.emasGram == '0' ? '' : db.emasGram;
-            inRekModal.value = db.reksaModal == '0' ? '' : parseNum(db.reksaModal).toLocaleString('id-ID');
-            inRekProfit.value = db.reksaProfit == '0' ? '' : parseNum(db.reksaProfit).toLocaleString('id-ID');
-            txtUpdate.textContent = db.lastDate;
-            
-            // Terapkan sensor jika state sedang aktif saat di-load (opsional, by default false)
-            if(isCensored) {
-                [inEmas, inRekModal, inRekProfit].forEach(i => i.type = 'password');
-            }
-
-            renderSahamList();
-            calculateTotals();
-            fetchGoldPrice(); 
-        }
-
         function calculateTotals() {
-            // Gold
             const g = parseFloatNum(inEmas.value);
             const totEmas = Math.round(g * HARGA_BUYBACK_EMAS);
             txtEmasTot.textContent = isCensored ? '••••••' : formatRp(totEmas);
 
-            // Reksadana
             const rm = parseNum(inRekModal.value);
             const rp = parseNum(inRekProfit.value);
             const totReksa = rm + rp;
             txtRekTot.textContent = isCensored ? '••••••' : formatRp(totReksa);
 
-            // Saham
             let totSaham = 0;
+            let totPnlSaham = 0;
             db.saham.forEach(s => {
-                totSaham += parseNum(s.lot) * 100 * parseNum(s.harga);
+                const lot = parseNum(s.lot);
+                const avg = parseNum(s.avg);
+                const harga = parseNum(s.harga);
+                const marketValue = lot * 100 * harga;
+                const pnl = (harga - avg) * lot * 100;
+                totSaham += marketValue;
+                if(lot > 0 && avg > 0) totPnlSaham += pnl;
             });
 
-            // Grand Total
+            if(txtSahamGrandTotal && txtSahamGrandPnl) {
+                txtSahamGrandTotal.textContent = isCensored ? '••••••' : formatRp(totSaham);
+                const pnlSign = totPnlSaham > 0 ? '+' : '';
+                txtSahamGrandPnl.className = `font-black text-lg ${isCensored ? 'text-gray-400' : (totPnlSaham >= 0 ? 'text-green-400' : 'text-red-400')}`;
+                txtSahamGrandPnl.textContent = isCensored ? '••••••' : `${pnlSign}${formatRp(totPnlSaham)}`;
+            }
+
             txtGrandTot.textContent = isCensored ? 'Rp ••••••' : formatRp(totEmas + totReksa + totSaham);
         }
 
-        // Input Handlers
+        function toggleSidebar(show) {
+            if (show) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                requestAnimationFrame(() => overlay.classList.remove('opacity-0'));
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+        btnHamburger.addEventListener('click', () => toggleSidebar(true));
+        btnCloseSidebar.addEventListener('click', () => toggleSidebar(false));
+        overlay.addEventListener('click', () => toggleSidebar(false));
+
+        function switchTab(tabName) {
+            toggleSidebar(false);
+            
+            // Remove animation class
+            tabHome.classList.remove('tab-active');
+            tabRiwayat.classList.remove('tab-active');
+
+            if (tabName === 'home') {
+                tabHome.classList.remove('hidden');
+                tabHome.classList.add('flex');
+                tabRiwayat.classList.add('hidden');
+                tabRiwayat.classList.remove('flex');
+                
+                // Force reflow and re-add class to trigger CSS animation
+                void tabHome.offsetWidth; 
+                tabHome.classList.add('tab-active');
+                calculateTotals();
+            } else if (tabName === 'riwayat') {
+                tabRiwayat.classList.remove('hidden');
+                tabRiwayat.classList.add('flex');
+                tabHome.classList.add('hidden');
+                tabHome.classList.remove('flex');
+                
+                // Force reflow and re-add class to trigger CSS animation
+                void tabRiwayat.offsetWidth;
+                tabRiwayat.classList.add('tab-active');
+                renderRiwayat();
+            }
+        }
+        navHome.addEventListener('click', () => switchTab('home'));
+        navRiwayat.addEventListener('click', () => switchTab('riwayat'));
+
+        btnToggleCensor.addEventListener('click', () => {
+            isCensored = !isCensored;
+            iconCensor.className = isCensored ? 'fa-solid fa-eye-slash text-lg' : 'fa-solid fa-eye text-lg';
+            
+            [inEmas, inRekModal, inRekProfit].forEach(input => {
+                input.type = isCensored ? 'password' : 'text';
+            });
+            document.querySelectorAll('#saham-list input').forEach(input => {
+                if(input.dataset.field !== 'kode') input.type = isCensored ? 'password' : 'text';
+            });
+            calculateTotals();
+            renderRiwayat();
+            if(db.saham.length > 0) db.saham.forEach((_, idx) => updateSahamRowUI(idx));
+        });
+
         inEmas.addEventListener('input', (e) => {
             let val = e.target.value.replace(/[^0-9,]/g, '');
             const parts = val.split(',');
             if (parts.length > 2) val = parts[0] + ',' + parts.slice(1).join('');
             e.target.value = val;
-            
             db.emasGram = val || '0';
             saveDB();
             calculateTotals();
@@ -587,31 +711,134 @@
 
         function handleRupiahInput(e, keyName, isProfit = false) {
             let raw = parseNum(e.target.value);
-            e.target.value = raw > 0 ? raw.toLocaleString('id-ID') : '';
-            
+            // Prefixing 'Rp ' natively inside the input field
+            e.target.value = raw > 0 ? 'Rp ' + raw.toLocaleString('id-ID') : '';
             db[keyName] = raw || 0;
             
             if (isProfit) {
                 db.lastDate = generateDateString();
                 txtUpdate.textContent = db.lastDate;
             }
-            
             saveDB();
             calculateTotals();
         }
-
         inRekModal.addEventListener('input', (e) => handleRupiahInput(e, 'reksaModal'));
         inRekProfit.addEventListener('input', (e) => handleRupiahInput(e, 'reksaProfit', true));
 
-        // ======== SAHAM LOGIC ========
+        function recalculateHistoryGrowths() {
+            if (!db.reksaHistory) return;
+            for (let i = 0; i < db.reksaHistory.length; i++) {
+                if (i < db.reksaHistory.length - 1) {
+                    db.reksaHistory[i].growth = db.reksaHistory[i].profit - db.reksaHistory[i+1].profit;
+                } else {
+                    db.reksaHistory[i].growth = db.reksaHistory[i].profit;
+                }
+            }
+        }
+
+        inRekProfit.addEventListener('focusout', (e) => {
+            const raw = parseNum(e.target.value);
+            if (!db.reksaHistory) db.reksaHistory = [];
+            const lastEntry = db.reksaHistory.length > 0 ? db.reksaHistory[0] : null;
+            if (!lastEntry || lastEntry.profit !== raw) {
+                const growth = lastEntry ? raw - lastEntry.profit : raw;
+                db.reksaHistory.unshift({ date: generateShortDateString(), profit: raw, growth: growth });
+                if (db.reksaHistory.length > 50) db.reksaHistory.pop();
+                saveDB();
+                renderRiwayat();
+            }
+        });
+
+        tbodyRiwayat.addEventListener('click', (e) => {
+            const btnEdit = e.target.closest('button[data-action="edit-riwayat"]');
+            const btnDelete = e.target.closest('button[data-action="delete-riwayat"]');
+            if (btnDelete) {
+                const idx = parseInt(btnDelete.dataset.index);
+                db.reksaHistory.splice(idx, 1);
+                recalculateHistoryGrowths();
+                if (idx === 0) {
+                    const latestProfit = db.reksaHistory.length > 0 ? db.reksaHistory[0].profit : 0;
+                    db.reksaProfit = latestProfit;
+                    inRekProfit.value = latestProfit > 0 ? 'Rp ' + latestProfit.toLocaleString('id-ID') : '';
+                    calculateTotals();
+                }
+                saveDB();
+                renderRiwayat();
+            } else if (btnEdit) {
+                currentEditIdx = parseInt(btnEdit.dataset.index);
+                const rawProfit = db.reksaHistory[currentEditIdx].profit;
+                inputEdit.value = rawProfit > 0 ? 'Rp ' + rawProfit.toLocaleString('id-ID') : '';
+                modalEdit.classList.remove('hidden');
+                modalEdit.classList.add('flex');
+                requestAnimationFrame(() => {
+                    modalEdit.classList.remove('opacity-0');
+                    cardEdit.classList.remove('scale-95');
+                });
+            }
+        });
+
+        inputEdit.addEventListener('input', (e) => {
+            let raw = parseNum(e.target.value);
+            e.target.value = raw > 0 ? 'Rp ' + raw.toLocaleString('id-ID') : '';
+        });
+
+        function closeEditModal() {
+            modalEdit.classList.add('opacity-0');
+            cardEdit.classList.add('scale-95');
+            setTimeout(() => {
+                modalEdit.classList.add('hidden');
+                modalEdit.classList.remove('flex');
+            }, 300);
+        }
+        btnCancelEdit.addEventListener('click', closeEditModal);
+        btnSaveEdit.addEventListener('click', () => {
+            if (currentEditIdx > -1) {
+                const newProfit = parseNum(inputEdit.value);
+                db.reksaHistory[currentEditIdx].profit = newProfit;
+                recalculateHistoryGrowths();
+                if (currentEditIdx === 0) {
+                    db.reksaProfit = newProfit;
+                    inRekProfit.value = newProfit > 0 ? 'Rp ' + newProfit.toLocaleString('id-ID') : '';
+                    calculateTotals();
+                }
+                saveDB();
+                renderRiwayat();
+            }
+            closeEditModal();
+        });
+
+        function renderRiwayat() {
+            tbodyRiwayat.innerHTML = '';
+            if (!db.reksaHistory || db.reksaHistory.length === 0) {
+                tbodyRiwayat.innerHTML = '<tr><td colspan="4" class="p-6 text-center font-bold text-gray-500 text-xs italic">Belum ada riwayat.</td></tr>';
+                return;
+            }
+            db.reksaHistory.forEach((item, idx) => {
+                const pnlClass = item.growth >= 0 ? 'text-green-600' : 'text-red-600';
+                const pnlSign = item.growth > 0 ? '+' : '';
+                const pDisplay = isCensored ? '••••••' : formatRp(item.profit);
+                const gDisplay = isCensored ? '••••••' : `${pnlSign}${formatRp(item.growth)}`;
+                const appliedPnlClass = isCensored ? 'text-gray-500' : pnlClass;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 whitespace-normal leading-tight">${item.date}</td>
+                    <td class="p-3 border-r-[3px] border-black text-right font-black text-sm">${pDisplay}</td>
+                    <td class="p-3 border-r-[3px] border-black text-right font-black text-sm ${appliedPnlClass}">${gDisplay}</td>
+                    <td class="p-2 text-center align-middle">
+                        <div class="flex items-center justify-center gap-2">
+                            <button data-action="edit-riwayat" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
+                            <button data-action="delete-riwayat" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbodyRiwayat.appendChild(tr);
+            });
+        }
+
         btnToggleSaham.addEventListener('click', () => {
             bodySaham.classList.toggle('open');
             iconSaham.classList.toggle('rotate-180');
-            if (bodySaham.classList.contains('open')) {
-                bodySaham.style.padding = "16px";
-            } else {
-                bodySaham.style.padding = "0px 16px";
-            }
         });
 
         function updateSahamRowUI(idx) {
@@ -619,21 +846,19 @@
             const lot = parseNum(s.lot);
             const avg = parseNum(s.avg);
             const harga = parseNum(s.harga);
-
-            const marketValue = lot * 100 * harga;
             const pnl = (harga - avg) * lot * 100;
 
             const totEl = document.getElementById(`saham-tot-${idx}`);
-            if(totEl) totEl.textContent = isCensored ? '••••••' : formatRp(marketValue);
+            if(totEl) totEl.textContent = isCensored ? '••••••' : formatRp(lot * 100 * harga);
 
             const pnlEl = document.getElementById(`saham-pnl-${idx}`);
             if(pnlEl) {
                 if (isCensored) {
                     pnlEl.textContent = '••••••';
-                    pnlEl.className = 'text-sm font-bold text-gray-500';
+                    pnlEl.className = 'text-sm font-black text-gray-500';
                 } else {
                     pnlEl.textContent = (pnl > 0 ? '+' : '') + formatRp(pnl);
-                    pnlEl.className = pnl >= 0 ? 'text-sm font-bold text-green-600' : 'text-sm font-bold text-red-600';
+                    pnlEl.className = pnl >= 0 ? 'text-sm font-black text-green-600' : 'text-sm font-black text-red-600';
                 }
             }
         }
@@ -644,29 +869,18 @@
                 listSaham.innerHTML = '<p class="text-center text-xs font-bold text-gray-500 py-2">Belum ada saham ditambahkan.</p>';
                 return;
             }
-            
             const numInputType = isCensored ? 'password' : 'text';
-
             db.saham.forEach((s, idx) => {
                 const lot = parseNum(s.lot);
                 const avg = parseNum(s.avg);
                 const harga = parseNum(s.harga);
-                const marketValue = lot * 100 * harga;
                 const pnl = (harga - avg) * lot * 100;
                 
-                const pnlClass = pnl >= 0 ? 'text-green-600' : 'text-red-600';
-                const pnlSign = pnl > 0 ? '+' : '';
-                const pnlDisplay = isCensored ? '••••••' : `${pnlSign}${formatRp(pnl)}`;
-                const totDisplay = isCensored ? '••••••' : formatRp(marketValue);
-                const appliedPnlClass = isCensored ? 'text-gray-500' : pnlClass;
-
                 const html = `
                     <div class="bg-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm flex flex-col gap-2 relative mt-2">
-                        <!-- Direct delete button without confirm popup -->
                         <button data-action="delete" data-index="${idx}" class="absolute -top-3 -right-3 w-8 h-8 bg-[#f87171] border-[3px] border-black rounded-full flex justify-center items-center text-white shadow-brutal-sm z-10 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                            <i class="fa-solid fa-times pointer-events-none"></i>
+                            <i class="fa-solid fa-times pointer-events-none text-black"></i>
                         </button>
-                        
                         <div class="grid grid-cols-4 gap-2 mt-1">
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">KODE</span>
@@ -678,22 +892,21 @@
                             </div>
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">AVG</span>
-                                <input data-field="avg" data-index="${idx}" value="${s.avg ? avg.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50">
+                                <input data-field="avg" data-index="${idx}" value="${s.avg ? avg.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50 bg-gray-50">
                             </div>
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">LAST</span>
                                 <input data-field="harga" data-index="${idx}" value="${s.harga ? harga.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50 bg-[#e0e7ff]">
                             </div>
                         </div>
-                        
                         <div class="flex justify-between items-center px-1 mt-1 border-t-2 border-dashed border-gray-300 pt-2">
                             <div class="flex flex-col">
                                 <span class="text-[9px] font-bold uppercase text-gray-500">Unrealized PnL</span>
-                                <span id="saham-pnl-${idx}" class="text-sm font-bold ${appliedPnlClass}">${pnlDisplay}</span>
+                                <span id="saham-pnl-${idx}" class="text-sm font-black ${isCensored ? 'text-gray-500' : (pnl >= 0 ? 'text-green-600' : 'text-red-600')}">${isCensored ? '••••••' : (pnl > 0 ? '+' : '') + formatRp(pnl)}</span>
                             </div>
                             <div class="flex flex-col items-end">
                                 <span class="text-[9px] font-bold uppercase text-gray-500">Market Value</span>
-                                <span id="saham-tot-${idx}" class="text-sm font-bold text-blue-600">${totDisplay}</span>
+                                <span id="saham-tot-${idx}" class="text-sm font-black text-blue-600">${isCensored ? '••••••' : formatRp(lot * 100 * harga)}</span>
                             </div>
                         </div>
                     </div>
@@ -709,27 +922,23 @@
             calculateTotals();
         });
 
-        // Saham Input Live Calculation
         listSaham.addEventListener('input', (e) => {
             const target = e.target;
             if (target.tagName !== 'INPUT') return;
             const idx = target.dataset.index;
             const field = target.dataset.field;
-            
             if (field === 'kode') {
                 db.saham[idx].kode = target.value.toUpperCase();
             } else {
                 let raw = parseNum(target.value);
                 target.value = raw > 0 ? raw.toLocaleString('id-ID') : '';
                 db.saham[idx][field] = raw;
-                
                 updateSahamRowUI(idx);
             }
             saveDB();
             calculateTotals();
         });
         
-        // Auto-fetch Stock Price on focus out
         listSaham.addEventListener('focusout', (e) => {
             const target = e.target;
             if (target.tagName === 'INPUT' && target.dataset.field === 'kode') {
@@ -737,11 +946,9 @@
             }
         });
 
-        // Delete Row Logic - Instant, NO CONFIRM POPUP
         listSaham.addEventListener('click', (e) => {
             const btn = e.target.closest('button[data-action="delete"]');
             if (!btn) return;
-            
             const idx = btn.dataset.index;
             db.saham.splice(idx, 1);
             saveDB();
@@ -749,12 +956,27 @@
             calculateTotals();
         });
 
-        // INIT APP
+        function initDashboard() {
+            inEmas.value = db.emasGram == '0' ? '' : db.emasGram;
+            
+            // Format existing DB values with Rp natively inside the inputs
+            inRekModal.value = db.reksaModal == '0' ? '' : 'Rp ' + parseNum(db.reksaModal).toLocaleString('id-ID');
+            inRekProfit.value = db.reksaProfit == '0' ? '' : 'Rp ' + parseNum(db.reksaProfit).toLocaleString('id-ID');
+            
+            txtUpdate.textContent = db.lastDate;
+            if(isCensored) {
+                [inEmas, inRekModal, inRekProfit].forEach(i => i.type = 'password');
+            }
+            renderSahamList();
+            calculateTotals();
+            fetchGoldPrice(); 
+            renderRiwayat();
+        }
+
         window.onload = function() {
             loadDB();
             initAuth();
         };
-
     </script>
 </body>
 </html>
