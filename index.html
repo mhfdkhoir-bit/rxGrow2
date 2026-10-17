@@ -6,6 +6,8 @@
     <!-- PWA / Homescreen Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="rxGrow">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#FDF9F1">
     
     <title>rxGrow - Finance Tracker</title>
@@ -681,34 +683,17 @@
             if (!kode) return;
             const targetInput = document.querySelector(`input[data-field="harga"][data-index="${idx}"]`);
             const symbol = kode.toUpperCase().replace('.JK', '') + '.JK';
-            const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+            
+            // Menggunakan Cloudflare Worker pribadi kamu agar secepat kilat tanpa antre
+            const workerUrl = `https://saham-proxy.m4hfud-backup.workers.dev/?symbol=${symbol}`;
             
             try {
                 if(targetInput) targetInput.placeholder = "Load...";
-                const proxies = [
-                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
-                    `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
-                ];
                 
-                let rawData = null;
-                for (const proxy of proxies) {
-                    try {
-                        const res = await fetch(proxy, { cache: "no-store", headers: { "Accept": "application/json" } });
-                        if (!res.ok) continue;
-                        const text = await res.text();
-                        try {
-                            rawData = JSON.parse(text);
-                            if (rawData?.chart?.result) break; 
-                        } catch(e) {
-                            const maybeJson = JSON.parse(text);
-                            if (maybeJson.contents) {
-                                rawData = JSON.parse(maybeJson.contents);
-                                if (rawData?.chart?.result) break;
-                            }
-                        }
-                    } catch(e) { }
-                }
+                const res = await fetch(workerUrl, { cache: "no-store" });
+                if (!res.ok) throw new Error("Gagal mengambil data");
+                
+                const rawData = await res.json();
                 
                 if (rawData?.chart?.result?.[0]) {
                     const price = rawData.chart.result[0].meta.regularMarketPrice;
@@ -1151,6 +1136,74 @@
             fetchGoldPrice(); 
             renderRiwayat();
         }
+
+        // -------------------------------------------------------------
+        // PWA (Progressive Web App) INJECTION - 1 FILE MAGIC
+        // Script ini membuat manifest.json & service-worker secara dinamis 
+        // sehingga web bisa di install ke homescreen tanpa file tambahan!
+        // -------------------------------------------------------------
+        (function initPWA() {
+            // 1. Generate Icon (Base64 SVG)
+            const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#a78bfa" rx="100"/><path fill="black" d="M149.33 213.33h42.67v85.34h128v-85.34h42.67v128h-213.34v-128z" /><circle fill="black" cx="256" cy="149.33" r="32"/></svg>`;
+            const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
+
+            // 2. Buat Web Manifest
+            const manifest = {
+                "name": "rxGrow - Finance Tracker",
+                "short_name": "rxGrow",
+                "start_url": window.location.href.split('?')[0] || ".",
+                "display": "standalone",
+                "background_color": "#3f3f46",
+                "theme_color": "#FDF9F1",
+                "description": "Aplikasi tracker investasi reksadana, emas, dan saham.",
+                "icons": [
+                    {
+                        "src": iconUrl,
+                        "sizes": "512x512",
+                        "type": "image/svg+xml",
+                        "purpose": "any maskable"
+                    }
+                ]
+            };
+            const manifestStr = JSON.stringify(manifest);
+            const manifestBlob = new Blob([manifestStr], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+
+            const linkManifest = document.createElement('link');
+            linkManifest.rel = 'manifest';
+            linkManifest.href = manifestUrl;
+            document.head.appendChild(linkManifest);
+
+            const linkAppleIcon = document.createElement('link');
+            linkAppleIcon.rel = 'apple-touch-icon';
+            linkAppleIcon.href = iconUrl;
+            document.head.appendChild(linkAppleIcon);
+
+            // 3. Buat dan Daftarkan Service Worker
+            const swCode = `
+                const CACHE_NAME = 'rxgrow-v1';
+                self.addEventListener('install', (e) => {
+                    self.skipWaiting();
+                });
+                self.addEventListener('activate', (e) => {
+                    e.waitUntil(clients.claim());
+                });
+                self.addEventListener('fetch', (e) => {
+                    // Pass-through simpel, cukup agar memenuhi standar install PWA Chrome/Safari
+                    e.respondWith(fetch(e.request).catch(() => new Response('App is offline.')));
+                });
+            `;
+            const swBlob = new Blob([swCode], {type: 'text/javascript'});
+            const swUrl = URL.createObjectURL(swBlob);
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register(swUrl).then(() => {
+                        console.log('✅ rxGrow PWA Ready: Service Worker & Manifest Active');
+                    }).catch(console.error);
+                });
+            }
+        })();
 
         window.onload = function() {
             loadDB();
