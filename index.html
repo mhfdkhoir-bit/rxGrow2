@@ -198,7 +198,7 @@
                             </div>
                             <!-- 2. Gram Input -->
                             <div class="w-full h-full relative">
-                                <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-[16px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2 pr-6" placeholder="0">
+                                <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2 pr-6" placeholder="0">
                                 <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs pointer-events-none">g</span>
                             </div>
                             <!-- 3. Label -->
@@ -207,14 +207,14 @@
                             </div>
                             <!-- 4. Buyback Box -->
                             <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center font-bold text-center px-1">
-                                <span id="gold-price-txt" class="text-[16px]">Memuat...</span>
+                                <span id="gold-price-txt" class="text-[14px]">Memuat...</span>
                             </div>
                             <!-- 5. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
                             </div>
                             <!-- 6. Total Box -->
-                            <div id="emas-total" class="w-full h-full bg-[#222] text-white border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[16px] font-bold tracking-tight px-1">
+                            <div id="emas-total" class="w-full h-full bg-[#222] text-white border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[14px] font-bold tracking-tight px-1">
                                 Rp 0
                             </div>
                         </div>
@@ -238,7 +238,7 @@
                             </div>
                             <!-- 2. Modal Input (With internal Rp formatting) -->
                             <div class="w-full h-full relative">
-                                <input type="text" id="reksa-modal" inputmode="numeric" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-[16px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
+                                <input type="text" id="reksa-modal" inputmode="numeric" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
                             </div>
                             <!-- 3. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
@@ -246,14 +246,14 @@
                             </div>
                             <!-- 4. Profit Input (Pink, with internal Rp formatting) -->
                             <div class="w-full h-full relative">
-                                <input type="text" id="reksa-profit" inputmode="numeric" class="w-full h-full bg-[#FBCFE8] text-black border-[3px] border-black rounded-lg text-center text-[16px] font-bold shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
+                                <input type="text" id="reksa-profit" inputmode="numeric" class="w-full h-full bg-[#FBCFE8] text-black border-[3px] border-black rounded-lg text-center text-[14px] font-bold shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
                             </div>
                             <!-- 5. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
                             </div>
                             <!-- 6. Total Box (Green) -->
-                            <div id="reksa-total" class="w-full h-full bg-[#86EFAC] text-black border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[16px] font-bold tracking-tight px-1">
+                            <div id="reksa-total" class="w-full h-full bg-[#86EFAC] text-black border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[14px] font-bold tracking-tight px-1">
                                 Rp 0
                             </div>
                         </div>
@@ -421,7 +421,18 @@
         let currentEditIdx = -1;
 
         const parseNum = (str) => parseInt(str.toString().replace(/[^0-9]/g, ''), 10) || 0;
-        const parseFloatNum = (str) => parseFloat(str.toString().replace(',', '.')) || 0;
+        const parseFloatNum = (str) => {
+            if (!str) return 0;
+            return parseFloat(str.toString().replace(/\./g, '').replace(',', '.')) || 0;
+        };
+        const formatDecimalID = (val) => {
+            let cleanVal = val.toString().replace(/[^0-9,]/g, '');
+            let parts = cleanVal.split(',');
+            if (parts.length > 2) cleanVal = parts[0] + ',' + parts.slice(1).join('');
+            parts = cleanVal.split(',');
+            let intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return parts.length > 1 ? intPart + ',' + parts[1] : intPart;
+        };
         const formatRp = (num) => 'Rp ' + (num || 0).toLocaleString('id-ID');
         const generateDateString = () => new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const generateShortDateString = () => new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
@@ -562,6 +573,7 @@
             try {
                 if(targetInput) targetInput.placeholder = "Load...";
                 const proxies = [
+                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
                     `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
                     `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
                 ];
@@ -569,7 +581,7 @@
                 let rawData = null;
                 for (const proxy of proxies) {
                     try {
-                        const res = await fetch(proxy, { cache: "no-store" });
+                        const res = await fetch(proxy, { cache: "no-store", headers: { "Accept": "application/json" } });
                         if (!res.ok) continue;
                         const text = await res.text();
                         try {
@@ -619,7 +631,7 @@
             let totPnlSaham = 0;
             db.saham.forEach(s => {
                 const lot = parseNum(s.lot);
-                const avg = parseNum(s.avg);
+                const avg = parseFloatNum(s.avg);
                 const harga = parseNum(s.harga);
                 const marketValue = lot * 100 * harga;
                 const pnl = (harga - avg) * lot * 100;
@@ -634,7 +646,9 @@
                 txtSahamGrandPnl.textContent = isCensored ? '••••••' : `${pnlSign}${formatRp(totPnlSaham)}`;
             }
 
-            txtGrandTot.textContent = isCensored ? 'Rp ••••••' : formatRp(totEmas + totReksa + totSaham);
+            // Perbaikan Logika Grand Total: karena nilai PnL rugi sudah berbentuk negatif (-200),
+            // maka kita menggunakan operasi penambahan (+) agar hasilnya secara otomatis berkurang.
+            txtGrandTot.textContent = isCensored ? 'Rp ••••••' : formatRp(totEmas + totReksa + totSaham + totPnlSaham);
         }
 
         function toggleSidebar(show) {
@@ -844,7 +858,7 @@
         function updateSahamRowUI(idx) {
             const s = db.saham[idx];
             const lot = parseNum(s.lot);
-            const avg = parseNum(s.avg);
+            const avg = parseFloatNum(s.avg);
             const harga = parseNum(s.harga);
             const pnl = (harga - avg) * lot * 100;
 
@@ -872,9 +886,9 @@
             const numInputType = isCensored ? 'password' : 'text';
             db.saham.forEach((s, idx) => {
                 const lot = parseNum(s.lot);
-                const avg = parseNum(s.avg);
+                const avgFloat = parseFloatNum(s.avg);
                 const harga = parseNum(s.harga);
-                const pnl = (harga - avg) * lot * 100;
+                const pnl = (harga - avgFloat) * lot * 100;
                 
                 const html = `
                     <div class="bg-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm flex flex-col gap-2 relative mt-2">
@@ -884,19 +898,19 @@
                         <div class="grid grid-cols-4 gap-2 mt-1">
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">KODE</span>
-                                <input data-field="kode" data-index="${idx}" value="${s.kode}" type="text" placeholder="..." class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold uppercase text-center outline-none focus:bg-yellow-50">
+                                <input data-field="kode" data-index="${idx}" value="${s.kode}" type="text" placeholder="..." class="w-full border-[2px] border-black rounded-lg p-2 text-[14px] font-bold uppercase text-center outline-none focus:bg-yellow-50">
                             </div>
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">LOT</span>
-                                <input data-field="lot" data-index="${idx}" value="${s.lot ? lot.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50">
+                                <input data-field="lot" data-index="${idx}" value="${s.lot ? lot.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-[14px] font-bold text-center outline-none focus:bg-yellow-50">
                             </div>
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">AVG</span>
-                                <input data-field="avg" data-index="${idx}" value="${s.avg ? avg.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50 bg-gray-50">
+                                <input data-field="avg" data-index="${idx}" value="${s.avg ? s.avg : ''}" type="${numInputType}" inputmode="decimal" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-[14px] font-bold text-center outline-none focus:bg-yellow-50 bg-gray-50">
                             </div>
                             <div class="flex flex-col relative col-span-1">
                                 <span class="absolute -top-2 left-2 bg-white px-1 text-[9px] font-bold text-gray-600">LAST</span>
-                                <input data-field="harga" data-index="${idx}" value="${s.harga ? harga.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-xs font-bold text-center outline-none focus:bg-yellow-50 bg-[#e0e7ff]">
+                                <input data-field="harga" data-index="${idx}" value="${s.harga ? harga.toLocaleString('id-ID') : ''}" type="${numInputType}" inputmode="numeric" placeholder="0" class="w-full border-[2px] border-black rounded-lg p-2 text-[14px] font-bold text-center outline-none focus:bg-yellow-50 bg-[#e0e7ff]">
                             </div>
                         </div>
                         <div class="flex justify-between items-center px-1 mt-1 border-t-2 border-dashed border-gray-300 pt-2">
@@ -929,6 +943,11 @@
             const field = target.dataset.field;
             if (field === 'kode') {
                 db.saham[idx].kode = target.value.toUpperCase();
+            } else if (field === 'avg') {
+                let formatted = formatDecimalID(target.value);
+                target.value = formatted;
+                db.saham[idx].avg = formatted;
+                updateSahamRowUI(idx);
             } else {
                 let raw = parseNum(target.value);
                 target.value = raw > 0 ? raw.toLocaleString('id-ID') : '';
