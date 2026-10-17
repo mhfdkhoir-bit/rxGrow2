@@ -6,7 +6,12 @@
     <!-- PWA / Homescreen Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="rxGrow">
     <meta name="theme-color" content="#FDF9F1">
+    
+    <!-- Dynamically generated Manifest & Icon for "Add to Homescreen" Native Feel -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"rxGrow Finance Tracker","short_name":"rxGrow","start_url":".","display":"standalone","background_color":"%2318181b","theme_color":"%23FDF9F1","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22192%22 height=%22192%22 viewBox=%220 0 192 192%22 fill=%22%23a78bfa%22%3E%3Crect width=%22192%22 height=%22192%22 rx=%2248%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%22100%22 fill=%22%2318181b%22%3Erx%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"},{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22 fill=%22%23a78bfa%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22128%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%22280%22 fill=%22%2318181b%22%3Erx%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+    <link rel="apple-touch-icon" href='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22192%22 height=%22192%22 viewBox=%220 0 192 192%22 fill=%22%23a78bfa%22%3E%3Crect width=%22192%22 height=%22192%22 rx=%2248%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%22100%22 fill=%22%2318181b%22%3Erx%3C/text%3E%3C/svg%3E'>
     
     <title>rxGrow - Finance Tracker</title>
 
@@ -36,6 +41,13 @@
     </script>
 
     <style>
+        /* Optimasi Native App Feel */
+        html, body {
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+            touch-action: manipulation;
+        }
+
         /* Exact Grid Constraint - Ensures 100% Pixel Perfect Alignment */
         .card-grid-container {
             display: grid;
