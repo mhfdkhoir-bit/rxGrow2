@@ -6,12 +6,7 @@
     <!-- PWA / Homescreen Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="rxGrow">
     <meta name="theme-color" content="#FDF9F1">
-    
-    <!-- Dynamically generated Manifest & Icon for "Add to Homescreen" Native Feel -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"rxGrow Finance Tracker","short_name":"rxGrow","start_url":".","display":"standalone","background_color":"%2318181b","theme_color":"%23FDF9F1","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22192%22 height=%22192%22 viewBox=%220 0 192 192%22 fill=%22%23a78bfa%22%3E%3Crect width=%22192%22 height=%22192%22 rx=%2248%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%22100%22 fill=%22%2318181b%22%3Erx%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"},{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22 fill=%22%23a78bfa%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22128%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%22280%22 fill=%22%2318181b%22%3Erx%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
-    <link rel="apple-touch-icon" href='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22192%22 height=%22192%22 viewBox=%220 0 192 192%22 fill=%22%23a78bfa%22%3E%3Crect width=%22192%22 height=%22192%22 rx=%2248%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dy=%22.35em%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%22100%22 fill=%22%2318181b%22%3Erx%3C/text%3E%3C/svg%3E'>
     
     <title>rxGrow - Finance Tracker</title>
 
@@ -32,7 +27,9 @@
                     fontFamily: { sans: ['"Space Grotesk"', 'sans-serif'] },
                     boxShadow: {
                         'brutal': '4px 4px 0px 0px #000',
+                        'brutal-flipped': '-4px 4px 0px 0px #000', /* Shadow for flip backface */
                         'brutal-sm': '2px 2px 0px 0px #000',
+                        'brutal-sm-flipped': '-2px 2px 0px 0px #000', /* Shadow for backface inner elements */
                         'brutal-pressed': '0px 0px 0px 0px #000',
                     }
                 }
@@ -41,13 +38,6 @@
     </script>
 
     <style>
-        /* Optimasi Native App Feel */
-        html, body {
-            -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: none;
-            touch-action: manipulation;
-        }
-
         /* Exact Grid Constraint - Ensures 100% Pixel Perfect Alignment */
         .card-grid-container {
             display: grid;
@@ -87,6 +77,19 @@
         .tab-active {
             animation: slideFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
+
+        /* 3D FLIP CARD UTILITIES */
+        .perspective-1000 { perspective: 1000px; -webkit-perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; -webkit-transform-style: preserve-3d; }
+        .backface-hidden { 
+            backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden; 
+            /* Fix iOS mobile text bleeding glitch */
+            transform: translateZ(0); 
+            -webkit-transform: translateZ(0); 
+        }
+        .rotate-y-180-static { transform: rotateY(180deg); }
+        .is-flipped { transform: rotateY(180deg); }
     </style>
 </head>
 <body class="font-sans antialiased text-black select-none bg-[#18181b]">
@@ -178,16 +181,75 @@
             <!-- ======================= -->
             <div id="home-tab" class="flex flex-col gap-5 tab-active">
                 
-                <!-- TOP CARD -->
-                <div class="bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal w-full mt-2 relative">
-                    <button id="toggle-censor-btn" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors active:scale-95">
-                        <i class="fa-solid fa-eye text-lg" id="censor-icon"></i>
-                    </button>
-                    <div class="flex justify-center mb-1">
-                        <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
+                <!-- TOP CARD (FLIP CONTAINER) -->
+                <div id="grand-total-container" class="perspective-1000 w-full mt-2 cursor-pointer group">
+                    <div id="grand-total-flipper" class="relative transition-transform duration-700 transform-style-3d w-full">
+                        
+                        <!-- FRONT FACE: GRAND TOTAL -->
+                        <div class="relative backface-hidden z-[2] bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal flex flex-col justify-center items-center w-full">
+                            <button id="toggle-censor-btn" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors active:scale-95 z-20">
+                                <i class="fa-solid fa-eye text-lg" id="censor-icon"></i>
+                            </button>
+                            <div class="flex justify-center mb-1">
+                                <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
+                            </div>
+                            <h2 class="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-1">TOTAL INVESTASI</h2>
+                            <div id="grand-total" class="font-bold text-4xl tracking-tight z-10">Rp 0</div>
+                        </div>
+
+                        <!-- BACK FACE: ASSET ALLOCATION (PIE CHART) -->
+                        <div class="absolute inset-0 backface-hidden z-[1] rotate-y-180-static bg-[#FDF9F1] border-[3px] border-black rounded-2xl p-3 shadow-brutal-flipped flex items-center justify-center text-black w-full h-full">
+                            
+                            <!-- INNER WRAPPER TO CENTER CONTENT -->
+                            <div class="flex items-center justify-center w-full max-w-[280px]">
+                                <!-- CHART CONTAINER -->
+                                <div class="w-1/2 flex justify-end items-center pr-3.5">
+                                    <div class="relative w-[85px] h-[85px] rounded-full border-[3px] border-black shadow-brutal-sm-flipped bg-gray-200 overflow-hidden shrink-0">
+                                        <svg viewBox="0 0 32 32" class="w-full h-full transform -rotate-90">
+                                            <!-- Emas -->
+                                            <circle id="pie-emas" r="8" cx="16" cy="16" fill="transparent" stroke="#FFE268" stroke-width="16" stroke-dasharray="0 51" class="transition-all duration-700 ease-out"></circle>
+                                            <!-- Reksadana -->
+                                            <circle id="pie-reksa" r="8" cx="16" cy="16" fill="transparent" stroke="#FF71A4" stroke-width="16" stroke-dasharray="0 51" class="transition-all duration-700 ease-out"></circle>
+                                            <!-- Saham -->
+                                            <circle id="pie-saham" r="8" cx="16" cy="16" fill="transparent" stroke="#93C5FD" stroke-width="16" stroke-dasharray="0 51" class="transition-all duration-700 ease-out"></circle>
+                                        </svg>
+                                        <!-- Donut Hole -->
+                                        <div class="absolute inset-0 m-auto w-[34px] h-[34px] bg-[#FDF9F1] rounded-full border-[3px] border-black"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- LEGEND CONTAINER -->
+                                <div class="w-1/2 flex flex-col justify-center gap-1.5 pl-3.5 border-l-[3px] border-black h-[75px]">
+                                    <h3 class="text-[10px] font-black uppercase tracking-wider text-gray-500 mb-0.5">Alokasi Aset</h3>
+                                    
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3.5 h-3.5 rounded-sm bg-[#FFE268] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
+                                        <div class="flex flex-col leading-none">
+                                            <span class="text-[10px] font-bold">Emas</span>
+                                            <span id="pct-emas" class="text-[12px] font-black">0%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3.5 h-3.5 rounded-sm bg-[#FF71A4] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
+                                        <div class="flex flex-col leading-none">
+                                            <span class="text-[10px] font-bold">Reksadana</span>
+                                            <span id="pct-reksa" class="text-[12px] font-black">0%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3.5 h-3.5 rounded-sm bg-[#93C5FD] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
+                                        <div class="flex flex-col leading-none">
+                                            <span class="text-[10px] font-bold">Saham</span>
+                                            <span id="pct-saham" class="text-[12px] font-black">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                    <h2 class="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-1">TOTAL INVESTASI</h2>
-                    <div id="grand-total" class="font-bold text-4xl tracking-tight">Rp 0</div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 w-full items-start">
@@ -248,7 +310,7 @@
                                     </svg>
                                 </div>
                             </div>
-                            <!-- 2. Modal Input (With internal Rp formatting) -->
+                            <!-- 2. Modal Input -->
                             <div class="w-full h-full relative">
                                 <input type="text" id="reksa-modal" inputmode="numeric" class="w-full h-full bg-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
                             </div>
@@ -256,7 +318,7 @@
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">TOTAL KEUNTUNGAN</span>
                             </div>
-                            <!-- 4. Profit Input (Pink, with internal Rp formatting) -->
+                            <!-- 4. Profit Input -->
                             <div class="w-full h-full relative">
                                 <input type="text" id="reksa-profit" inputmode="numeric" class="w-full h-full bg-[#FBCFE8] text-black border-[3px] border-black rounded-lg text-center text-[14px] font-bold shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
                             </div>
@@ -264,7 +326,7 @@
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
                             </div>
-                            <!-- 6. Total Box (Green) -->
+                            <!-- 6. Total Box -->
                             <div id="reksa-total" class="w-full h-full bg-[#86EFAC] text-black border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[14px] font-bold tracking-tight px-1">
                                 Rp 0
                             </div>
@@ -412,8 +474,11 @@
         const btnAddSaham = document.getElementById('add-saham-btn');
         const txtSahamGrandTotal = document.getElementById('saham-grand-total');
         const txtSahamGrandPnl = document.getElementById('saham-grand-pnl');
+        
         const btnToggleCensor = document.getElementById('toggle-censor-btn');
         const iconCensor = document.getElementById('censor-icon');
+        const flipContainer = document.getElementById('grand-total-container');
+        const flipper = document.getElementById('grand-total-flipper');
 
         const btnHamburger = document.getElementById('hamburger-btn');
         const btnCloseSidebar = document.getElementById('close-sidebar-btn');
@@ -629,6 +694,55 @@
             }
         }
 
+        function updatePieChart(totE, totR, totS, totP) {
+            const pieE = document.getElementById('pie-emas');
+            const pieR = document.getElementById('pie-reksa');
+            const pieS = document.getElementById('pie-saham');
+            const pctE = document.getElementById('pct-emas');
+            const pctR = document.getElementById('pct-reksa');
+            const pctS = document.getElementById('pct-saham');
+
+            if (!pieE || !pctE) return;
+
+            // Safe total for Saham strictly ensuring no negative values ruin the chart render
+            const valS = Math.max(0, totS + totP);
+            const safeGrand = totE + totR + valS;
+
+            if (safeGrand <= 0) {
+                pctE.textContent = isCensored ? '••%' : '0%';
+                pctR.textContent = isCensored ? '••%' : '0%';
+                pctS.textContent = isCensored ? '••%' : '0%';
+                pieE.style.strokeDasharray = '0 51';
+                pieR.style.strokeDasharray = '0 51';
+                pieS.style.strokeDasharray = '0 51';
+                return;
+            }
+
+            const pe = totE / safeGrand;
+            const pr = totR / safeGrand;
+            const ps = valS / safeGrand;
+
+            pctE.textContent = isCensored ? '••%' : Math.round(pe * 100) + '%';
+            pctR.textContent = isCensored ? '••%' : Math.round(pr * 100) + '%';
+            pctS.textContent = isCensored ? '••%' : Math.round(ps * 100) + '%';
+
+            // Circumference for r=8 is 2 * pi * 8 = 50.26548
+            const C = 2 * Math.PI * 8; 
+            const lenE = pe * C;
+            const lenR = pr * C;
+            const lenS = ps * C;
+
+            // Update SVG dash properties to form pie sections
+            pieE.style.strokeDasharray = `${lenE} ${C}`;
+            pieE.style.strokeDashoffset = `0`;
+
+            pieR.style.strokeDasharray = `${lenR} ${C}`;
+            pieR.style.strokeDashoffset = `-${lenE}`;
+
+            pieS.style.strokeDasharray = `${lenS} ${C}`;
+            pieS.style.strokeDashoffset = `-${lenE + lenR}`;
+        }
+
         function calculateTotals() {
             const g = parseFloatNum(inEmas.value);
             const totEmas = Math.round(g * HARGA_BUYBACK_EMAS);
@@ -658,9 +772,11 @@
                 txtSahamGrandPnl.textContent = isCensored ? '••••••' : `${pnlSign}${formatRp(totPnlSaham)}`;
             }
 
-            // Perbaikan Logika Grand Total: karena nilai PnL rugi sudah berbentuk negatif (-200),
-            // maka kita menggunakan operasi penambahan (+) agar hasilnya secara otomatis berkurang.
+            // Mempertahankan formula original
             txtGrandTot.textContent = isCensored ? 'Rp ••••••' : formatRp(totEmas + totReksa + totSaham + totPnlSaham);
+
+            // Trigger pie chart render
+            updatePieChart(totEmas, totReksa, totSaham, totPnlSaham);
         }
 
         function toggleSidebar(show) {
@@ -681,7 +797,6 @@
         function switchTab(tabName) {
             toggleSidebar(false);
             
-            // Remove animation class
             tabHome.classList.remove('tab-active');
             tabRiwayat.classList.remove('tab-active');
 
@@ -691,7 +806,6 @@
                 tabRiwayat.classList.add('hidden');
                 tabRiwayat.classList.remove('flex');
                 
-                // Force reflow and re-add class to trigger CSS animation
                 void tabHome.offsetWidth; 
                 tabHome.classList.add('tab-active');
                 calculateTotals();
@@ -701,7 +815,6 @@
                 tabHome.classList.add('hidden');
                 tabHome.classList.remove('flex');
                 
-                // Force reflow and re-add class to trigger CSS animation
                 void tabRiwayat.offsetWidth;
                 tabRiwayat.classList.add('tab-active');
                 renderRiwayat();
@@ -710,7 +823,12 @@
         navHome.addEventListener('click', () => switchTab('home'));
         navRiwayat.addEventListener('click', () => switchTab('riwayat'));
 
-        btnToggleCensor.addEventListener('click', () => {
+        flipContainer.addEventListener('click', () => {
+            flipper.classList.toggle('is-flipped');
+        });
+
+        btnToggleCensor.addEventListener('click', (e) => {
+            e.stopPropagation(); // Mencegah klik tombol censor memicu animasi flip
             isCensored = !isCensored;
             iconCensor.className = isCensored ? 'fa-solid fa-eye-slash text-lg' : 'fa-solid fa-eye text-lg';
             
@@ -737,7 +855,6 @@
 
         function handleRupiahInput(e, keyName, isProfit = false) {
             let raw = parseNum(e.target.value);
-            // Prefixing 'Rp ' natively inside the input field
             e.target.value = raw > 0 ? 'Rp ' + raw.toLocaleString('id-ID') : '';
             db[keyName] = raw || 0;
             
@@ -990,7 +1107,6 @@
         function initDashboard() {
             inEmas.value = db.emasGram == '0' ? '' : db.emasGram;
             
-            // Format existing DB values with Rp natively inside the inputs
             inRekModal.value = db.reksaModal == '0' ? '' : 'Rp ' + parseNum(db.reksaModal).toLocaleString('id-ID');
             inRekProfit.value = db.reksaProfit == '0' ? '' : 'Rp ' + parseNum(db.reksaProfit).toLocaleString('id-ID');
             
