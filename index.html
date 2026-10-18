@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- PWA / Homescreen Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="rxGrow">
@@ -87,7 +86,6 @@
         .backface-hidden { 
             backface-visibility: hidden; 
             -webkit-backface-visibility: hidden; 
-            /* Fix iOS mobile text bleeding glitch */
             transform: translateZ(0); 
             -webkit-transform: translateZ(0); 
         }
@@ -96,11 +94,6 @@
     </style>
 </head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#3f3f46] transition-colors duration-300">
-
-    <!-- ========================================== -->
-    <!-- PRIVACY SCREEN (App Switcher / Recent Apps)-->
-    <!-- ========================================== -->
-    <div id="privacy-screen" class="fixed inset-0 bg-black z-[9999] hidden pointer-events-none"></div>
 
     <!-- ========================================== -->
     <!-- VIEW 1: LOGIN / PIN SCREEN                 -->
@@ -127,9 +120,16 @@
 
             <p id="pin-error" class="text-[#fca5a5] text-xs font-bold h-4 text-center w-full mt-1"></p>
 
-            <button id="login-btn" class="w-full bg-[#a78bfa] text-black border-[3px] border-black shadow-brutal-sm rounded-xl font-bold text-base py-3 mt-1 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                Simpan PIN & Masuk
-            </button>
+            <div class="w-full flex flex-col gap-3">
+                <button id="login-btn" class="w-full bg-[#a78bfa] text-black border-[3px] border-black shadow-brutal-sm rounded-xl font-bold text-base py-3 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                    Simpan PIN & Masuk
+                </button>
+
+                <!-- FITUR BARU: Tombol Face ID / Biometrik -->
+                <button id="biometric-btn" class="hidden w-full bg-[#10b981] text-black border-[3px] border-black shadow-brutal-sm rounded-xl font-bold text-base py-3 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all items-center justify-center gap-2">
+                    <i class="fa-solid fa-fingerprint text-lg"></i> <span id="biometric-text">Face ID / Biometrik</span>
+                </button>
+            </div>
 
             <button id="reset-pin-link" class="hidden text-gray-400 hover:text-white text-xs font-semibold underline underline-offset-2 mt-2">
                 Lupa PIN? Reset Sekarang
@@ -157,7 +157,6 @@
             </button>
         </div>
         
-        <!-- FITUR BARU: Dark Mode Toggle -->
         <div class="p-4 border-t-[3px] border-black">
             <button id="toggle-dark-mode" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <span id="theme-text-span" class="flex items-center gap-3"><i class="fa-solid fa-moon"></i> Mode Gelap</span>
@@ -174,7 +173,6 @@
     <div id="dashboard-view" class="hidden min-h-screen bg-[#FDF9F1] dark:bg-[#3f3f46] pb-10 transition-colors duration-300">
         <div class="w-full max-w-[500px] mx-auto p-4 flex flex-col gap-5">
             
-            <!-- HEADER -->
             <div class="flex justify-between items-center w-full pt-2">
                 <div class="flex items-center gap-3">
                     <button id="hamburger-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
@@ -199,11 +197,9 @@
             <!-- ======================= -->
             <div id="home-tab" class="flex flex-col gap-5 tab-active">
                 
-                <!-- TOP CARD (FLIP CONTAINER) -->
                 <div id="grand-total-container" class="perspective-1000 w-full mt-2 cursor-pointer group">
                     <div id="grand-total-flipper" class="relative transition-transform duration-700 transform-style-3d w-full">
                         
-                        <!-- FRONT FACE: GRAND TOTAL -->
                         <div class="relative backface-hidden z-[2] bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal flex flex-col justify-center items-center w-full">
                             <button id="toggle-censor-btn" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors active:scale-95 z-20">
                                 <i class="fa-solid fa-eye text-lg" id="censor-icon"></i>
@@ -215,28 +211,20 @@
                             <div id="grand-total" class="font-bold text-4xl tracking-tight z-10">Rp 0</div>
                         </div>
 
-                        <!-- BACK FACE: ASSET ALLOCATION (MONEY CHART) -->
                         <div class="absolute inset-0 backface-hidden z-[1] rotate-y-180-static bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black rounded-2xl p-3 shadow-brutal-flipped flex items-center justify-center w-full h-full">
                             
-                            <!-- INNER WRAPPER TO CENTER CONTENT -->
                             <div class="flex items-center justify-center w-full max-w-[280px]">
-                                <!-- CHART CONTAINER (MONEY SHAPE) -->
                                 <div class="w-1/2 flex justify-end items-center pr-3.5">
-                                    <!-- Money Chart (Banknote Graphic) -->
                                     <div class="relative w-[95px] h-[60px] bg-[#bbf7d0] border-[3px] border-black rounded-md shadow-brutal-sm-flipped flex flex-col p-1 overflow-hidden shrink-0">
-                                        <!-- Inner frame (Stacked Bars) -->
                                         <div class="w-full h-full border-[2px] border-black rounded-[2px] flex relative overflow-hidden bg-white">
-                                            <!-- Allocation Bars replacing old circle strokes -->
                                             <div id="pie-emas" class="h-full bg-[#FFE268] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
                                             <div id="pie-reksa" class="h-full bg-[#FF71A4] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
                                             <div id="pie-saham" class="h-full bg-[#93C5FD] transition-all duration-700 ease-out" style="width: 0%;"></div>
                                             
-                                            <!-- Center Seal (Rp) -->
                                             <div class="absolute inset-0 m-auto w-7 h-7 bg-[#FDF9F1] dark:bg-[#52525b] border-[2px] border-black rounded-full shadow-[2px_2px_0px_0px_#000] flex items-center justify-center z-10 transition-colors">
                                                 <span class="font-black text-[12px] text-green-600 dark:text-green-400 tracking-tighter">Rp</span>
                                             </div>
 
-                                            <!-- Corner accents for Banknote look -->
                                             <div class="absolute top-0.5 left-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
                                             <div class="absolute top-0.5 right-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
                                             <div class="absolute bottom-0.5 left-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
@@ -245,7 +233,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- LEGEND CONTAINER -->
                                 <div class="w-1/2 flex flex-col justify-center gap-1.5 pl-3.5 border-l-[3px] border-black h-[75px]">
                                     <h3 class="text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-0.5">Alokasi Aset</h3>
                                     
@@ -274,17 +261,14 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 w-full items-start">
-                    
                     <!-- EMAS -->
                     <div class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal rounded-2xl p-3">
                         <div class="card-grid-container">
-                            <!-- 1. Title -->
                             <div class="flex justify-between items-center w-full h-full">
                                 <div class="flex flex-col leading-tight">
                                     <span class="font-bold text-sm">Emas</span>
@@ -297,24 +281,19 @@
                                     </svg>
                                 </div>
                             </div>
-                            <!-- 2. Gram Input -->
                             <div class="w-full h-full relative">
                                 <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2 pr-6" placeholder="0">
                                 <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 dark:text-gray-300 text-xs pointer-events-none">g</span>
                             </div>
-                            <!-- 3. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">HARGA PASAR</span>
                             </div>
-                            <!-- 4. Buyback Box -->
                             <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center font-bold text-center px-1">
                                 <span id="gold-price-txt" class="text-[14px]">Memuat...</span>
                             </div>
-                            <!-- 5. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
                             </div>
-                            <!-- 6. Total Box -->
                             <div id="emas-total" class="w-full h-full bg-[#222] text-white border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[14px] font-bold tracking-tight px-1">
                                 Rp 0
                             </div>
@@ -324,7 +303,6 @@
                     <!-- REKSADANA -->
                     <div class="bg-[#FF71A4] text-black border-[3px] border-black shadow-brutal rounded-2xl p-3">
                         <div class="card-grid-container">
-                            <!-- 1. Title -->
                             <div class="flex justify-between items-center w-full h-full">
                                 <div class="flex flex-col leading-tight">
                                     <span class="font-bold text-sm">Reksadana</span>
@@ -337,23 +315,18 @@
                                     </svg>
                                 </div>
                             </div>
-                            <!-- 2. Modal Input -->
                             <div class="w-full h-full relative">
                                 <input type="text" id="reksa-modal" inputmode="numeric" class="w-full h-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
                             </div>
-                            <!-- 3. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">TOTAL KEUNTUNGAN</span>
                             </div>
-                            <!-- 4. Profit Input -->
                             <div class="w-full h-full relative">
                                 <input type="text" id="reksa-profit" inputmode="numeric" class="w-full h-full bg-[#FBCFE8] text-black border-[3px] border-black rounded-lg text-center text-[14px] font-bold shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
                             </div>
-                            <!-- 5. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
                             </div>
-                            <!-- 6. Total Box -->
                             <div id="reksa-total" class="w-full h-full bg-[#86EFAC] text-black border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[14px] font-bold tracking-tight px-1">
                                 Rp 0
                             </div>
@@ -366,9 +339,7 @@
                     Update Terakhir: <span id="update-date-txt" class="font-normal italic">Belum ada pembaruan</span>
                 </div>
 
-                <!-- SAHAM DROPDOWN CARD -->
                 <div class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden mt-1 transition-colors">
-                    <!-- Header -->
                     <button id="saham-toggle" class="w-full p-4 flex justify-between items-center bg-white hover:bg-gray-50 dark:bg-[#52525b] dark:hover:bg-[#71717a] transition-colors">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-[#93C5FD] border-[2px] border-black flex items-center justify-center text-black">
@@ -379,11 +350,9 @@
                         <i id="saham-icon" class="fa-solid fa-chevron-down text-sm transition-transform duration-300"></i>
                     </button>
                     
-                    <!-- Body (Smooth CSS Grid Expand) -->
                     <div id="saham-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#3f3f46]">
                         <div class="accordion-inner">
                             <div class="p-4 flex flex-col gap-3">
-                                <!-- Ringkasan Saham -->
                                 <div class="bg-[#222] text-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm mb-1">
                                     <div class="flex justify-between items-center px-1">
                                         <div class="flex flex-col">
@@ -449,7 +418,6 @@
         <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="edit-history-card">
             <h3 class="font-black text-lg text-center">Edit Keuntungan</h3>
             <div class="relative w-full">
-                <!-- Using Rp inside input via JS formatting -->
                 <input type="text" id="edit-history-input" inputmode="numeric" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-xl text-center font-black text-lg shadow-brutal-sm p-3 outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all" placeholder="Rp 0">
             </div>
             <div class="flex gap-3 mt-2">
@@ -465,6 +433,7 @@
         
         let db = {
             pin: null,
+            biometricId: null, // FITUR BARU: Menyimpan referensi Face ID/Biometrik
             emasGram: '0',
             reksaModal: '0',
             reksaProfit: '0',
@@ -484,6 +453,10 @@
         const btnTogglePin = document.getElementById('toggle-pin-btn');
         const pinError = document.getElementById('pin-error');
         const lockBtn = document.getElementById('lock-btn');
+
+        /* Element Baru untuk Biometrik */
+        const btnBiometric = document.getElementById('biometric-btn');
+        const txtBiometric = document.getElementById('biometric-text');
 
         const inEmas = document.getElementById('emas-gram');
         const txtEmasTot = document.getElementById('emas-total');
@@ -525,7 +498,6 @@
         const btnSaveEdit = document.getElementById('save-edit-btn');
         let currentEditIdx = -1;
         
-        /* Dark Mode Elements */
         const btnToggleDarkMode = document.getElementById('toggle-dark-mode');
         const darkToggleIndicator = document.getElementById('dark-toggle-indicator');
 
@@ -545,6 +517,26 @@
         const formatRp = (num) => 'Rp ' + (num || 0).toLocaleString('id-ID');
         const generateDateString = () => new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const generateShortDateString = () => new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+
+        // FITUR BARU: Utility Functions untuk konversi WebAuthn ArrayBuffer
+        function bufferToBase64(buffer) {
+            let binary = '';
+            let bytes = new Uint8Array(buffer);
+            let len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+        function base64ToBuffer(base64) {
+            let binary_string = window.atob(base64);
+            let len = binary_string.length;
+            let bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
 
         function loadDB() {
             const saved = localStorage.getItem('rxGrow_db');
@@ -587,7 +579,6 @@
         function initAuth() {
             inputPin.value = '';
             pinError.textContent = '';
-            // Login tetap default background dark
             document.body.classList.remove('bg-[#FDF9F1]', 'dark:bg-[#3f3f46]');
             document.body.classList.add('bg-[#3f3f46]');
             viewLogin.classList.remove('hidden');
@@ -599,16 +590,32 @@
                 loginSub.textContent = "Tentukan 4 digit angka untuk mengunci aset";
                 btnLogin.textContent = "Simpan PIN & Masuk";
                 linkReset.classList.add('hidden');
+                
+                // Hide Biometric button saat sedang membuat PIN
+                if (btnBiometric) {
+                    btnBiometric.classList.add('hidden');
+                    btnBiometric.classList.remove('flex');
+                }
             } else {
                 loginTitle.textContent = "Masukkan PIN";
                 loginSub.textContent = "Sistem terkunci demi privasi Anda";
                 btnLogin.textContent = "Buka Kunci";
                 linkReset.classList.remove('hidden');
+
+                // Tampilkan Biometric Button jika didukung (hanya pada secure context atau localhost)
+                if (btnBiometric && window.PublicKeyCredential && (window.location.hostname !== '' || window.isSecureContext)) {
+                    btnBiometric.classList.remove('hidden');
+                    btnBiometric.classList.add('flex');
+                    if (db.biometricId) {
+                        txtBiometric.textContent = "Buka dengan Face ID / Biometrik";
+                    } else {
+                        txtBiometric.textContent = "Daftarkan Face ID / Biometrik";
+                    }
+                }
             }
         }
 
         function openDashboard() {
-            // Restore background body untuk dashboard dengan support dark mode
             document.body.classList.remove('bg-[#3f3f46]');
             document.body.classList.add('bg-[#FDF9F1]', 'dark:bg-[#3f3f46]');
             viewLogin.classList.add('hidden');
@@ -650,6 +657,7 @@
 
         linkReset.addEventListener('click', () => {
             db.pin = null;
+            db.biometricId = null; // Reset juga fitur biometrik
             saveDB();
             initAuth();
             pinError.textContent = "PIN berhasil di-reset! Silakan buat PIN baru.";
@@ -659,6 +667,69 @@
                 pinError.classList.replace('text-green-400', 'text-[#fca5a5]');
             }, 3500);
         });
+
+        // FITUR BARU: Logic Web Authentication (Face ID / Biometrik)
+        if (btnBiometric) {
+            btnBiometric.addEventListener('click', async () => {
+                if (!window.PublicKeyCredential) {
+                    pinError.textContent = "Perangkat/Browser tidak mendukung Biometrik.";
+                    return;
+                }
+
+                // Kita buat challenge random sederhana
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                try {
+                    if (!db.biometricId) {
+                        // 1. REGISTRASI WAJAH / SIDIK JARI
+                        const createOptions = {
+                            challenge: challenge,
+                            rp: { name: "rxGrow App" }, // Biarkan browser inferensi ID dari host (aman cross-platform)
+                            user: {
+                                id: window.crypto.getRandomValues(new Uint8Array(16)),
+                                name: "user@rxgrow",
+                                displayName: "rxGrow User"
+                            },
+                            pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
+                            authenticatorSelection: {
+                                authenticatorAttachment: "platform",
+                                userVerification: "required"
+                            },
+                            timeout: 60000,
+                            attestation: "none"
+                        };
+
+                        const credential = await navigator.credentials.create({ publicKey: createOptions });
+                        // Simpan rawId ke localStorage sebagai base64 string
+                        db.biometricId = bufferToBase64(credential.rawId);
+                        saveDB();
+                        openDashboard(); // Jika berhasil, langsung masuk
+                    } else {
+                        // 2. OTENTIKASI / LOGIN
+                        const getOptions = {
+                            challenge: challenge,
+                            allowCredentials: [{
+                                id: base64ToBuffer(db.biometricId),
+                                type: 'public-key',
+                                transports: ['internal']
+                            }],
+                            timeout: 60000,
+                            userVerification: "required"
+                        };
+
+                        const assertion = await navigator.credentials.get({ publicKey: getOptions });
+                        if (assertion) {
+                            openDashboard(); // Jika identitas valid, masuk
+                        }
+                    }
+                } catch (err) {
+                    console.error("Biometric error:", err);
+                    pinError.textContent = "Gagal memverifikasi Face ID/Biometrik.";
+                    setTimeout(() => pinError.textContent = '', 3000);
+                }
+            });
+        }
 
         async function fetchGoldPrice() {
             try {
@@ -704,7 +775,6 @@
             const targetInput = document.querySelector(`input[data-field="harga"][data-index="${idx}"]`);
             const symbol = kode.toUpperCase().replace('.JK', '') + '.JK';
             
-            // Menggunakan Cloudflare Worker pribadi agar secepat kilat tanpa antre
             const workerUrl = `https://saham-proxy.m4hfud-backup.workers.dev/?symbol=${symbol}`;
             
             try {
@@ -1153,49 +1223,13 @@
             renderRiwayat();
         }
 
-        // =============================================================
-        // SECURITY UPDATE: Auto-lock when minimized or screen turned off
-        // + PRIVACY SCREEN for App Switcher (Safari & Standalone PWA)
-        // =============================================================
-        const privacyScreen = document.getElementById('privacy-screen');
-        
-        function showPrivacy() {
-            if(privacyScreen) privacyScreen.classList.remove('hidden');
-        }
-        
-        function hidePrivacy() {
-            if(privacyScreen) privacyScreen.classList.add('hidden');
-        }
-
-        // Deteksi background web browser standar
-        window.addEventListener('blur', showPrivacy);
-        window.addEventListener('focus', hidePrivacy);
-        window.addEventListener('pagehide', showPrivacy);
-        window.addEventListener('pageshow', hidePrivacy);
-
-        // TRICK KHUSUS: Deteksi agresif untuk iOS Standalone PWA (Homescreen)
-        // iOS akan men-trigger 'touchcancel' seketika saat user menggeser home bar ke atas (masuk Recent Apps).
-        // Ini adalah momen terbaik mendahului sistem snapshot iOS sebelum merender recent app.
-        document.addEventListener('touchcancel', showPrivacy);
-        document.addEventListener('touchstart', hidePrivacy, {passive: true});
-
         document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "hidden") {
-                showPrivacy();
-                // Jika dokumen/halaman menjadi hidden (di-minimize/layar mati) dan user SUDAH mengatur PIN
-                if (db.pin) {
-                    // Kunci aplikasi dan kembali ke Home Dashboard 
-                    initAuth();
-                    switchTab('home');
-                }
-            } else {
-                hidePrivacy();
+            if (document.visibilityState === "hidden" && db.pin) {
+                initAuth();
+                switchTab('home');
             }
         });
 
-        // -------------------------------------------------------------
-        // PWA (Progressive Web App) INJECTION - 1 FILE MAGIC
-        // -------------------------------------------------------------
         (function initPWA() {
             const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#a78bfa" rx="100"/><path fill="black" d="M149.33 213.33h42.67v85.34h128v-85.34h42.67v128h-213.34v-128z" /><circle fill="black" cx="256" cy="149.33" r="32"/></svg>`;
             const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
@@ -1257,7 +1291,7 @@
 
         window.onload = function() {
             loadDB();
-            applyTheme(); /* Aplikasikan tema saat pertama dimuat */
+            applyTheme(); 
             initAuth();
         };
     </script>
