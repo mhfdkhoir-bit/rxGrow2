@@ -157,7 +157,7 @@
             </button>
         </div>
         
-        <!-- FITUR BARU: Dark Mode Toggle -->
+        <!-- Dark Mode Toggle -->
         <div class="p-4 border-t-[3px] border-black">
             <button id="toggle-dark-mode" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <span id="theme-text-span" class="flex items-center gap-3"><i class="fa-solid fa-moon"></i> Mode Gelap</span>
@@ -222,21 +222,16 @@
                             <div class="flex items-center justify-center w-full max-w-[280px]">
                                 <!-- CHART CONTAINER (MONEY SHAPE) -->
                                 <div class="w-1/2 flex justify-end items-center pr-3.5">
-                                    <!-- Money Chart (Banknote Graphic) -->
                                     <div class="relative w-[95px] h-[60px] bg-[#bbf7d0] border-[3px] border-black rounded-md shadow-brutal-sm-flipped flex flex-col p-1 overflow-hidden shrink-0">
-                                        <!-- Inner frame (Stacked Bars) -->
                                         <div class="w-full h-full border-[2px] border-black rounded-[2px] flex relative overflow-hidden bg-white">
-                                            <!-- Allocation Bars replacing old circle strokes -->
                                             <div id="pie-emas" class="h-full bg-[#FFE268] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
                                             <div id="pie-reksa" class="h-full bg-[#FF71A4] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
                                             <div id="pie-saham" class="h-full bg-[#93C5FD] transition-all duration-700 ease-out" style="width: 0%;"></div>
                                             
-                                            <!-- Center Seal (Rp) -->
                                             <div class="absolute inset-0 m-auto w-7 h-7 bg-[#FDF9F1] dark:bg-[#52525b] border-[2px] border-black rounded-full shadow-[2px_2px_0px_0px_#000] flex items-center justify-center z-10 transition-colors">
                                                 <span class="font-black text-[12px] text-green-600 dark:text-green-400 tracking-tighter">Rp</span>
                                             </div>
 
-                                            <!-- Corner accents for Banknote look -->
                                             <div class="absolute top-0.5 left-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
                                             <div class="absolute top-0.5 right-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
                                             <div class="absolute bottom-0.5 left-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
@@ -284,11 +279,10 @@
                     <!-- EMAS -->
                     <div class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal rounded-2xl p-3">
                         <div class="card-grid-container">
-                            <!-- 1. Title -->
                             <div class="flex justify-between items-center w-full h-full">
                                 <div class="flex flex-col leading-tight">
                                     <span class="font-bold text-sm">Emas</span>
-                                    <span class="text-[10px] font-semibold opacity-80">(Gold)</span>
+                                    <span class="text-[10px] font-semibold opacity-80">(Gold - Galeri24)</span>
                                 </div>
                                 <div class="w-8 h-8 rounded-full bg-[#FEF08A] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="#FDE047" stroke="black" stroke-width="2" stroke-linejoin="round">
@@ -297,24 +291,19 @@
                                     </svg>
                                 </div>
                             </div>
-                            <!-- 2. Gram Input -->
                             <div class="w-full h-full relative">
                                 <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2 pr-6" placeholder="0">
                                 <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 dark:text-gray-300 text-xs pointer-events-none">g</span>
                             </div>
-                            <!-- 3. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">HARGA PASAR</span>
                             </div>
-                            <!-- 4. Buyback Box -->
                             <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center font-bold text-center px-1">
                                 <span id="gold-price-txt" class="text-[14px]">Memuat...</span>
                             </div>
-                            <!-- 5. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
                             </div>
-                            <!-- 6. Total Box -->
                             <div id="emas-total" class="w-full h-full bg-[#222] text-white border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[14px] font-bold tracking-tight px-1">
                                 Rp 0
                             </div>
@@ -324,7 +313,6 @@
                     <!-- REKSADANA -->
                     <div class="bg-[#FF71A4] text-black border-[3px] border-black shadow-brutal rounded-2xl p-3">
                         <div class="card-grid-container">
-                            <!-- 1. Title -->
                             <div class="flex justify-between items-center w-full h-full">
                                 <div class="flex flex-col leading-tight">
                                     <span class="font-bold text-sm">Reksadana</span>
@@ -337,23 +325,18 @@
                                     </svg>
                                 </div>
                             </div>
-                            <!-- 2. Modal Input -->
                             <div class="w-full h-full relative">
                                 <input type="text" id="reksa-modal" inputmode="numeric" class="w-full h-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
                             </div>
-                            <!-- 3. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">TOTAL KEUNTUNGAN</span>
                             </div>
-                            <!-- 4. Profit Input -->
                             <div class="w-full h-full relative">
                                 <input type="text" id="reksa-profit" inputmode="numeric" class="w-full h-full bg-[#FBCFE8] text-black border-[3px] border-black rounded-lg text-center text-[14px] font-bold shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2" placeholder="Rp 0">
                             </div>
-                            <!-- 5. Label -->
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
                             </div>
-                            <!-- 6. Total Box -->
                             <div id="reksa-total" class="w-full h-full bg-[#86EFAC] text-black border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center text-[14px] font-bold tracking-tight px-1">
                                 Rp 0
                             </div>
@@ -368,7 +351,6 @@
 
                 <!-- SAHAM DROPDOWN CARD -->
                 <div class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden mt-1 transition-colors">
-                    <!-- Header -->
                     <button id="saham-toggle" class="w-full p-4 flex justify-between items-center bg-white hover:bg-gray-50 dark:bg-[#52525b] dark:hover:bg-[#71717a] transition-colors">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-[#93C5FD] border-[2px] border-black flex items-center justify-center text-black">
@@ -379,11 +361,9 @@
                         <i id="saham-icon" class="fa-solid fa-chevron-down text-sm transition-transform duration-300"></i>
                     </button>
                     
-                    <!-- Body (Smooth CSS Grid Expand) -->
                     <div id="saham-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#3f3f46]">
                         <div class="accordion-inner">
                             <div class="p-4 flex flex-col gap-3">
-                                <!-- Ringkasan Saham -->
                                 <div class="bg-[#222] text-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm mb-1">
                                     <div class="flex justify-between items-center px-1">
                                         <div class="flex flex-col">
@@ -432,7 +412,6 @@
                                 </tr>
                             </thead>
                             <tbody id="riwayat-tbody" class="divide-y-[3px] divide-black text-sm font-semibold bg-[#FDF9F1] dark:bg-[#3f3f46] text-black dark:text-white transition-colors">
-                                <!-- Rows injected via JS -->
                             </tbody>
                         </table>
                     </div>
@@ -449,7 +428,6 @@
         <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="edit-history-card">
             <h3 class="font-black text-lg text-center">Edit Keuntungan</h3>
             <div class="relative w-full">
-                <!-- Using Rp inside input via JS formatting -->
                 <input type="text" id="edit-history-input" inputmode="numeric" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-xl text-center font-black text-lg shadow-brutal-sm p-3 outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all" placeholder="Rp 0">
             </div>
             <div class="flex gap-3 mt-2">
@@ -525,7 +503,6 @@
         const btnSaveEdit = document.getElementById('save-edit-btn');
         let currentEditIdx = -1;
         
-        /* Dark Mode Elements */
         const btnToggleDarkMode = document.getElementById('toggle-dark-mode');
         const darkToggleIndicator = document.getElementById('dark-toggle-indicator');
 
@@ -587,7 +564,6 @@
         function initAuth() {
             inputPin.value = '';
             pinError.textContent = '';
-            // Login tetap default background dark
             document.body.classList.remove('bg-[#FDF9F1]', 'dark:bg-[#3f3f46]');
             document.body.classList.add('bg-[#3f3f46]');
             viewLogin.classList.remove('hidden');
@@ -608,7 +584,6 @@
         }
 
         function openDashboard() {
-            // Restore background body untuk dashboard dengan support dark mode
             document.body.classList.remove('bg-[#3f3f46]');
             document.body.classList.add('bg-[#FDF9F1]', 'dark:bg-[#3f3f46]');
             viewLogin.classList.add('hidden');
@@ -684,7 +659,7 @@
                 }
 
                 if (html) {
-                    const match = html.match(/Buyback[\s\S]{0,100}?Rp\s*([\d,.]+)/i) || html.match(/Rp\s*([\d,.]+)/i);
+                    const match = html.match(/Buyback[\s\S]{0,120}?Rp\s*([\d,.]+)/i) || html.match(/Rp\s*([\d,.]+)/i);
                     if (match && match[1]) {
                         const parsed = parseInt(match[1].replace(/\./g, ''), 10);
                         if (!isNaN(parsed) && parsed > 1000000) {
@@ -694,7 +669,7 @@
                 }
             } catch(e) { console.error(e); }
             
-            if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2275000; 
+            if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2375000; 
             txtGoldPrice.textContent = `Rp ${HARGA_BUYBACK_EMAS.toLocaleString('id-ID')} /g`;
             calculateTotals();
         }
@@ -703,16 +678,12 @@
             if (!kode) return;
             const targetInput = document.querySelector(`input[data-field="harga"][data-index="${idx}"]`);
             const symbol = kode.toUpperCase().replace('.JK', '') + '.JK';
-            
-            // Menggunakan Cloudflare Worker pribadi agar secepat kilat tanpa antre
             const workerUrl = `https://saham-proxy.m4hfud-backup.workers.dev/?symbol=${symbol}`;
             
             try {
                 if(targetInput) targetInput.placeholder = "Load...";
-                
                 const res = await fetch(workerUrl, { cache: "no-store" });
                 if (!res.ok) throw new Error("Gagal mengambil data");
-                
                 const rawData = await res.json();
                 
                 if (rawData?.chart?.result?.[0]) {
@@ -829,7 +800,6 @@
 
         function switchTab(tabName) {
             toggleSidebar(false);
-            
             tabHome.classList.remove('tab-active');
             tabRiwayat.classList.remove('tab-active');
 
@@ -838,7 +808,6 @@
                 tabHome.classList.add('flex');
                 tabRiwayat.classList.add('hidden');
                 tabRiwayat.classList.remove('flex');
-                
                 void tabHome.offsetWidth; 
                 tabHome.classList.add('tab-active');
                 calculateTotals();
@@ -847,7 +816,6 @@
                 tabRiwayat.classList.add('flex');
                 tabHome.classList.add('hidden');
                 tabHome.classList.remove('flex');
-                
                 void tabRiwayat.offsetWidth;
                 tabRiwayat.classList.add('tab-active');
                 renderRiwayat();
@@ -1139,10 +1107,8 @@
 
         function initDashboard() {
             inEmas.value = db.emasGram == '0' ? '' : db.emasGram;
-            
             inRekModal.value = db.reksaModal == '0' ? '' : 'Rp ' + parseNum(db.reksaModal).toLocaleString('id-ID');
             inRekProfit.value = db.reksaProfit == '0' ? '' : 'Rp ' + parseNum(db.reksaProfit).toLocaleString('id-ID');
-            
             txtUpdate.textContent = db.lastDate;
             if(isCensored) {
                 [inEmas, inRekModal, inRekProfit].forEach(i => i.type = 'password');
@@ -1153,16 +1119,11 @@
             renderRiwayat();
         }
 
-        // =============================================================
-        // SECURITY UPDATE: Auto-lock when minimized or screen turned off
-        // + AUTO CENSOR TRIGGER
-        // =============================================================
         const privacyScreen = document.getElementById('privacy-screen');
         
         function showPrivacy() {
             if(privacyScreen) privacyScreen.classList.remove('hidden');
         }
-        
         function hidePrivacy() {
             if(privacyScreen) privacyScreen.classList.add('hidden');
         }
@@ -1184,7 +1145,6 @@
             }
         }
 
-        // Deteksi background web browser standar
         window.addEventListener('blur', () => {
             showPrivacy();
             autoTriggerCensor(true);
@@ -1200,7 +1160,6 @@
             hidePrivacy();
         });
 
-        // Deteksi khusus iOS / mobile touch gesture
         document.addEventListener('touchcancel', () => {
             showPrivacy();
             autoTriggerCensor(true);
@@ -1213,9 +1172,7 @@
             if (document.visibilityState === "hidden") {
                 showPrivacy();
                 autoTriggerCensor(true);
-                // Jika dokumen/halaman menjadi hidden (di-minimize/layar mati) dan user SUDAH mengatur PIN
                 if (db.pin) {
-                    // Kunci aplikasi dan kembali ke Home Dashboard 
                     initAuth();
                     switchTab('home');
                 }
@@ -1224,9 +1181,6 @@
             }
         });
 
-        // -------------------------------------------------------------
-        // PWA (Progressive Web App) INJECTION - 1 FILE MAGIC
-        // -------------------------------------------------------------
         (function initPWA() {
             const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#a78bfa" rx="100"/><path fill="black" d="M149.33 213.33h42.67v85.34h128v-85.34h42.67v128h-213.34v-128z" /><circle fill="black" cx="256" cy="149.33" r="32"/></svg>`;
             const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
@@ -1288,7 +1242,7 @@
 
         window.onload = function() {
             loadDB();
-            applyTheme(); /* Aplikasikan tema saat pertama dimuat */
+            applyTheme();
             initAuth();
         };
     </script>
