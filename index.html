@@ -93,19 +93,29 @@
         }
         .rotate-y-180-static { transform: rotateY(180deg); }
         .is-flipped { transform: rotateY(180deg); }
+        
+        /* SECURITY: Privacy Mode */
+        body.privacy-active > *:not(#privacy-overlay) {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+        body.privacy-active #privacy-overlay {
+            display: flex !important;
+            visibility: visible !important;
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#3f3f46] transition-colors duration-300">
 
     <!-- ========================================== -->
-    <!-- PRIVACY OVERLAY (RECENT APPS BLUR HIDER)   -->
+    <!-- PRIVACY OVERLAY (RECENT APPS HIDER)        -->
     <!-- ========================================== -->
-    <div id="privacy-overlay" class="fixed inset-0 bg-[#FDF9F1]/80 dark:bg-[#3f3f46]/80 backdrop-blur-xl z-[9999] hidden flex-col items-center justify-center">
+    <div id="privacy-overlay" class="fixed inset-0 bg-[#3f3f46] z-[99999] hidden flex-col items-center justify-center">
         <div class="flex flex-col items-center gap-4">
             <div class="w-16 h-16 bg-[#a78bfa] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal">
                 <i class="fa-solid fa-shield-halved text-3xl text-black"></i>
             </div>
-            <h2 class="text-black dark:text-white font-black text-xl tracking-tighter bg-white/50 dark:bg-black/50 px-4 py-1.5 rounded-xl border-[2px] border-black">Privasi Terjaga</h2>
+            <h2 class="text-white font-black text-xl tracking-tighter bg-black/50 px-4 py-1.5 rounded-xl border-[2px] border-black">Privasi Terjaga</h2>
         </div>
     </div>
 
@@ -1127,35 +1137,15 @@
         }
 
         // =============================================================
-        // SECURITY UPDATE: Recent Apps Blur Overlay & Auto-Lock
+        // SECURITY UPDATE: Privacy Screen (Recent Apps Hider)
         // =============================================================
-        
-        // Memunculkan efek blur saat kehilangan fokus (recent apps)
-        window.addEventListener('blur', () => {
-            privacyOverlay.classList.remove('hidden');
-            privacyOverlay.classList.add('flex');
-        });
-        
-        // Menyembunyikan blur saat kembali masuk
-        window.addEventListener('focus', () => {
-            privacyOverlay.classList.add('hidden');
-            privacyOverlay.classList.remove('flex');
-        });
-        
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === "hidden") {
-                // Instan tampilkan blur untuk tangkapan layar sistem HP
-                privacyOverlay.classList.remove('hidden');
-                privacyOverlay.classList.add('flex');
-                
-                if (db.pin) {
-                    initAuth();
-                    switchTab('home');
-                }
+                // Tampilkan layer privasi HANYA saat aplikasi masuk background
+                document.body.classList.add('privacy-active');
             } else {
-                // Sembunyikan blur saat App kembali aktif ke user
-                privacyOverlay.classList.add('hidden');
-                privacyOverlay.classList.remove('flex');
+                // Hapus layer privasi seketika saat aplikasi aktif lagi
+                document.body.classList.remove('privacy-active');
             }
         });
 
