@@ -155,7 +155,6 @@
         <!-- FITUR BARU: Dark Mode Toggle -->
         <div class="p-4 border-t-[3px] border-black">
             <button id="toggle-dark-mode" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                <!-- Direvisi menjadi dinamis melalui JS -->
                 <span id="theme-text-span" class="flex items-center gap-3"><i class="fa-solid fa-moon"></i> Mode Gelap</span>
                 <div class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative border-[2px] border-black">
                     <div id="dark-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform"></div>
@@ -467,7 +466,7 @@
             saham: [], 
             lastDate: 'Belum ada pembaruan',
             reksaHistory: [],
-            darkMode: false /* Fitur Baru: Status Dark Mode */
+            darkMode: false 
         };
 
         const viewLogin = document.getElementById('login-view');
@@ -557,7 +556,6 @@
             localStorage.setItem('rxGrow_db', JSON.stringify(db));
         }
         
-        /* FITUR BARU: Terapkan Dark Mode di Level Root/HTML dan Update Text Dinamis */
         function applyTheme() {
             const themeTextSpan = document.getElementById('theme-text-span');
             if (db.darkMode) {
@@ -732,7 +730,6 @@
             }
         }
 
-        /* FUNGSI YANG DIREVISI: Memanipulasi lebar bar untuk Chart Money */
         function updatePieChart(totE, totR, totS, totP) {
             const pieE = document.getElementById('pie-emas');
             const pieR = document.getElementById('pie-reksa');
@@ -768,12 +765,10 @@
             pctR.textContent = isCensored ? '••%' : Math.round(pr * 100) + '%';
             pctS.textContent = isCensored ? '••%' : Math.round(ps * 100) + '%';
 
-            // Menerapkan Width untuk Banknote bar secara proporsional
             pieE.style.width = `${pe * 100}%`;
             pieR.style.width = `${pr * 100}%`;
             pieS.style.width = `${ps * 100}%`;
 
-            // Menambah border antar bar jika terlihat (mencegah border menggantung saat nilai 0)
             pieE.style.borderRightWidth = (pe > 0 && (pr > 0 || ps > 0)) ? '2px' : '0px';
             pieR.style.borderRightWidth = (pr > 0 && ps > 0) ? '2px' : '0px';
         }
@@ -1152,6 +1147,18 @@
             fetchGoldPrice(); 
             renderRiwayat();
         }
+
+        // =============================================================
+        // SECURITY UPDATE: Auto-lock when minimized or screen turned off
+        // =============================================================
+        document.addEventListener("visibilitychange", () => {
+            // Jika dokumen/halaman menjadi hidden (di-minimize/layar mati) dan user SUDAH mengatur PIN
+            if (document.visibilityState === "hidden" && db.pin) {
+                // Kunci aplikasi dan kembali ke Home Dashboard 
+                initAuth();
+                switchTab('home');
+            }
+        });
 
         // -------------------------------------------------------------
         // PWA (Progressive Web App) INJECTION - 1 FILE MAGIC
