@@ -98,6 +98,11 @@
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#3f3f46] transition-colors duration-300">
 
     <!-- ========================================== -->
+    <!-- PRIVACY SCREEN (App Switcher / Recent Apps)-->
+    <!-- ========================================== -->
+    <div id="privacy-screen" class="fixed inset-0 bg-black z-[9999] hidden pointer-events-none"></div>
+
+    <!-- ========================================== -->
     <!-- VIEW 1: LOGIN / PIN SCREEN                 -->
     <!-- ========================================== -->
     <div id="login-view" class="fixed inset-0 bg-[#3f3f46] z-50 flex items-center justify-center p-4">
@@ -1150,13 +1155,30 @@
 
         // =============================================================
         // SECURITY UPDATE: Auto-lock when minimized or screen turned off
+        // + PRIVACY SCREEN for Recent Apps / App Switcher
         // =============================================================
+        const privacyScreen = document.getElementById('privacy-screen');
+        
+        // Listen to blur/focus to instantly show black screen in App Switcher (especially iOS)
+        window.addEventListener('blur', () => {
+            privacyScreen.classList.remove('hidden');
+        });
+        
+        window.addEventListener('focus', () => {
+            privacyScreen.classList.add('hidden');
+        });
+
         document.addEventListener("visibilitychange", () => {
-            // Jika dokumen/halaman menjadi hidden (di-minimize/layar mati) dan user SUDAH mengatur PIN
-            if (document.visibilityState === "hidden" && db.pin) {
-                // Kunci aplikasi dan kembali ke Home Dashboard 
-                initAuth();
-                switchTab('home');
+            if (document.visibilityState === "hidden") {
+                privacyScreen.classList.remove('hidden');
+                // Jika dokumen/halaman menjadi hidden (di-minimize/layar mati) dan user SUDAH mengatur PIN
+                if (db.pin) {
+                    // Kunci aplikasi dan kembali ke Home Dashboard 
+                    initAuth();
+                    switchTab('home');
+                }
+            } else {
+                privacyScreen.classList.add('hidden');
             }
         });
 
