@@ -41,7 +41,6 @@
     </script>
 
     <style>
-        /* Exact Grid Constraint - Ensures 100% Pixel Perfect Alignment */
         .card-grid-container {
             display: grid;
             grid-template-rows: 50px 48px 24px 56px 24px 56px;
@@ -87,7 +86,6 @@
         .backface-hidden { 
             backface-visibility: hidden; 
             -webkit-backface-visibility: hidden; 
-            /* Fix iOS mobile text bleeding glitch */
             transform: translateZ(0); 
             -webkit-transform: translateZ(0); 
         }
@@ -638,38 +636,20 @@
         async function fetchGoldPrice() {
             try {
                 txtGoldPrice.textContent = "Load...";
-                const targetUrl = 'https://logamspot.id/harga/emas-galeri-24-1-gram';
-                const proxies = [
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
-                ];
-                let html = null;
-                for (const proxy of proxies) {
-                    try {
-                        const res = await fetch(proxy, { cache: "no-store" });
-                        if (!res.ok) continue;
-                        if (proxy.includes('allorigins')) {
-                            const data = await res.json();
-                            html = data.contents;
-                        } else {
-                            html = await res.text();
-                        }
-                        if (html) break; 
-                    } catch (e) { }
+                const workerUrl = 'https://orange-dew-0bc6.m4hfud-backup.workers.dev/';
+                
+                const res = await fetch(workerUrl, { cache: "no-store" });
+                if (!res.ok) throw new Error("Gagal mengambil data dari worker");
+                
+                const data = await res.json();
+                if (data && data.price && !isNaN(data.price)) {
+                    HARGA_BUYBACK_EMAS = data.price;
                 }
-
-                if (html) {
-                    const match = html.match(/Buyback[\s\S]{0,120}?Rp\s*([\d,.]+)/i) || html.match(/Rp\s*([\d,.]+)/i);
-                    if (match && match[1]) {
-                        const parsed = parseInt(match[1].replace(/\./g, ''), 10);
-                        if (!isNaN(parsed) && parsed > 1000000) {
-                            HARGA_BUYBACK_EMAS = parsed;
-                        }
-                    }
-                }
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                console.error("Error fetching gold price:", e); 
+            }
             
-            if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2375000; 
+            if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2367000; 
             txtGoldPrice.textContent = `Rp ${HARGA_BUYBACK_EMAS.toLocaleString('id-ID')} /g`;
             calculateTotals();
         }
