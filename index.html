@@ -1155,22 +1155,33 @@
 
         // =============================================================
         // SECURITY UPDATE: Auto-lock when minimized or screen turned off
-        // + PRIVACY SCREEN for Recent Apps / App Switcher
+        // + PRIVACY SCREEN for App Switcher (Safari & Standalone PWA)
         // =============================================================
         const privacyScreen = document.getElementById('privacy-screen');
         
-        // Listen to blur/focus to instantly show black screen in App Switcher (especially iOS)
-        window.addEventListener('blur', () => {
-            privacyScreen.classList.remove('hidden');
-        });
+        function showPrivacy() {
+            if(privacyScreen) privacyScreen.classList.remove('hidden');
+        }
         
-        window.addEventListener('focus', () => {
-            privacyScreen.classList.add('hidden');
-        });
+        function hidePrivacy() {
+            if(privacyScreen) privacyScreen.classList.add('hidden');
+        }
+
+        // Deteksi background web browser standar
+        window.addEventListener('blur', showPrivacy);
+        window.addEventListener('focus', hidePrivacy);
+        window.addEventListener('pagehide', showPrivacy);
+        window.addEventListener('pageshow', hidePrivacy);
+
+        // TRICK KHUSUS: Deteksi agresif untuk iOS Standalone PWA (Homescreen)
+        // iOS akan men-trigger 'touchcancel' seketika saat user menggeser home bar ke atas (masuk Recent Apps).
+        // Ini adalah momen terbaik mendahului sistem snapshot iOS sebelum merender recent app.
+        document.addEventListener('touchcancel', showPrivacy);
+        document.addEventListener('touchstart', hidePrivacy, {passive: true});
 
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === "hidden") {
-                privacyScreen.classList.remove('hidden');
+                showPrivacy();
                 // Jika dokumen/halaman menjadi hidden (di-minimize/layar mati) dan user SUDAH mengatur PIN
                 if (db.pin) {
                     // Kunci aplikasi dan kembali ke Home Dashboard 
@@ -1178,7 +1189,7 @@
                     switchTab('home');
                 }
             } else {
-                privacyScreen.classList.add('hidden');
+                hidePrivacy();
             }
         });
 
