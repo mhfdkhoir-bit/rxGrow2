@@ -105,16 +105,13 @@
     <!-- ========================================== -->
     <div id="login-view" class="fixed inset-0 bg-[#3f3f46] z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-[360px] bg-[#52525b] border-[3px] border-black shadow-brutal rounded-2xl p-6 flex flex-col items-center gap-5">
-            
             <div class="w-14 h-14 bg-[#a78bfa] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm">
                 <i class="fa-solid fa-lock text-xl text-black"></i>
             </div>
-
             <div class="text-center">
                 <h2 id="login-title" class="text-white font-bold text-2xl mb-1">Buat PIN Baru</h2>
                 <p id="login-subtitle" class="text-gray-400 text-sm font-medium">Tentukan 4 digit angka untuk mengunci aset</p>
             </div>
-
             <div class="w-full relative">
                 <input type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="••••"
                     class="w-full bg-[#71717a] text-white border-[3px] border-black shadow-brutal-sm rounded-xl text-center font-bold text-3xl py-3 tracking-[0.5em] outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all">
@@ -122,13 +119,10 @@
                     <i class="fa-solid fa-eye-slash text-lg"></i>
                 </button>
             </div>
-
             <p id="pin-error" class="text-[#fca5a5] text-xs font-bold h-4 text-center w-full mt-1"></p>
-
             <button id="login-btn" class="w-full bg-[#a78bfa] text-black border-[3px] border-black shadow-brutal-sm rounded-xl font-bold text-base py-3 mt-1 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 Simpan PIN & Masuk
             </button>
-
             <button id="reset-pin-link" class="hidden text-gray-400 hover:text-white text-xs font-semibold underline underline-offset-2 mt-2">
                 Lupa PIN? Reset Sekarang
             </button>
@@ -153,6 +147,17 @@
             <button id="nav-riwayat" class="w-full bg-[#FBCFE8] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Reksadana
             </button>
+            
+            <!-- EXPORT & IMPORT DATA SECTION -->
+            <div class="flex flex-col gap-3 mt-auto pt-4 border-t-[3px] border-black/20 dark:border-white/20">
+                <button id="export-data-btn" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                    <i class="fa-solid fa-download"></i> Export Data
+                </button>
+                <button id="import-data-btn" class="w-full bg-[#A7F3D0] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                    <i class="fa-solid fa-upload"></i> Import Data
+                </button>
+                <input type="file" id="import-file-input" accept=".json" class="hidden">
+            </div>
         </div>
         
         <!-- Dark Mode Toggle -->
@@ -187,16 +192,23 @@
                         </div>
                     </div>
                 </div>
-                <button id="lock-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1.5 font-bold text-xs flex items-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                    <i class="fa-solid fa-lock"></i> Kunci
-                </button>
+                
+                <div class="flex items-center gap-2">
+                    <!-- Tombol Sync/Refresh All Baru -->
+                    <button id="sync-all-btn" class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Refresh Harga">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                    <!-- Tombol Kunci -->
+                    <button id="lock-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg h-10 px-3 font-bold text-xs flex items-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                        <i class="fa-solid fa-lock"></i> Kunci
+                    </button>
+                </div>
             </div>
 
             <!-- ======================= -->
             <!-- TAB 1: HOME (DASHBOARD) -->
             <!-- ======================= -->
             <div id="home-tab" class="flex flex-col gap-5 tab-active">
-                
                 <!-- TOP CARD (FLIP CONTAINER) -->
                 <div id="grand-total-container" class="perspective-1000 w-full mt-2 cursor-pointer group">
                     <div id="grand-total-flipper" class="relative transition-transform duration-700 transform-style-3d w-full">
@@ -215,10 +227,9 @@
 
                         <!-- BACK FACE: ASSET ALLOCATION (MONEY CHART) -->
                         <div class="absolute inset-0 backface-hidden z-[1] rotate-y-180-static bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black rounded-2xl p-3 shadow-brutal-flipped flex items-center justify-center w-full h-full">
-                            
                             <!-- INNER WRAPPER TO CENTER CONTENT -->
                             <div class="flex items-center justify-center w-full max-w-[280px]">
-                                <!-- CHART CONTAINER (MONEY SHAPE) -->
+                                <!-- CHART CONTAINER -->
                                 <div class="w-1/2 flex justify-end items-center pr-3.5">
                                     <div class="relative w-[95px] h-[60px] bg-[#bbf7d0] border-[3px] border-black rounded-md shadow-brutal-sm-flipped flex flex-col p-1 overflow-hidden shrink-0">
                                         <div class="w-full h-full border-[2px] border-black rounded-[2px] flex relative overflow-hidden bg-white">
@@ -267,13 +278,11 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 w-full items-start">
-                    
                     <!-- EMAS -->
                     <div class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal rounded-2xl p-3">
                         <div class="card-grid-container">
@@ -340,7 +349,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="text-left text-[11px] font-bold px-1 text-black/80 dark:text-white/80 mt-1">
@@ -435,6 +443,23 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- CUSTOM CONFIRMATION MODAL (Hapus Data)     -->
+    <!-- ========================================== -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black/60 z-[90] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="confirm-card">
+            <div class="w-12 h-12 bg-[#f87171] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm mx-auto">
+                <i class="fa-solid fa-triangle-exclamation text-xl text-black"></i>
+            </div>
+            <h3 id="confirm-title" class="font-black text-xl text-center leading-tight">Hapus Data?</h3>
+            <p id="confirm-desc" class="text-sm text-center font-semibold text-gray-600 dark:text-gray-300">Data yang dihapus tidak dapat dikembalikan.</p>
+            <div class="flex gap-3 mt-2">
+                <button id="cancel-confirm-btn" class="flex-1 bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">Batal</button>
+                <button id="execute-confirm-btn" class="flex-1 bg-[#f87171] text-black border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">Hapus</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let HARGA_BUYBACK_EMAS = 0; 
         let isCensored = false; 
@@ -460,6 +485,7 @@
         const btnTogglePin = document.getElementById('toggle-pin-btn');
         const pinError = document.getElementById('pin-error');
         const lockBtn = document.getElementById('lock-btn');
+        const syncAllBtn = document.getElementById('sync-all-btn');
 
         const inEmas = document.getElementById('emas-gram');
         const txtEmasTot = document.getElementById('emas-total');
@@ -494,6 +520,10 @@
         const navRiwayat = document.getElementById('nav-riwayat');
         const tbodyRiwayat = document.getElementById('riwayat-tbody');
 
+        const btnExportData = document.getElementById('export-data-btn');
+        const btnImportData = document.getElementById('import-data-btn');
+        const importFileInput = document.getElementById('import-file-input');
+
         const modalEdit = document.getElementById('edit-history-modal');
         const cardEdit = document.getElementById('edit-history-card');
         const inputEdit = document.getElementById('edit-history-input');
@@ -501,6 +531,14 @@
         const btnSaveEdit = document.getElementById('save-edit-btn');
         let currentEditIdx = -1;
         
+        const modalConfirm = document.getElementById('confirm-modal');
+        const cardConfirm = document.getElementById('confirm-card');
+        const titleConfirm = document.getElementById('confirm-title');
+        const descConfirm = document.getElementById('confirm-desc');
+        const btnCancelConfirm = document.getElementById('cancel-confirm-btn');
+        const btnExecuteConfirm = document.getElementById('execute-confirm-btn');
+        let confirmAction = null;
+
         const btnToggleDarkMode = document.getElementById('toggle-dark-mode');
         const darkToggleIndicator = document.getElementById('dark-toggle-indicator');
 
@@ -686,6 +724,34 @@
             }
         }
 
+        syncAllBtn.addEventListener('click', async () => {
+            const icon = syncAllBtn.querySelector('i');
+            icon.classList.add('fa-spin');
+            
+            try {
+                // Fetch Emas
+                await fetchGoldPrice();
+                
+                // Fetch Saham
+                const promises = db.saham.map((s, idx) => {
+                    if (s.kode) return fetchStockPrice(s.kode, idx);
+                    return Promise.resolve();
+                });
+                await Promise.all(promises);
+                
+                // Update timestamp for feedback
+                db.lastDate = generateDateString();
+                txtUpdate.textContent = db.lastDate;
+                saveDB();
+
+            } catch (err) {
+                console.error("Error syncing data:", err);
+            } finally {
+                icon.classList.remove('fa-spin');
+                calculateTotals();
+            }
+        });
+
         function updatePieChart(totE, totR, totS, totP) {
             const pieE = document.getElementById('pie-emas');
             const pieR = document.getElementById('pie-reksa');
@@ -804,6 +870,51 @@
         navHome.addEventListener('click', () => switchTab('home'));
         navRiwayat.addEventListener('click', () => switchTab('riwayat'));
 
+        // Fitur Export Data
+        btnExportData.addEventListener('click', () => {
+            const dataStr = JSON.stringify(db, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rxGrow_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toggleSidebar(false);
+        });
+
+        // Fitur Import Data
+        btnImportData.addEventListener('click', () => {
+            importFileInput.click();
+        });
+        
+        importFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const importedDb = JSON.parse(ev.target.result);
+                    if (importedDb && typeof importedDb === 'object') {
+                        db = { ...db, ...importedDb };
+                        saveDB();
+                        initDashboard();
+                        applyTheme();
+                        toggleSidebar(false);
+                        // Refresh UI updates immediately
+                        calculateTotals();
+                        renderRiwayat();
+                    }
+                } catch(err) {
+                    console.error('Import failed', err);
+                }
+                importFileInput.value = ''; // Reset
+            };
+            reader.readAsText(file);
+        });
+
         flipContainer.addEventListener('click', () => {
             flipper.classList.toggle('is-flipped');
         });
@@ -873,21 +984,52 @@
             }
         });
 
+        // Helper function for custom confirmation modal
+        function showConfirmModal(title, desc, onConfirm) {
+            titleConfirm.textContent = title;
+            descConfirm.textContent = desc;
+            confirmAction = onConfirm;
+            modalConfirm.classList.remove('hidden');
+            modalConfirm.classList.add('flex');
+            requestAnimationFrame(() => {
+                modalConfirm.classList.remove('opacity-0');
+                cardConfirm.classList.remove('scale-95');
+            });
+        }
+
+        function closeConfirmModal() {
+            modalConfirm.classList.add('opacity-0');
+            cardConfirm.classList.add('scale-95');
+            setTimeout(() => {
+                modalConfirm.classList.add('hidden');
+                modalConfirm.classList.remove('flex');
+                confirmAction = null;
+            }, 300);
+        }
+
+        btnCancelConfirm.addEventListener('click', closeConfirmModal);
+        btnExecuteConfirm.addEventListener('click', () => {
+            if (confirmAction) confirmAction();
+            closeConfirmModal();
+        });
+
         tbodyRiwayat.addEventListener('click', (e) => {
             const btnEdit = e.target.closest('button[data-action="edit-riwayat"]');
             const btnDelete = e.target.closest('button[data-action="delete-riwayat"]');
             if (btnDelete) {
                 const idx = parseInt(btnDelete.dataset.index);
-                db.reksaHistory.splice(idx, 1);
-                recalculateHistoryGrowths();
-                if (idx === 0) {
-                    const latestProfit = db.reksaHistory.length > 0 ? db.reksaHistory[0].profit : 0;
-                    db.reksaProfit = latestProfit;
-                    inRekProfit.value = latestProfit > 0 ? 'Rp ' + latestProfit.toLocaleString('id-ID') : '';
-                    calculateTotals();
-                }
-                saveDB();
-                renderRiwayat();
+                showConfirmModal("Hapus Riwayat?", "Riwayat reksadana ini akan dihapus permanen.", () => {
+                    db.reksaHistory.splice(idx, 1);
+                    recalculateHistoryGrowths();
+                    if (idx === 0) {
+                        const latestProfit = db.reksaHistory.length > 0 ? db.reksaHistory[0].profit : 0;
+                        db.reksaProfit = latestProfit;
+                        inRekProfit.value = latestProfit > 0 ? 'Rp ' + latestProfit.toLocaleString('id-ID') : '';
+                        calculateTotals();
+                    }
+                    saveDB();
+                    renderRiwayat();
+                });
             } else if (btnEdit) {
                 currentEditIdx = parseInt(btnEdit.dataset.index);
                 const rawProfit = db.reksaHistory[currentEditIdx].profit;
@@ -1044,6 +1186,16 @@
             saveDB();
             renderSahamList();
             calculateTotals();
+            
+            // Auto-focus logic ke form yang paling baru
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('input[data-field="kode"]');
+                if (inputs.length > 0) {
+                    const lastInput = inputs[inputs.length - 1];
+                    lastInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    lastInput.focus();
+                }
+            }, 100);
         });
 
         listSaham.addEventListener('input', (e) => {
@@ -1079,10 +1231,14 @@
             const btn = e.target.closest('button[data-action="delete"]');
             if (!btn) return;
             const idx = btn.dataset.index;
-            db.saham.splice(idx, 1);
-            saveDB();
-            renderSahamList();
-            calculateTotals();
+            const namaSaham = db.saham[idx].kode || "Saham ini";
+            
+            showConfirmModal("Hapus Saham?", `Data portofolio ${namaSaham} akan dihapus secara permanen.`, () => {
+                db.saham.splice(idx, 1);
+                saveDB();
+                renderSahamList();
+                calculateTotals();
+            });
         });
 
         function initDashboard() {
