@@ -171,10 +171,12 @@
         <div class="p-4 border-t-[3px] border-black flex flex-col gap-3 shrink-0">
             <!-- Biometric Toggle -->
             <div id="biometric-setting-container" class="w-full">
-                <button id="toggle-biometric" class="w-full bg-[#bae6fd] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <!-- Changed background from bg-[#bae6fd] to Neo-Brutalist soft orange/peach #FED7AA for aesthetic contrast -->
+                <button id="toggle-biometric" class="w-full bg-[#FED7AA] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
                     <span class="flex items-center gap-3"><i class="fa-solid fa-face-viewfinder"></i> Face ID</span>
-                    <div class="w-10 h-5 bg-gray-300 rounded-full relative border-[2px] border-black">
-                        <div id="biometric-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform"></div>
+                    <!-- Toggle track with distinct background colors for ON/OFF -->
+                    <div id="biometric-toggle-track" class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative border-[2px] border-black transition-colors duration-300">
+                        <div id="biometric-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform duration-300 shadow-sm"></div>
                     </div>
                 </button>
                 <p id="biometric-msg" class="text-[10px] font-bold mt-1 text-center hidden"></p>
@@ -507,6 +509,7 @@
         const btnBiometricLogin = document.getElementById('biometric-login-btn');
         const toggleBiometricBtn = document.getElementById('toggle-biometric');
         const biometricIndicator = document.getElementById('biometric-toggle-indicator');
+        const biometricToggleTrack = document.getElementById('biometric-toggle-track');
         const biometricContainer = document.getElementById('biometric-setting-container');
         const biometricMsg = document.getElementById('biometric-msg');
 
@@ -649,10 +652,12 @@
         function applyBiometricTheme() {
             if (db.biometricEnabled) {
                 biometricIndicator.classList.add('translate-x-[20px]');
-                toggleBiometricBtn.classList.replace('bg-[#bae6fd]', 'bg-[#86efac]'); 
+                biometricToggleTrack.classList.remove('bg-gray-300', 'dark:bg-gray-600');
+                biometricToggleTrack.classList.add('bg-[#86efac]'); // Vivid green when active
             } else {
                 biometricIndicator.classList.remove('translate-x-[20px]');
-                toggleBiometricBtn.classList.replace('bg-[#86efac]', 'bg-[#bae6fd]'); 
+                biometricToggleTrack.classList.remove('bg-[#86efac]');
+                biometricToggleTrack.classList.add('bg-gray-300', 'dark:bg-gray-600'); // Neutral gray when inactive
             }
         }
 
