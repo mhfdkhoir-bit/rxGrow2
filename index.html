@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- PWA / Homescreen Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -96,12 +96,6 @@
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#3f3f46] transition-colors duration-300">
 
     <!-- ========================================== -->
-    <!-- iOS PWA STATUS BAR FIX (Anti-Bug & Override) -->
-    <!-- Blok warna absolut ini memastikan status bar tidak pernah digelapkan oleh overlay -->
-    <!-- ========================================== -->
-    <div id="ios-status-bar" class="fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] bg-[#FDF9F1] dark:bg-[#3f3f46] z-[9990] transition-colors duration-300 pointer-events-none"></div>
-
-    <!-- ========================================== -->
     <!-- PRIVACY SCREEN (App Switcher / Recent Apps)-->
     <!-- ========================================== -->
     <div id="privacy-screen" class="fixed inset-0 bg-black z-[9999] hidden pointer-events-none"></div>
@@ -109,8 +103,8 @@
     <!-- ========================================== -->
     <!-- VIEW 1: LOGIN / PIN SCREEN                 -->
     <!-- ========================================== -->
-    <!-- Login View ditambahkan padding aman atas agar konten tidak tertutup status bar fix -->
-    <div id="login-view" class="fixed inset-0 bg-[#FDF9F1] dark:bg-[#3f3f46] z-50 flex items-center justify-center p-4 pt-[calc(env(safe-area-inset-top,0px)+1rem)] transition-colors duration-300">
+    <!-- Login View diperbarui agar mengikuti tema light/dark keseluruhan website -->
+    <div id="login-view" class="fixed inset-0 bg-[#FDF9F1] dark:bg-[#3f3f46] z-50 flex items-center justify-center p-4 transition-colors duration-300">
         <div class="w-full max-w-[360px] bg-white dark:bg-[#52525b] border-[3px] border-black shadow-brutal rounded-2xl p-6 flex flex-col items-center gap-5 transition-colors duration-300">
             <div class="w-14 h-14 bg-[#a78bfa] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm">
                 <i class="fa-solid fa-lock text-xl text-black"></i>
@@ -146,9 +140,8 @@
     <!-- ========================================== -->
     <!-- SIDEBAR MENU & OVERLAY                     -->
     <!-- ========================================== -->
-    <!-- Sidebar Overlay & Container diatur agar berhenti di bawah area poni/status bar -->
-    <div id="sidebar-overlay" class="fixed inset-x-0 bottom-0 top-[env(safe-area-inset-top,0px)] bg-black/60 z-[65] hidden opacity-0 transition-opacity duration-300"></div>
-    <div id="sidebar" class="fixed left-0 bottom-0 top-[env(safe-area-inset-top,0px)] w-[260px] bg-[#FDF9F1] dark:bg-[#52525b] dark:text-white border-r-[3px] border-black shadow-[4px_0_0_0_#000] z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col overflow-y-auto">
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-[65] hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="sidebar" class="fixed top-0 left-0 w-[260px] h-full bg-[#FDF9F1] dark:bg-[#52525b] dark:text-white border-r-[3px] border-black shadow-[4px_0_0_0_#000] z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col overflow-y-auto">
         <div class="p-4 border-b-[3px] border-black flex justify-between items-center bg-[#e9d5ff] text-black shrink-0">
             <h2 class="font-black text-xl italic tracking-tighter">rxGrow <span class="text-xs font-bold not-italic">Menu</span></h2>
             <button id="close-sidebar-btn" class="w-8 h-8 bg-white dark:bg-[#71717a] dark:text-white border-[2px] border-black rounded flex items-center justify-center shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all">
@@ -162,20 +155,20 @@
             <button id="nav-riwayat" class="w-full bg-[#FBCFE8] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Reksadana
             </button>
-            
-            <!-- EXPORT & IMPORT DATA SECTION -->
-            <div class="flex flex-col gap-3 mt-auto border-t-[3px] border-black pt-4">
-                <div class="px-1 mb-[-4px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Backup & Restore</h3>
-                </div>
-                <button id="export-data-btn" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                    <i class="fa-solid fa-upload"></i> Export Data
-                </button>
-                <button id="import-data-btn" class="w-full bg-[#A7F3D0] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                    <i class="fa-solid fa-download"></i> Import Data
-                </button>
-                <input type="file" id="import-file-input" accept=".json" class="hidden">
+        </div>
+        
+        <!-- EXPORT & IMPORT DATA SECTION -->
+        <div class="p-4 border-t-[3px] border-black flex flex-col gap-3 shrink-0">
+            <div class="px-1 mb-[-4px]">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Backup & Restore</h3>
             </div>
+            <button id="export-data-btn" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-upload"></i> Export Data
+            </button>
+            <button id="import-data-btn" class="w-full bg-[#A7F3D0] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-download"></i> Import Data
+            </button>
+            <input type="file" id="import-file-input" accept=".json" class="hidden">
         </div>
         
         <!-- Setting Toggles -->
@@ -209,7 +202,7 @@
     <!-- ========================================== -->
     <!-- VIEW 2: DASHBOARD SCREEN                   -->
     <!-- ========================================== -->
-    <div id="dashboard-view" class="hidden min-h-screen bg-[#FDF9F1] dark:bg-[#3f3f46] pt-[env(safe-area-inset-top,0px)] pb-10 transition-colors duration-300">
+    <div id="dashboard-view" class="hidden min-h-screen bg-[#FDF9F1] dark:bg-[#3f3f46] pb-10 transition-colors duration-300">
         <div class="w-full max-w-[500px] mx-auto p-4 flex flex-col gap-5">
             
             <!-- HEADER -->
@@ -232,6 +225,7 @@
                     <button id="sync-all-btn" class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Refresh Harga">
                         <i class="fa-solid fa-rotate"></i>
                     </button>
+                    <!-- Tampilan Kunci disesuaikan: Hanya icon, neo brutalism, ukuran w-10 h-10 -->
                     <button id="lock-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Kunci Aplikasi">
                         <i class="fa-solid fa-lock"></i>
                     </button>
@@ -459,9 +453,8 @@
 
     <!-- ========================================== -->
     <!-- EDIT HISTORY MODAL                         -->
-    <!-- Modals juga diatur agar berhenti di bawah area poni -->
     <!-- ========================================== -->
-    <div id="edit-history-modal" class="fixed inset-x-0 bottom-0 top-[env(safe-area-inset-top,0px)] bg-black/60 z-[80] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div id="edit-history-modal" class="fixed inset-0 bg-black/60 z-[80] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="edit-history-card">
             <h3 class="font-black text-lg text-center">Edit Keuntungan</h3>
             <div class="relative w-full">
@@ -477,7 +470,7 @@
     <!-- ========================================== -->
     <!-- CUSTOM CONFIRMATION MODAL (Hapus Data)     -->
     <!-- ========================================== -->
-    <div id="confirm-modal" class="fixed inset-x-0 bottom-0 top-[env(safe-area-inset-top,0px)] bg-black/60 z-[90] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div id="confirm-modal" class="fixed inset-0 bg-black/60 z-[90] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="confirm-card">
             <div class="w-12 h-12 bg-[#f87171] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm mx-auto">
                 <i class="fa-solid fa-triangle-exclamation text-xl text-black"></i>
@@ -504,8 +497,8 @@
             lastDate: 'Belum ada pembaruan',
             reksaHistory: [],
             darkMode: false,
-            biometricEnabled: false, 
-            credentialId: null       
+            biometricEnabled: false, // Flag for Face ID / Fingerprint
+            credentialId: null       // WebAuthn Passkey ID
         };
 
         const viewLogin = document.getElementById('login-view');
@@ -624,7 +617,7 @@
                 document.documentElement.classList.add('dark');
                 darkToggleIndicator.classList.add('translate-x-[20px]');
                 darkToggleTrack.classList.remove('bg-gray-300', 'dark:bg-gray-600');
-                darkToggleTrack.classList.add('bg-[#86efac]'); 
+                darkToggleTrack.classList.add('bg-[#86efac]'); // Warna hijau saat aktif (sama dengan Face ID)
                 if (themeTextSpan) {
                     themeTextSpan.innerHTML = '<i class="fa-solid fa-sun text-[#FFE268]"></i> Mode Terang';
                 }
@@ -633,7 +626,7 @@
                 document.documentElement.classList.remove('dark');
                 darkToggleIndicator.classList.remove('translate-x-[20px]');
                 darkToggleTrack.classList.remove('bg-[#86efac]');
-                darkToggleTrack.classList.add('bg-gray-300', 'dark:bg-gray-600'); 
+                darkToggleTrack.classList.add('bg-gray-300', 'dark:bg-gray-600'); // Warna abu-abu saat non-aktif
                 if (themeTextSpan) {
                     themeTextSpan.innerHTML = '<i class="fa-solid fa-moon"></i> Mode Gelap';
                 }
@@ -1053,7 +1046,7 @@
                 calculateTotals();
             } else if (tabName === 'riwayat') {
                 tabRiwayat.classList.remove('hidden');
-                tabRiwayat.add('flex');
+                tabRiwayat.classList.add('flex');
                 tabHome.classList.add('hidden');
                 tabHome.classList.remove('flex');
                 void tabRiwayat.offsetWidth;
