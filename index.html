@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="rxGrow">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#FDF9F1">
+    <meta id="meta-theme-color" name="theme-color" content="#FDF9F1">
     
     <title>rxGrow - Finance Tracker</title>
 
@@ -155,20 +155,20 @@
             <button id="nav-riwayat" class="w-full bg-[#FBCFE8] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Reksadana
             </button>
-            
-            <!-- EXPORT & IMPORT DATA SECTION -->
-            <div class="flex flex-col gap-3 mt-auto pt-4 border-t-[3px] border-black/20 dark:border-white/20">
-                <div class="px-1 mb-[-4px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Backup & Restore</h3>
-                </div>
-                <button id="export-data-btn" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                    <i class="fa-solid fa-upload"></i> Export Data
-                </button>
-                <button id="import-data-btn" class="w-full bg-[#A7F3D0] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                    <i class="fa-solid fa-download"></i> Import Data
-                </button>
-                <input type="file" id="import-file-input" accept=".json" class="hidden">
+        </div>
+        
+        <!-- EXPORT & IMPORT DATA SECTION -->
+        <div class="p-4 border-t-[3px] border-black flex flex-col gap-3 shrink-0">
+            <div class="px-1 mb-[-4px]">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Backup & Restore</h3>
             </div>
+            <button id="export-data-btn" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-upload"></i> Export Data
+            </button>
+            <button id="import-data-btn" class="w-full bg-[#A7F3D0] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-download"></i> Import Data
+            </button>
+            <input type="file" id="import-file-input" accept=".json" class="hidden">
         </div>
         
         <!-- Setting Toggles -->
@@ -612,6 +612,7 @@
         
         function applyTheme() {
             const themeTextSpan = document.getElementById('theme-text-span');
+            const metaThemeColor = document.getElementById('meta-theme-color');
             if (db.darkMode) {
                 document.documentElement.classList.add('dark');
                 darkToggleIndicator.classList.add('translate-x-[20px]');
@@ -620,6 +621,7 @@
                 if (themeTextSpan) {
                     themeTextSpan.innerHTML = '<i class="fa-solid fa-sun text-[#FFE268]"></i> Mode Terang';
                 }
+                if (metaThemeColor) metaThemeColor.setAttribute('content', '#3f3f46');
             } else {
                 document.documentElement.classList.remove('dark');
                 darkToggleIndicator.classList.remove('translate-x-[20px]');
@@ -628,6 +630,7 @@
                 if (themeTextSpan) {
                     themeTextSpan.innerHTML = '<i class="fa-solid fa-moon"></i> Mode Gelap';
                 }
+                if (metaThemeColor) metaThemeColor.setAttribute('content', '#FDF9F1');
             }
         }
         
