@@ -1364,7 +1364,8 @@
             const pnl = (harga - avg) * lot * 100;
 
             const totEl = document.getElementById(`saham-tot-${idx}`);
-            if(totEl) totEl.textContent = isCensored ? '••••••' : formatRp(lot * 100 * harga);
+            // REVISI: Mengubah perhitungan menjadi lot x 100 x avg
+            if(totEl) totEl.textContent = isCensored ? '••••••' : formatRp(lot * 100 * avg);
 
             const pnlEl = document.getElementById(`saham-pnl-${idx}`);
             if(pnlEl) {
@@ -1423,9 +1424,10 @@
                                 <span class="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400">Unrealized PnL</span>
                                 <span id="saham-pnl-${idx}" class="text-sm font-black ${isCensored ? 'text-gray-500' : (pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}">${isCensored ? '••••••' : (pnl > 0 ? '+' : '') + formatRp(pnl)}</span>
                             </div>
+                            <!-- REVISI: Teks menjadi MODAL dan kalkulasi menjadi lot x 100 x avgFloat -->
                             <div class="flex flex-col items-end">
-                                <span class="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400">Market Value</span>
-                                <span id="saham-tot-${idx}" class="text-sm font-black text-blue-600 dark:text-blue-400">${isCensored ? '••••••' : formatRp(lot * 100 * harga)}</span>
+                                <span class="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400">MODAL</span>
+                                <span id="saham-tot-${idx}" class="text-sm font-black text-blue-600 dark:text-blue-400">${isCensored ? '••••••' : formatRp(lot * 100 * avgFloat)}</span>
                             </div>
                         </div>
                     </div>
