@@ -533,15 +533,15 @@
     <!-- EASTER EGG MODAL                           -->
     <!-- ========================================== -->
     <div id="easter-egg-modal" class="fixed left-0 right-0 bottom-0 bg-black/60 z-[100] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" style="top: env(safe-area-inset-top, 0px);">
-        <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-6 flex flex-col gap-4 relative opacity-0" id="easter-egg-card">
-            <button id="close-easter-egg-btn" class="absolute -top-3 -right-3 w-8 h-8 bg-[#f87171] border-[3px] border-black rounded-full flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all z-10">
-                <i class="fa-solid fa-times pointer-events-none"></i>
+        <div class="relative w-full max-w-[320px] bg-[#c4b5fd] dark:bg-[#6ee7b7] text-black border-[3px] border-black shadow-brutal rounded-2xl p-6 flex flex-col gap-4 opacity-0 transition-colors duration-300" id="easter-egg-card">
+            <button id="close-easter-egg" class="absolute -top-3 -right-3 w-8 h-8 bg-white border-[3px] border-black rounded-full flex justify-center items-center text-black shadow-brutal-sm z-10 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-times text-sm pointer-events-none"></i>
             </button>
-            <div class="w-12 h-12 bg-[#FFE268] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm mx-auto">
-                <i class="fa-solid fa-gem text-xl text-black"></i>
+            <div class="flex items-center gap-3 border-b-[3px] border-black pb-3">
+                <i class="fa-solid fa-face-grin-squint-tears text-2xl"></i>
+                <h3 class="font-black text-lg uppercase tracking-wider leading-none pt-1">Realita Porto</h3>
             </div>
-            <h3 class="font-black text-xl text-center leading-tight">Nasehat Suhu</h3>
-            <p id="easter-egg-quote" class="text-sm text-center font-bold text-gray-700 dark:text-gray-300 italic px-2"></p>
+            <p id="easter-egg-text" class="text-sm font-bold text-center italic mt-1 min-h-[60px] flex items-center justify-center"></p>
         </div>
     </div>
 
@@ -1607,56 +1607,56 @@
         // EASTER EGG LOGIC
         // ========================================== //
         const sarcasticQuotes = [
-            "Liat porto merah terus? Itu portofolio apa rapor anak SD? Ayo top up lagi mumpung harga lagi diskon, jangan jajan boba mulu.",
-            "Kamu bangga emasmu udah nambah 1 gram? Bagus. Lanjutin. Kapan jadi sekilo kalau nambahnya tiap tahun kabisat doang?",
-            "Nunggu harga saham di pucuk baru berani beli? Pantesan unrealized PnL kamu minus mulu. Belajar averaging down, bos!",
-            "Reksadanamu tumbuhnya lebih lambat dari tanaman hias di teras. Jangan di-pause top up-nya, katanya mau pensiun muda?",
-            "Kamu kira saldo reksadana bisa auto-nambah kalau di-refresh tiap 5 menit? Top up woy, bukan di-refresh doang!",
-            "Beli saham gorengan ngarep cuan instan. Pas nyangkut pura-pura jadi investor jangka panjang. Mending nambah lot saham bluechip deh.",
-            "Hebat banget, grafik portomu konsisten... konsisten nyungsep. Jangan nangis, ini waktunya kamu nyerok, bukan nyerah!",
-            "Emasnya disimpen doang dipandangin tiap malam? Tambahin dong gramnya, biar ntar pas nikah nggak minjem cincin tetangga.",
-            "Unrealized PnL masih minus aja belagu mau healing. Healing tuh kalau portomu udah ijo semua, sekarang mah mending puasa jajan.",
-            "Udah tau market lagi crash, malah sibuk check out keranjang oren. Duitnya dipake buat averaging down sahammu yang nyangkut itu lho!",
-            "Kamu nyebut diri kamu investor, tapi ngeliat reksadana minus 1% aja langsung panik keringetan. Tambah saldonya, biar cepet balik modal!",
-            "Asetmu cuma emas segram? Terus mimpinya beli rumah gedongan? Ayo dong kurangin ngopinya, tambahin belinya.",
-            "Kalau kamu lebih rajin ngecek promo diskon daripada ngecek fundamental saham yang kamu beli, ya wajar kalau portomu isinya air mata.",
-            "Nabung emas itu bagus, tapi kalau belinya pas inget doang, kapan kayanya? Rutinin dong, masa kalah sama cicilan paylater.",
-            "Tuh liat reksadanamu, untungnya cuma cukup buat beli cilok. Ayo lipat gandakan modalnya, biar untungnya bisa buat beli pabrik cilok sekalian.",
-            "Jangan bangga dulu sahammu ijo dikit, itu belum seberapa dibanding inflasi tahunan. Tambah lagi lot-nya biar cuannya kerasa!",
-            "Averaging down itu butuh modal, bukan butuh doa doang. Gimana mau average down kalau sisa gajimu cuma tinggal debu?",
-            "Kamu pikir Warren Buffett bisa kaya raya cuma dengan modal rebahan nunggu keajaiban? Buka aplikasi, top up sekarang juga.",
-            "Reksadanamu lagi merah? Berarti lagi promo! Beli lagi dong, masa baju diskonan diborong tapi reksadana diskon malah dianggurin.",
-            "Lot saham masih satuan aja gayanya udah kayak bandar. Tambah dong modalnya, biar kalau RUPS kamu diakuin keberadaannya.",
-            "Emas tuh harganya naik turun, kayak mood bosmu. Makanya rajin nabung pas lagi turun, jangan pas di pucuk baru FOMO.",
-            "Mau PnL-mu balik ijo? Ya kuncinya sabar dan tambah modal, bukan malah buka tutup aplikasi sambil komat-kamit.",
-            "Kamu berharap keajaiban datang biar porto sahammu yang nyangkut tiba-tiba meroket? Keajaiban itu namanya 'Top Up Dana'.",
-            "Gimana reksadanamu mau compounding kalau tiap cuan dikit langsung ditarik buat nongkrong? Tahan godaan, biarin aja dia berkembang!",
-            "Katanya mau financial freedom, tapi beli lot saham aja mikirnya tiga hari tiga malam. Ayo cepet eksekusi sebelum harganya lari!",
-            "Kamu rajin banget ngerawat kendaraan, tapi portofolio dibiarin berantakan merah semua. Rawat dong asetmu, average down kek!",
-            "Emas 10 gram pertama emang berat, tapi lebih berat lagi beban hidupmu kalau masa tua nanti nggak punya pegangan apa-apa.",
-            "Kamu teriak-teriak market lagi hancur, padahal itu waktunya belanja saham bagus harga murah. Duitnya mana? Oh, udah habis buat staycation ya.",
-            "Reksadana pendapatan tetap aja bisa bikin kamu deg-degan. Gimana mau main saham? Udah, rutinin aja top up-nya dan tutup aplikasinya.",
-            "PnL merah itu bukan aib, itu kesempatan buat nambah muatan. Masalahnya, kamu punya amunisi nggak buat nambah muatannya?",
-            "Porto ijo langsung di-screenshot buat update status. Giliran merah diam-diam aja. Ayo buktikan mental investormu, tambah modal pas lagi merah!",
-            "Nyombongin dividen padahal nominalnya cuma cukup buat bayar parkir? Tambah lot sahammu sampai dividennya bisa buat bayar UKT anak.",
-            "Kamu ngoleksi saham nyangkut kayak ngoleksi perangko. Ayo bersihin portomu, cut loss yang ampas, pindahin ke yang fundamentalnya kuat.",
-            "Emas makin lama makin mahal. Kamu nunggu apa lagi? Nunggu nemu emas di sungai? Beli sekarang sebelum nyesel tahun depan.",
-            "Investasi reksadana itu maraton, bukan lari sprint. Kalau baru sebulan udah nanya kapan untung besar, mending kamu ternak lele aja.",
-            "Liat harga saham turun malah panik. Seharusnya kamu panik itu pas sadar saldo rekeningmu nggak cukup buat nyerok di bawah.",
-            "Mau compounding interest kerja maksimal buat kamu? Rahasianya cuma satu: jangan pernah berhenti nambah modal. Gitu aja repot.",
-            "Aset sahammu belum cukup buat kasih kamu kebebasan, jadi jangan bertingkah sok bebas dulu. Tambah lagi lot-nya sampai kamu beneran bos!",
-            "Katanya nunggu krisis buat beli saham murah. Giliran krisis beneran datang, kamu malah ikut krisis keuangan. Makanya sedia cash dari sekarang.",
-            "Kamu lebih hafal lirik lagu hits daripada harga rata-rata saham di portomu. Pantesan nyangkut mulu. Ayo mulai serius perhatiin investasimu!",
-            "Jangan biarkan reksadanamu merasa kesepian karena lama nggak di-top up. Kasih suntikan dana segar dong, biar dia semangat ngasilin cuan.",
-            "Koleksi gram emasmu kok jalannya kayak siput? Ayo dong kurangin jajan yang nggak penting, alihin ke emas biar cepet berat.",
-            "Kamu nyalahin kondisi global pas sahammu turun, padahal emang kamu aja yang salah pilih saham pucuk. Belajar lagi, baca laporan keuangan!",
-            "PnL plus sedikit langsung gatel mau jual. Kamu investasi apa jualan gorengan? Tahan dikit napa, biar untungnya nutupin inflasi.",
-            "Udah nabung reksadana kok masih ngerasa miskin? Ya iyalah, nabungnya cuma pas ada sisa receh. Jadiin prioritas utama dong nabungnya!",
-            "Kamu ngerasa paling pinter pas milih saham, tapi pasar selalu punya cara buat ngajarin kamu kerendahan hati lewat angka merah di layar.",
-            "Mimpi punya passive income ratusan juta, tapi modal investasi bulananmu cuma seharga paket internet. Yuk bisa yuk, naikin lagi nominalnya.",
-            "Emas itu anti inflasi, tapi sifat konsumtifmu itu yang bikin inflasi di dompetmu sendiri. Ayo beralih jadi pengumpul emas, bukan pengumpul barang KW.",
-            "Kalau kamu ngerawat portofolio sahammu sebaik kamu ngerawat image di sosmed, mungkin sekarang kamu udah tajir melintir beneran.",
-            "Reksadana itu kendaraanmu menuju kebebasan, tapi bensinnya ya uang top up-mu. Gimana mau sampai tujuan kalau bensinnya kamu isi setetes doang?"
+            "Portofolio saham lu merah semua, tapi gaya hidup tetap elit. Keren.",
+            "Beli emas pas harga pucuk, giliran turun panik jual. Jenius investasi.",
+            "Reksadana lu naiknya sepeser, tapi tiap hari dicek kayak nungguin warisan.",
+            "Top up saham cuma seratus ribu, tapi lagaknya udah kayak Lo Kheng Hong.",
+            "Cuan saham 2 persen aja udah pamer di story, giliran ARB 3 hari berturut-turut mendadak religius.",
+            "Beli reksadana pasar uang ngarep cuan kayak kripto. Belajar di mana lu?",
+            "Emas batangan di lemari nggak bakal beranak jadi dua kalau cuma lu pantengin tiap malam.",
+            "Katanya investor jangka panjang, baru minus 1% langsung keringat dingin.",
+            "Nabung saham nyangkut, dibilangnya 'investasi masa depan'. Ngeles aja lu.",
+            "Portofolio merah merona kayak pipi orang kasmaran, sayangnya dompet lu yang nangis.",
+            "Beli emas buat lindung nilai, ujung-ujungnya digadai buat beli tiket konser.",
+            "Tiap hari ngecek grafik saham, padahal saldo lu cuma cukup buat beli lot gurem.",
+            "Reksadana lu lagi nyungsep, mending lu tutup aplikasinya daripada sakit mata.",
+            "Cuan tipis langsung take profit buat beli kopi senja, pas rugi di-hold sampai jadi debu.",
+            "Jangan ngarep dividen gede kalau modal lu cuma seharga nasi padang.",
+            "Emas turun dibilang diskon, emas naik dibilang cuan. Intinya lu selalu benar, padahal saldo nol.",
+            "Beli saham gorengan ngarep auto kaya, besoknya perusahaannya kena suspek bursa.",
+            "Ngecek NAB reksadana tiap jam, kayak bakal berubah aja itu angka dalam 60 menit.",
+            "Porto lu butuh disiram air yasin kayaknya, merah mulu nggak ada hijau-hijaunya.",
+            "Katanya mau diversifikasi, tapi ujung-ujungnya all in di saham titipan grup Telegram.",
+            "Emas antam lu diam-diam menangis melihat kelakuan lu yang boros.",
+            "Investasi reksadana seratus ribu minta return 100% sebulan, lu kira pesugihan?",
+            "Lebih rajin mantau IHSG daripada mantau saldo tabungan sendiri.",
+            "Sok-sokan nunggu saham koreksi buat serok bawah, pas beneran koreksi lu nggak punya cash.",
+            "Average down terus sampai dana darurat habis, mantap strategi miskin perlahan.",
+            "Reksadana saham lagi minus, lu pura-pura lupa kalau pernah install aplikasi ini.",
+            "Simpan emas di brankas dibilang kuno, beli saham nyangkut dibilang modern.",
+            "Beli saham blue chip pas harga tertinggi, lu emang pahlawan penyumbang likuiditas.",
+            "Cuan investasi 50 ribu, gaya belanjanya 500 ribu. Emang boleh nombok gitu?",
+            "Daripada lu mantau porto yang merah terus, mending lu mantau diskonan di minimarket.",
+            "Nambah muatan pas saham lagi nyungsep, semangat ya jadi donatur tetap bursa.",
+            "Reksadana lu cuma jalan di tempat, persis kayak resolusi tahun baru lu.",
+            "Harga emas dunia naik rekor, tapi lu nggak punya emasnya. Cuma nonton aja?",
+            "Dividen cair cuma cukup buat bayar parkir, tapi sombongnya se-kecamatan.",
+            "Saham naik 5% lu hold, turun 20% lu tambah muatan. Warren Buffett menangis melihat strategimu.",
+            "Gaya bahasanya kalau ngomongin makro ekonomi udah kayak menteri, padahal portonya nyangkut di pucuk.",
+            "Nabung emas dikit-dikit lama-lama jadi bukit, asal nggak lu jual buat nongkrong aja.",
+            "Tiap lihat porto merah lu nyalahin bandar, padahal lu sendiri yang asal pencet buy.",
+            "Cek saldo reksadana berharap keajaiban bunga majemuk, padahal top up aja setahun sekali.",
+            "IHSG hijau, saham lu doang yang merah. Itu portofolio apa lampu merah?",
+            "Beli emas pas lagi hype, sekarang harganya turun lu pura-pura nggak peduli.",
+            "Reksadana pendapatan tetap emang paling pas buat lu yang nggak kuat lihat fluktuasi harga.",
+            "Cut loss saham ibarat putus cinta, sakit di awal tapi menyelamatkan masa depan dompet lu.",
+            "Percuma analisis teknikal pakai banyak indikator kalau ujung-ujungnya fomo beli saham pom-pom.",
+            "Emas itu instrumen pelindung nilai, bukan pelindung dari kebiasaan belanja online lu.",
+            "Mau cuan instan dari bursa saham? Mending lu jualan gorengan beneran di depannya.",
+            "Investasi lu kayak hubungan tanpa status, nggak jelas arahnya mau ke mana.",
+            "Portofolio reksadana lu terlalu defensif, saking defensifnya malah merugi digerus inflasi.",
+            "Bangga banget beli saham di harga bawah, pas lu beli ternyata perusahaannya terancam delisting.",
+            "Coba cek lagi porto lu, jangan-jangan lu bukan investasi, tapi lagi sedekah jariah ke bandar."
         ];
 
         let titleClickCount = 0;
@@ -1665,8 +1665,8 @@
         const titleTrigger = document.getElementById('app-title-trigger');
         const easterEggModal = document.getElementById('easter-egg-modal');
         const easterEggCard = document.getElementById('easter-egg-card');
-        const easterEggQuote = document.getElementById('easter-egg-quote');
-        const closeEasterEggBtn = document.getElementById('close-easter-egg-btn');
+        const easterEggQuote = document.getElementById('easter-egg-text');
+        const closeEasterEggBtn = document.getElementById('close-easter-egg');
 
         titleTrigger.addEventListener('click', () => {
             // Trigger quick pulse animation on the title
