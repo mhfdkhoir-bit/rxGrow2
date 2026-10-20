@@ -100,6 +100,32 @@
         }
         .rotate-y-180-static { transform: rotateY(180deg); }
         .is-flipped { transform: rotateY(180deg); }
+
+        /* EASTER EGG ANIMATIONS */
+        @keyframes pulse-click {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.93); }
+            100% { transform: scale(1); }
+        }
+        .animate-pulse-click {
+            animation: pulse-click 0.25s ease-in-out;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            60% { opacity: 1; transform: scale(1.05) translateY(-5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes popOut {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(0.8) translateY(20px); }
+        }
+        .modal-pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .modal-pop-out {
+            animation: popOut 0.3s ease-in forwards;
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#3f3f46] transition-colors duration-300">
@@ -229,7 +255,8 @@
                     <button id="hamburger-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <div class="flex relative">
+                    <!-- EASTER EGG TRIGGER ADDED HERE -->
+                    <div id="app-title-trigger" class="flex relative">
                         <div class="bg-[#e9d5ff] text-black border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1 relative z-10">
                             <h1 class="text-2xl font-bold italic tracking-tighter">rxGrow</h1>
                         </div>
@@ -499,6 +526,22 @@
                 <button id="cancel-confirm-btn" class="flex-1 bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">Batal</button>
                 <button id="execute-confirm-btn" class="flex-1 bg-[#f87171] text-black border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">Hapus</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- EASTER EGG MODAL                           -->
+    <!-- ========================================== -->
+    <div id="easter-egg-modal" class="fixed left-0 right-0 bottom-0 bg-black/60 z-[100] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" style="top: env(safe-area-inset-top, 0px);">
+        <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-6 flex flex-col gap-4 relative opacity-0" id="easter-egg-card">
+            <button id="close-easter-egg-btn" class="absolute -top-3 -right-3 w-8 h-8 bg-[#f87171] border-[3px] border-black rounded-full flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all z-10">
+                <i class="fa-solid fa-times pointer-events-none"></i>
+            </button>
+            <div class="w-12 h-12 bg-[#FFE268] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm mx-auto">
+                <i class="fa-solid fa-gem text-xl text-black"></i>
+            </div>
+            <h3 class="font-black text-xl text-center leading-tight">Nasehat Suhu</h3>
+            <p id="easter-egg-quote" class="text-sm text-center font-bold text-gray-700 dark:text-gray-300 italic px-2"></p>
         </div>
     </div>
 
@@ -1364,7 +1407,6 @@
             const pnl = (harga - avg) * lot * 100;
 
             const totEl = document.getElementById(`saham-tot-${idx}`);
-            // REVISI: Mengubah perhitungan menjadi lot x 100 x avg
             if(totEl) totEl.textContent = isCensored ? '••••••' : formatRp(lot * 100 * avg);
 
             const pnlEl = document.getElementById(`saham-pnl-${idx}`);
@@ -1560,6 +1602,115 @@
                 hidePrivacy();
             }
         });
+
+        // ========================================== //
+        // EASTER EGG LOGIC
+        // ========================================== //
+        const sarcasticQuotes = [
+            "Liat porto merah terus? Itu portofolio apa rapor anak SD? Ayo top up lagi mumpung harga lagi diskon, jangan jajan boba mulu.",
+            "Kamu bangga emasmu udah nambah 1 gram? Bagus. Lanjutin. Kapan jadi sekilo kalau nambahnya tiap tahun kabisat doang?",
+            "Nunggu harga saham di pucuk baru berani beli? Pantesan unrealized PnL kamu minus mulu. Belajar averaging down, bos!",
+            "Reksadanamu tumbuhnya lebih lambat dari tanaman hias di teras. Jangan di-pause top up-nya, katanya mau pensiun muda?",
+            "Kamu kira saldo reksadana bisa auto-nambah kalau di-refresh tiap 5 menit? Top up woy, bukan di-refresh doang!",
+            "Beli saham gorengan ngarep cuan instan. Pas nyangkut pura-pura jadi investor jangka panjang. Mending nambah lot saham bluechip deh.",
+            "Hebat banget, grafik portomu konsisten... konsisten nyungsep. Jangan nangis, ini waktunya kamu nyerok, bukan nyerah!",
+            "Emasnya disimpen doang dipandangin tiap malam? Tambahin dong gramnya, biar ntar pas nikah nggak minjem cincin tetangga.",
+            "Unrealized PnL masih minus aja belagu mau healing. Healing tuh kalau portomu udah ijo semua, sekarang mah mending puasa jajan.",
+            "Udah tau market lagi crash, malah sibuk check out keranjang oren. Duitnya dipake buat averaging down sahammu yang nyangkut itu lho!",
+            "Kamu nyebut diri kamu investor, tapi ngeliat reksadana minus 1% aja langsung panik keringetan. Tambah saldonya, biar cepet balik modal!",
+            "Asetmu cuma emas segram? Terus mimpinya beli rumah gedongan? Ayo dong kurangin ngopinya, tambahin belinya.",
+            "Kalau kamu lebih rajin ngecek promo diskon daripada ngecek fundamental saham yang kamu beli, ya wajar kalau portomu isinya air mata.",
+            "Nabung emas itu bagus, tapi kalau belinya pas inget doang, kapan kayanya? Rutinin dong, masa kalah sama cicilan paylater.",
+            "Tuh liat reksadanamu, untungnya cuma cukup buat beli cilok. Ayo lipat gandakan modalnya, biar untungnya bisa buat beli pabrik cilok sekalian.",
+            "Jangan bangga dulu sahammu ijo dikit, itu belum seberapa dibanding inflasi tahunan. Tambah lagi lot-nya biar cuannya kerasa!",
+            "Averaging down itu butuh modal, bukan butuh doa doang. Gimana mau average down kalau sisa gajimu cuma tinggal debu?",
+            "Kamu pikir Warren Buffett bisa kaya raya cuma dengan modal rebahan nunggu keajaiban? Buka aplikasi, top up sekarang juga.",
+            "Reksadanamu lagi merah? Berarti lagi promo! Beli lagi dong, masa baju diskonan diborong tapi reksadana diskon malah dianggurin.",
+            "Lot saham masih satuan aja gayanya udah kayak bandar. Tambah dong modalnya, biar kalau RUPS kamu diakuin keberadaannya.",
+            "Emas tuh harganya naik turun, kayak mood bosmu. Makanya rajin nabung pas lagi turun, jangan pas di pucuk baru FOMO.",
+            "Mau PnL-mu balik ijo? Ya kuncinya sabar dan tambah modal, bukan malah buka tutup aplikasi sambil komat-kamit.",
+            "Kamu berharap keajaiban datang biar porto sahammu yang nyangkut tiba-tiba meroket? Keajaiban itu namanya 'Top Up Dana'.",
+            "Gimana reksadanamu mau compounding kalau tiap cuan dikit langsung ditarik buat nongkrong? Tahan godaan, biarin aja dia berkembang!",
+            "Katanya mau financial freedom, tapi beli lot saham aja mikirnya tiga hari tiga malam. Ayo cepet eksekusi sebelum harganya lari!",
+            "Kamu rajin banget ngerawat kendaraan, tapi portofolio dibiarin berantakan merah semua. Rawat dong asetmu, average down kek!",
+            "Emas 10 gram pertama emang berat, tapi lebih berat lagi beban hidupmu kalau masa tua nanti nggak punya pegangan apa-apa.",
+            "Kamu teriak-teriak market lagi hancur, padahal itu waktunya belanja saham bagus harga murah. Duitnya mana? Oh, udah habis buat staycation ya.",
+            "Reksadana pendapatan tetap aja bisa bikin kamu deg-degan. Gimana mau main saham? Udah, rutinin aja top up-nya dan tutup aplikasinya.",
+            "PnL merah itu bukan aib, itu kesempatan buat nambah muatan. Masalahnya, kamu punya amunisi nggak buat nambah muatannya?",
+            "Porto ijo langsung di-screenshot buat update status. Giliran merah diam-diam aja. Ayo buktikan mental investormu, tambah modal pas lagi merah!",
+            "Nyombongin dividen padahal nominalnya cuma cukup buat bayar parkir? Tambah lot sahammu sampai dividennya bisa buat bayar UKT anak.",
+            "Kamu ngoleksi saham nyangkut kayak ngoleksi perangko. Ayo bersihin portomu, cut loss yang ampas, pindahin ke yang fundamentalnya kuat.",
+            "Emas makin lama makin mahal. Kamu nunggu apa lagi? Nunggu nemu emas di sungai? Beli sekarang sebelum nyesel tahun depan.",
+            "Investasi reksadana itu maraton, bukan lari sprint. Kalau baru sebulan udah nanya kapan untung besar, mending kamu ternak lele aja.",
+            "Liat harga saham turun malah panik. Seharusnya kamu panik itu pas sadar saldo rekeningmu nggak cukup buat nyerok di bawah.",
+            "Mau compounding interest kerja maksimal buat kamu? Rahasianya cuma satu: jangan pernah berhenti nambah modal. Gitu aja repot.",
+            "Aset sahammu belum cukup buat kasih kamu kebebasan, jadi jangan bertingkah sok bebas dulu. Tambah lagi lot-nya sampai kamu beneran bos!",
+            "Katanya nunggu krisis buat beli saham murah. Giliran krisis beneran datang, kamu malah ikut krisis keuangan. Makanya sedia cash dari sekarang.",
+            "Kamu lebih hafal lirik lagu hits daripada harga rata-rata saham di portomu. Pantesan nyangkut mulu. Ayo mulai serius perhatiin investasimu!",
+            "Jangan biarkan reksadanamu merasa kesepian karena lama nggak di-top up. Kasih suntikan dana segar dong, biar dia semangat ngasilin cuan.",
+            "Koleksi gram emasmu kok jalannya kayak siput? Ayo dong kurangin jajan yang nggak penting, alihin ke emas biar cepet berat.",
+            "Kamu nyalahin kondisi global pas sahammu turun, padahal emang kamu aja yang salah pilih saham pucuk. Belajar lagi, baca laporan keuangan!",
+            "PnL plus sedikit langsung gatel mau jual. Kamu investasi apa jualan gorengan? Tahan dikit napa, biar untungnya nutupin inflasi.",
+            "Udah nabung reksadana kok masih ngerasa miskin? Ya iyalah, nabungnya cuma pas ada sisa receh. Jadiin prioritas utama dong nabungnya!",
+            "Kamu ngerasa paling pinter pas milih saham, tapi pasar selalu punya cara buat ngajarin kamu kerendahan hati lewat angka merah di layar.",
+            "Mimpi punya passive income ratusan juta, tapi modal investasi bulananmu cuma seharga paket internet. Yuk bisa yuk, naikin lagi nominalnya.",
+            "Emas itu anti inflasi, tapi sifat konsumtifmu itu yang bikin inflasi di dompetmu sendiri. Ayo beralih jadi pengumpul emas, bukan pengumpul barang KW.",
+            "Kalau kamu ngerawat portofolio sahammu sebaik kamu ngerawat image di sosmed, mungkin sekarang kamu udah tajir melintir beneran.",
+            "Reksadana itu kendaraanmu menuju kebebasan, tapi bensinnya ya uang top up-mu. Gimana mau sampai tujuan kalau bensinnya kamu isi setetes doang?"
+        ];
+
+        let titleClickCount = 0;
+        let titleClickTimer;
+
+        const titleTrigger = document.getElementById('app-title-trigger');
+        const easterEggModal = document.getElementById('easter-egg-modal');
+        const easterEggCard = document.getElementById('easter-egg-card');
+        const easterEggQuote = document.getElementById('easter-egg-quote');
+        const closeEasterEggBtn = document.getElementById('close-easter-egg-btn');
+
+        titleTrigger.addEventListener('click', () => {
+            // Trigger quick pulse animation on the title
+            titleTrigger.classList.remove('animate-pulse-click');
+            void titleTrigger.offsetWidth; // Trigger reflow to restart animation
+            titleTrigger.classList.add('animate-pulse-click');
+
+            titleClickCount++;
+            clearTimeout(titleClickTimer);
+            
+            if (titleClickCount === 3) {
+                // Show Easter Egg with Random Quote
+                const randomQuote = sarcasticQuotes[Math.floor(Math.random() * sarcasticQuotes.length)];
+                easterEggQuote.textContent = `"${randomQuote}"`;
+                
+                easterEggModal.classList.remove('hidden');
+                easterEggModal.classList.add('flex');
+                
+                requestAnimationFrame(() => {
+                    easterEggModal.classList.remove('opacity-0');
+                    easterEggCard.classList.remove('modal-pop-out');
+                    easterEggCard.classList.add('modal-pop-in');
+                });
+                titleClickCount = 0;
+            } else {
+                titleClickTimer = setTimeout(() => {
+                    titleClickCount = 0;
+                }, 1000); 
+            }
+        });
+
+        closeEasterEggBtn.addEventListener('click', () => {
+            // Trigger pop-out animation
+            easterEggCard.classList.remove('modal-pop-in');
+            easterEggCard.classList.add('modal-pop-out');
+            easterEggModal.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                easterEggModal.classList.add('hidden');
+                easterEggModal.classList.remove('flex');
+                easterEggCard.classList.remove('modal-pop-out'); // reset
+            }, 300); // Matches the exit animation duration
+        });
+        // ========================================== //
 
         (function initPWA() {
             const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#a78bfa" rx="100"/><path fill="black" d="M149.33 213.33h42.67v85.34h128v-85.34h42.67v128h-213.34v-128z" /><circle fill="black" cx="256" cy="149.33" r="32"/></svg>`;
