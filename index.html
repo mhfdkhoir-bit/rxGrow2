@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- PWA / Homescreen Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="rxGrow">
     <meta name="mobile-web-app-capable" content="yes">
     <meta id="meta-theme-color" name="theme-color" content="#FDF9F1">
@@ -41,6 +41,15 @@
     </script>
 
     <style>
+        /* Fixing Status Bar Color Bug: Ensure html background dictates the status bar over browser heuristics */
+        html {
+            background-color: #FDF9F1;
+            transition: background-color 0.3s;
+        }
+        html.dark {
+            background-color: #3f3f46;
+        }
+
         .card-grid-container {
             display: grid;
             grid-template-rows: 50px 48px 24px 56px 24px 56px;
@@ -96,6 +105,11 @@
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#3f3f46] transition-colors duration-300">
 
     <!-- ========================================== -->
+    <!-- TOAST NOTIFICATION CONTAINER               -->
+    <!-- ========================================== -->
+    <div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2 pointer-events-none w-[90%] max-w-[340px]"></div>
+
+    <!-- ========================================== -->
     <!-- PRIVACY SCREEN (App Switcher / Recent Apps)-->
     <!-- ========================================== -->
     <div id="privacy-screen" class="fixed inset-0 bg-black z-[9999] hidden pointer-events-none"></div>
@@ -103,7 +117,6 @@
     <!-- ========================================== -->
     <!-- VIEW 1: LOGIN / PIN SCREEN                 -->
     <!-- ========================================== -->
-    <!-- Login View diperbarui agar mengikuti tema light/dark keseluruhan website -->
     <div id="login-view" class="fixed inset-0 bg-[#FDF9F1] dark:bg-[#3f3f46] z-50 flex items-center justify-center p-4 transition-colors duration-300">
         <div class="w-full max-w-[360px] bg-white dark:bg-[#52525b] border-[3px] border-black shadow-brutal rounded-2xl p-6 flex flex-col items-center gap-5 transition-colors duration-300">
             <div class="w-14 h-14 bg-[#a78bfa] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm">
@@ -163,10 +176,10 @@
                 <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Backup & Restore</h3>
             </div>
             <button id="export-data-btn" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                <i class="fa-solid fa-upload"></i> Export Data
+                <i class="fa-solid fa-upload text-lg w-5 text-center"></i> Export Data
             </button>
             <button id="import-data-btn" class="w-full bg-[#A7F3D0] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                <i class="fa-solid fa-download"></i> Import Data
+                <i class="fa-solid fa-download text-lg w-5 text-center"></i> Import Data
             </button>
             <input type="file" id="import-file-input" accept=".json" class="hidden">
         </div>
@@ -180,7 +193,7 @@
             <div id="biometric-setting-container" class="w-full">
                 <!-- Changed background from bg-[#bae6fd] to Neo-Brutalist soft orange/peach #FED7AA for aesthetic contrast -->
                 <button id="toggle-biometric" class="w-full bg-[#FED7AA] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                    <span class="flex items-center gap-3"><i class="fa-solid fa-face-viewfinder"></i> Face ID</span>
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-face-viewfinder text-lg w-5 text-center"></i> Face ID</span>
                     <!-- Toggle track with distinct background colors for ON/OFF -->
                     <div id="biometric-toggle-track" class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative border-[2px] border-black transition-colors duration-300">
                         <div id="biometric-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform duration-300 shadow-sm"></div>
@@ -191,7 +204,7 @@
 
             <!-- Dark Mode Toggle -->
             <button id="toggle-dark-mode" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                <span id="theme-text-span" class="flex items-center gap-3"><i class="fa-solid fa-moon"></i> Mode Gelap</span>
+                <span id="theme-text-span" class="flex items-center gap-3"><i class="fa-solid fa-moon text-lg w-5 text-center"></i> Darkmode</span>
                 <div id="dark-toggle-track" class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative border-[2px] border-black transition-colors duration-300">
                     <div id="dark-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform duration-300 shadow-sm"></div>
                 </div>
@@ -225,8 +238,8 @@
                     <button id="sync-all-btn" class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Refresh Harga">
                         <i class="fa-solid fa-rotate"></i>
                     </button>
-                    <!-- Tampilan Kunci disesuaikan: Hanya icon, neo brutalism, ukuran w-10 h-10 -->
-                    <button id="lock-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Kunci Aplikasi">
+                    <!-- Tampilan Kunci Direvisi: Warna Merah Pastel (bg-[#fca5a5]) dengan teks hitam -->
+                    <button id="lock-btn" class="bg-[#fca5a5] text-black border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Kunci Aplikasi">
                         <i class="fa-solid fa-lock"></i>
                     </button>
                 </div>
@@ -497,8 +510,8 @@
             lastDate: 'Belum ada pembaruan',
             reksaHistory: [],
             darkMode: false,
-            biometricEnabled: false, // Flag for Face ID / Fingerprint
-            credentialId: null       // WebAuthn Passkey ID
+            biometricEnabled: false, 
+            credentialId: null       
         };
 
         const viewLogin = document.getElementById('login-view');
@@ -594,6 +607,36 @@
         const generateDateString = () => new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const generateShortDateString = () => new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
 
+        // Fitur Toast Notification Neo Brutalism
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-[#86efac]' : 'bg-[#fca5a5]';
+            const icon = type === 'success' ? '<i class="fa-solid fa-check-circle text-lg"></i>' : '<i class="fa-solid fa-triangle-exclamation text-lg"></i>';
+            
+            toast.className = `${bgColor} text-black border-[3px] border-black shadow-brutal-sm rounded-xl px-4 py-3 flex items-center gap-3 font-bold text-sm transform -translate-y-10 opacity-0 transition-all duration-300 pointer-events-auto`;
+            toast.innerHTML = `${icon} <span class="flex-1">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            // Animasi masuk
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    toast.classList.remove('-translate-y-10', 'opacity-0');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                });
+            });
+            
+            // Animasi keluar dan hapus elemen
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         function loadDB() {
             const saved = localStorage.getItem('rxGrow_db');
             if (saved) {
@@ -611,25 +654,18 @@
         }
         
         function applyTheme() {
-            const themeTextSpan = document.getElementById('theme-text-span');
             const metaThemeColor = document.getElementById('meta-theme-color');
             if (db.darkMode) {
                 document.documentElement.classList.add('dark');
                 darkToggleIndicator.classList.add('translate-x-[20px]');
                 darkToggleTrack.classList.remove('bg-gray-300', 'dark:bg-gray-600');
-                darkToggleTrack.classList.add('bg-[#86efac]'); // Warna hijau saat aktif (sama dengan Face ID)
-                if (themeTextSpan) {
-                    themeTextSpan.innerHTML = '<i class="fa-solid fa-sun text-[#FFE268]"></i> Mode Terang';
-                }
+                darkToggleTrack.classList.add('bg-[#86efac]'); 
                 if (metaThemeColor) metaThemeColor.setAttribute('content', '#3f3f46');
             } else {
                 document.documentElement.classList.remove('dark');
                 darkToggleIndicator.classList.remove('translate-x-[20px]');
                 darkToggleTrack.classList.remove('bg-[#86efac]');
-                darkToggleTrack.classList.add('bg-gray-300', 'dark:bg-gray-600'); // Warna abu-abu saat non-aktif
-                if (themeTextSpan) {
-                    themeTextSpan.innerHTML = '<i class="fa-solid fa-moon"></i> Mode Gelap';
-                }
+                darkToggleTrack.classList.add('bg-gray-300', 'dark:bg-gray-600'); 
                 if (metaThemeColor) metaThemeColor.setAttribute('content', '#FDF9F1');
             }
         }
@@ -640,7 +676,6 @@
             applyTheme();
         });
 
-        // Helpers for WebAuthn Base64Url encoding/decoding
         function bufferToBase64url(buffer) {
             const bytes = new Uint8Array(buffer);
             let str = '';
@@ -669,11 +704,11 @@
             if (db.biometricEnabled) {
                 biometricIndicator.classList.add('translate-x-[20px]');
                 biometricToggleTrack.classList.remove('bg-gray-300', 'dark:bg-gray-600');
-                biometricToggleTrack.classList.add('bg-[#86efac]'); // Vivid green when active
+                biometricToggleTrack.classList.add('bg-[#86efac]'); 
             } else {
                 biometricIndicator.classList.remove('translate-x-[20px]');
                 biometricToggleTrack.classList.remove('bg-[#86efac]');
-                biometricToggleTrack.classList.add('bg-gray-300', 'dark:bg-gray-600'); // Neutral gray when inactive
+                biometricToggleTrack.classList.add('bg-gray-300', 'dark:bg-gray-600'); 
             }
         }
 
@@ -792,10 +827,8 @@
                 btnLogin.textContent = "Buka Kunci";
                 linkReset.classList.remove('hidden');
                 
-                // Jika WebAuthn didukung dan FaceID/Biometrik sudah diaktifkan user
                 if (checkWebAuthnSupport() && db.biometricEnabled && db.credentialId) {
                     btnBiometricLogin.classList.remove('hidden');
-                    // Trigger otomatis permintaan pemindaian wajah/jari
                     setTimeout(() => authenticateBiometric(), 400); 
                 } else {
                     btnBiometricLogin.classList.add('hidden');
@@ -843,7 +876,6 @@
 
         linkReset.addEventListener('click', () => {
             db.pin = null;
-            // Saat reset PIN, nonaktifkan biometrik juga sebagai keamanan
             db.biometricEnabled = false;
             db.credentialId = null;
             saveDB();
@@ -872,6 +904,7 @@
                 }
             } catch(e) { 
                 console.error("Error fetching gold price:", e); 
+                throw e; // Lemparkan error agar ditangkap oleh syncAllBtn
             }
             
             if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2367000; 
@@ -908,6 +941,7 @@
                 if(targetInput) targetInput.placeholder = "0";
             } catch(e) {
                 if(targetInput) targetInput.placeholder = "0";
+                throw e; // Lemparkan error agar ditangkap oleh syncAllBtn
             }
         }
 
@@ -916,23 +950,22 @@
             icon.classList.add('fa-spin');
             
             try {
-                // Fetch Emas
                 await fetchGoldPrice();
-                
-                // Fetch Saham
                 const promises = db.saham.map((s, idx) => {
                     if (s.kode) return fetchStockPrice(s.kode, idx);
                     return Promise.resolve();
                 });
                 await Promise.all(promises);
                 
-                // Update timestamp for feedback
                 db.lastDate = generateDateString();
                 txtUpdate.textContent = db.lastDate;
                 saveDB();
+                
+                showToast('Data berhasil diperbarui!', 'success');
 
             } catch (err) {
                 console.error("Error syncing data:", err);
+                showToast('Gagal memuat beberapa data pasar.', 'error');
             } finally {
                 icon.classList.remove('fa-spin');
                 calculateTotals();
@@ -1059,17 +1092,23 @@
 
         // Fitur Export Data
         btnExportData.addEventListener('click', () => {
-            const dataStr = JSON.stringify(db, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `rxGrow_Backup_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            toggleSidebar(false);
+            try {
+                const dataStr = JSON.stringify(db, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `rxGrow_Backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                toggleSidebar(false);
+                showToast('Data berhasil diekspor!', 'success');
+            } catch(e) {
+                console.error(e);
+                showToast('Gagal mengekspor data.', 'error');
+            }
         });
 
         // Fitur Import Data
@@ -1091,12 +1130,15 @@
                         applyTheme();
                         applyBiometricTheme();
                         toggleSidebar(false);
-                        // Refresh UI updates immediately
                         calculateTotals();
                         renderRiwayat();
+                        showToast('Data berhasil diimpor!', 'success');
+                    } else {
+                        throw new Error("Invalid Format");
                     }
                 } catch(err) {
                     console.error('Import failed', err);
+                    showToast('Gagal mengimpor data. File tidak valid!', 'error');
                 }
                 importFileInput.value = ''; // Reset
             };
@@ -1107,7 +1149,6 @@
             flipper.classList.toggle('is-flipped');
         });
 
-        // Censor function abstraction to handle disabling inputs cleanly
         function applyCensorState() {
             iconCensor.className = isCensored ? 'fa-solid fa-eye-slash text-lg' : 'fa-solid fa-eye text-lg';
             
@@ -1188,7 +1229,6 @@
             }
         });
 
-        // Helper function for custom confirmation modal
         function showConfirmModal(title, desc, onConfirm) {
             titleConfirm.textContent = title;
             descConfirm.textContent = desc;
@@ -1395,7 +1435,6 @@
             renderSahamList();
             calculateTotals();
             
-            // Auto-focus logic ke form yang paling baru
             setTimeout(() => {
                 const inputs = document.querySelectorAll('input[data-field="kode"]');
                 if (inputs.length > 0) {
