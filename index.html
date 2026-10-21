@@ -948,7 +948,8 @@
                 
                 const data = await res.json();
                 if (data && data.price && !isNaN(data.price)) {
-                    HARGA_BUYBACK_EMAS = data.price;
+                    // REVISI: Mengurangi Rp10000 per gram dari harga yang di-fetch
+                    HARGA_BUYBACK_EMAS = data.price - 10000;
                 }
             } catch(e) { 
                 console.error("Error fetching gold price:", e); 
