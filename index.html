@@ -1466,7 +1466,6 @@
                                 <span class="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400">Unrealized PnL</span>
                                 <span id="saham-pnl-${idx}" class="text-sm font-black ${isCensored ? 'text-gray-500' : (pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}">${isCensored ? '••••••' : (pnl > 0 ? '+' : '') + formatRp(pnl)}</span>
                             </div>
-                            <!-- REVISI: Teks menjadi MODAL dan kalkulasi menjadi lot x 100 x avgFloat -->
                             <div class="flex flex-col items-end">
                                 <span class="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400">MODAL</span>
                                 <span id="saham-tot-${idx}" class="text-sm font-black text-blue-600 dark:text-blue-400">${isCensored ? '••••••' : formatRp(lot * 100 * avgFloat)}</span>
@@ -1606,58 +1605,94 @@
         // ========================================== //
         // EASTER EGG LOGIC
         // ========================================== //
-        const sarcasticQuotes = [
-            "Portofolio saham lu merah semua, tapi gaya hidup tetap elit. Keren.",
-            "Beli emas pas harga pucuk, giliran turun panik jual. Jenius investasi.",
-            "Reksadana lu naiknya sepeser, tapi tiap hari dicek kayak nungguin warisan.",
-            "Top up saham cuma seratus ribu, tapi lagaknya udah kayak Lo Kheng Hong.",
-            "Cuan saham 2 persen aja udah pamer di story, giliran ARB 3 hari berturut-turut mendadak religius.",
-            "Beli reksadana pasar uang ngarep cuan kayak kripto. Belajar di mana lu?",
-            "Emas batangan di lemari nggak bakal beranak jadi dua kalau cuma lu pantengin tiap malam.",
-            "Katanya investor jangka panjang, baru minus 1% langsung keringat dingin.",
-            "Nabung saham nyangkut, dibilangnya 'investasi masa depan'. Ngeles aja lu.",
-            "Portofolio merah merona kayak pipi orang kasmaran, sayangnya dompet lu yang nangis.",
-            "Beli emas buat lindung nilai, ujung-ujungnya digadai buat beli tiket konser.",
-            "Tiap hari ngecek grafik saham, padahal saldo lu cuma cukup buat beli lot gurem.",
-            "Reksadana lu lagi nyungsep, mending lu tutup aplikasinya daripada sakit mata.",
-            "Cuan tipis langsung take profit buat beli kopi senja, pas rugi di-hold sampai jadi debu.",
-            "Jangan ngarep dividen gede kalau modal lu cuma seharga nasi padang.",
-            "Emas turun dibilang diskon, emas naik dibilang cuan. Intinya lu selalu benar, padahal saldo nol.",
-            "Beli saham gorengan ngarep auto kaya, besoknya perusahaannya kena suspek bursa.",
-            "Ngecek NAB reksadana tiap jam, kayak bakal berubah aja itu angka dalam 60 menit.",
-            "Porto lu butuh disiram air yasin kayaknya, merah mulu nggak ada hijau-hijaunya.",
-            "Katanya mau diversifikasi, tapi ujung-ujungnya all in di saham titipan grup Telegram.",
-            "Emas antam lu diam-diam menangis melihat kelakuan lu yang boros.",
-            "Investasi reksadana seratus ribu minta return 100% sebulan, lu kira pesugihan?",
-            "Lebih rajin mantau IHSG daripada mantau saldo tabungan sendiri.",
-            "Sok-sokan nunggu saham koreksi buat serok bawah, pas beneran koreksi lu nggak punya cash.",
-            "Average down terus sampai dana darurat habis, mantap strategi miskin perlahan.",
-            "Reksadana saham lagi minus, lu pura-pura lupa kalau pernah install aplikasi ini.",
-            "Simpan emas di brankas dibilang kuno, beli saham nyangkut dibilang modern.",
-            "Beli saham blue chip pas harga tertinggi, lu emang pahlawan penyumbang likuiditas.",
-            "Cuan investasi 50 ribu, gaya belanjanya 500 ribu. Emang boleh nombok gitu?",
-            "Daripada lu mantau porto yang merah terus, mending lu mantau diskonan di minimarket.",
-            "Nambah muatan pas saham lagi nyungsep, semangat ya jadi donatur tetap bursa.",
-            "Reksadana lu cuma jalan di tempat, persis kayak resolusi tahun baru lu.",
-            "Harga emas dunia naik rekor, tapi lu nggak punya emasnya. Cuma nonton aja?",
-            "Dividen cair cuma cukup buat bayar parkir, tapi sombongnya se-kecamatan.",
-            "Saham naik 5% lu hold, turun 20% lu tambah muatan. Warren Buffett menangis melihat strategimu.",
-            "Gaya bahasanya kalau ngomongin makro ekonomi udah kayak menteri, padahal portonya nyangkut di pucuk.",
-            "Nabung emas dikit-dikit lama-lama jadi bukit, asal nggak lu jual buat nongkrong aja.",
-            "Tiap lihat porto merah lu nyalahin bandar, padahal lu sendiri yang asal pencet buy.",
-            "Cek saldo reksadana berharap keajaiban bunga majemuk, padahal top up aja setahun sekali.",
-            "IHSG hijau, saham lu doang yang merah. Itu portofolio apa lampu merah?",
-            "Beli emas pas lagi hype, sekarang harganya turun lu pura-pura nggak peduli.",
-            "Reksadana pendapatan tetap emang paling pas buat lu yang nggak kuat lihat fluktuasi harga.",
-            "Cut loss saham ibarat putus cinta, sakit di awal tapi menyelamatkan masa depan dompet lu.",
-            "Percuma analisis teknikal pakai banyak indikator kalau ujung-ujungnya fomo beli saham pom-pom.",
-            "Emas itu instrumen pelindung nilai, bukan pelindung dari kebiasaan belanja online lu.",
-            "Mau cuan instan dari bursa saham? Mending lu jualan gorengan beneran di depannya.",
-            "Investasi lu kayak hubungan tanpa status, nggak jelas arahnya mau ke mana.",
-            "Portofolio reksadana lu terlalu defensif, saking defensifnya malah merugi digerus inflasi.",
-            "Bangga banget beli saham di harga bawah, pas lu beli ternyata perusahaannya terancam delisting.",
-            "Coba cek lagi porto lu, jangan-jangan lu bukan investasi, tapi lagi sedekah jariah ke bandar."
-        ];
+        function getSarcasticQuotes() {
+            // Kalkulasi real-time
+            const emasG = parseFloatNum(inEmas.value) || 0;
+            const totEmas = Math.round(emasG * HARGA_BUYBACK_EMAS);
+            const reksaM = parseNum(inRekModal.value) || 0;
+            const reksaP = parseNum(inRekProfit.value) || 0;
+            const totReksa = reksaM + reksaP;
+            
+            let totSahamBase = 0;
+            let totPnlSaham = 0;
+            db.saham.forEach(s => {
+                const lot = parseNum(s.lot);
+                const avg = parseFloatNum(s.avg);
+                const harga = parseNum(s.harga);
+                totSahamBase += (lot * 100 * harga);
+                if (lot > 0 && avg > 0) totPnlSaham += ((harga - avg) * lot * 100);
+            });
+            const totSahamGrand = Math.max(0, totSahamBase + totPnlSaham); 
+            
+            const safeGrand = totEmas + totReksa + totSahamGrand;
+            const pctEmas = safeGrand > 0 ? Math.round((totEmas / safeGrand) * 100) : 0;
+            const pctReksa = safeGrand > 0 ? Math.round((totReksa / safeGrand) * 100) : 0;
+            const pctSaham = safeGrand > 0 ? Math.round((totSahamGrand / safeGrand) * 100) : 0;
+            
+            const strReksaP = formatRp(reksaP);
+            const strReksaM = formatRp(reksaM);
+            const strTotReksa = formatRp(totReksa);
+            const strTotEmas = formatRp(totEmas);
+            const strTotalAset = formatRp(safeGrand);
+            const strHargaEmas = formatRp(HARGA_BUYBACK_EMAS);
+            const retPorto = safeGrand > 0 ? Math.round(((reksaP + totPnlSaham) / safeGrand) * 100) : 0;
+
+            return [
+                // 30 Kalimat Roasting Awal (Beradaptasi dengan portofolio)
+                `Alokasi saham cuma ${pctSaham}%? Ini portofolio investasi atau sekadar bumbu penyedap rasa biar bisa ikut ngobrol di tongkrongan?`,
+                `Punya emas ${pctEmas}% dan reksadana ${pctReksa}%, ini profil risiko kamu "investor agresif" atau "kakek-kakek pensiunan nunggu kiamat"?`,
+                `Bikin UI aplikasinya gaya neobrutalism yang keren abis, tapi mindset investasinya masih kolot nyimpen emas kayak nenek-nenek di kampung.`,
+                `Cuan reksadana cuma ${strReksaP} dari modal ${strReksaM} itu bukan investasi namanya, itu cuma numpang lewat biar uangnya nggak dimakan rayap.`,
+                `Itu tombol gembok di kanan atas fungsinya buat apa? Buat ngunci kenyataan kalau return portofoliomu cuma sekitar ${retPorto}% dan kalah dari inflasi?`,
+                `Tab Investasi Saham sengaja di-collapse di paling bawah karena malu lihat nominalnya yang cuma sisa uang kembalian Indomaret, ya?`,
+                `Nyimpen emas sampai ${emasG} gram lebih, niatnya mau investasi atau persiapan mau buka toko perhiasan di Pasar Tengah?`,
+                `Modal ${strReksaM} di reksadana cuma ngasilin ${strReksaP}, mending duitnya dipakai jualan seblak, sebulan juga udah balik modal plus cuan.`,
+                `Kamu pasti tipe orang yang mantengin aplikasi tiap 5 menit sekali, padahal alokasi asetnya cuma ngikutin harga emas dunia yang geraknya kayak siput.`,
+                `Emas ${pctEmas}% itu strategi hedging terhadap resesi, atau cuma karena kamu takut sama bayanganmu sendiri pas lihat portofolio merah?`,
+                `Repot-repot bikin web app sendiri buat tracking aset dengan dark mode, padahal asetnya cuma reksadana dan emas yang bisa dicek sambil merem.`,
+                `Tulisan "Total Keuntungan ${strReksaP}" ditaruh di kotak pink tebal banget seolah-olah menang lotre, padahal nominal segitu dipakai nongkrong di coffee shop sebulan juga ludes.`,
+                `Saham ${pctSaham}% itu ibarat ikut maraton tapi baru jalan lima meter udah minta digendong panitia karena takut pegal.`,
+                `Gaya banget nulis "Harga Pasar ${strHargaEmas} /g", padahal pas mau buyback juga harganya bakal dipotong toko, siap-siap aja nangis di pojokan.`,
+                `Ngakunya investor muda, tapi isi portofolionya lebih mirip celengan ayam anak SD yang takut uang jajannya ilang.`,
+                `Itu reksadana total ${strTotReksa} kalau cuma ditaruh di pasar uang mending diselipin di bawah kasur aja, lumayan bikin kasurnya agak empuk dikit.`,
+                `Portofoliomu ini bukti nyata bahwa kemampuan coding frontend yang estetik sama sekali tidak berbanding lurus dengan keberanian di pasar modal.`,
+                `Capek-capek bikin tampilan dark mode buat aplikasinya, eh tapi masa depan investasimu yang ${pctSaham}% di saham itu ternyata jauh lebih gelap.`,
+                `Porsi sahamnya cuma ${pctSaham}% karena sisa ${100 - pctSaham}% mentalmu udah habis duluan buat nahan deg-degan waktu IHSG turun 0,1%.`,
+                `Nama aplikasinya "rxGrow", tapi ngeliat alokasi sahamnya yang secuil itu, lebih cocok diganti jadi "rxStagnant" atau "rxCariAman".`,
+                `Kamu pasti sering pamer ke temen-temen "Gue main saham loh", padahal sahammu isinya cuma hasil nyisa dari beli reksadana.`,
+                `Total aset hampir ${strTotalAset}, tapi nyalinya buat masuk pasar saham beneran masih seharga gorengan pinggir jalan.`,
+                `Itu emas ${strTotEmas} beneran ada fisiknya, atau jangan-jangan cuma angka digital yang kalau aplikasinya error kamu ikutan panik keringat dingin?`,
+                `Warna kuning dan pink di UI ini saking terangnya bikin sakit mata, sama kayak ngelihat betapa lambatnya pertumbuhan cuan portofoliomu.`,
+                `Bikin layout kotak reksadana gede banget biar kelihatan sukses ya, padahal cuannya cuma cukup buat bayar langganan Netflix setahun.`,
+                `Menu "Investasi Saham" ditaruh paling bawah disembunyiin, persis kayak caramu menyembunyikan rasa minder kalau lagi ngobrol sama trader kripto.`,
+                `Kalau tujuannya cuma numpuk emas dan reksadana, mending kamu pakai kalkulator warung aja, nggak usah sok-sokan pamer dashboard aset di homescreen.`,
+                `Bangga banget nulis "Update Terakhir: ${db.lastDate}", padahal harga emas dan reksadana pergerakan hariannya nggak bakal bikin kamu tiba-tiba bisa beli Rubicon hari ini.`,
+                `Punya duit nyaris ${strTotalAset} tapi strateginya super pasif, ini sih namanya kamu kerja keras buat uang, bukan uang kerja buat kamu.`,
+                `Alokasi ${pctReksa}% Reksadana dan ${pctEmas}% Emas adalah kombinasi paling sempurna untuk memastikan kamu aman dari kebangkrutan, sekaligus aman dari kemungkinan jadi kaya raya.`,
+
+                // 20 Kalimat Roasting Baru (Juga beradaptasi)
+                `Fitur biometrik dipasang cuma buat ngamanin aset senilai ${strTotalAset}? Hacker juga mikir dua kali, buang-buang waktu doang meretas ginian.`,
+                `Niat banget bikin tombol 'Sync All' biar muter-muter estetik, padahal harga emas ${strHargaEmas} juga nggak bakal berubah drastis dalam sejam.`,
+                `Porto saham ${pctSaham}% doang, tapi tiap buka HP ngeceknya tab Saham duluan. Ngarep apa lu, ARB jadi ARA beruntun?`,
+                `Tampilan total investasi dibikin flip 3D pamer Alokasi Aset, eh pas dibalik isinya cuma reksadana sama emas dominan. Gak ada seru-serunya.`,
+                `Fitur blur (mata dicoret) itu buat nyembunyiin ${strTotalAset} dari siapa sih? Dari diri sendiri biar nggak nyesek lihat cuannya?`,
+                `Gaya banget ada riwayat reksadana, kayak bakal ada pergerakan miliaran aja tiap hari. Paling naik ${formatRp(Math.round(reksaP > 1000 ? reksaP/10 : 15000))} doang.`,
+                `UI neobrutalism begini emang cocok buat portofoliomu: kelihatan berantakan, mencolok, dan nggak ada arah tujuannya yang jelas.`,
+                `Mending hapus aja itu tombol 'Tambah Saham'. Kita berdua sama-sama tau mental lu cuma kuat buat nyicil emas ${emasG} gram.`,
+                `Dark mode diaktifin biar hemat baterai ya? Sekalian aja hemat ekspektasi dari cuan saham lu yang cuma ${pctSaham}%.`,
+                `Tombol kunci merah pastel itu mempertegas satu hal: lu lebih takut kehilangan uang lu yang ${strTotalAset} daripada takut miskin di masa tua.`,
+                `Pake font Space Grotesk yang futuristik abis, sayang gaya investasinya masih gaya zaman batu: numpuk emas dan hindari risiko.`,
+                `Export data bentuk JSON? Emangnya lu kira aset ${strTotalAset} lu ini bakal diakuisisi sama BlackRock?`,
+                `Tombol hamburger menunya bagus, sayangnya isinya cuma Home sama Riwayat. Persis kayak hidup lu, monoton.`,
+                `Lu tau nggak sih, nyimpen ${strReksaM} di reksadana itu sama aja nitipin duit ke orang pinter biar mereka kaya, lu nya dapet sisaan doang.`,
+                `Unrealized PnL saham lu mau hijau kek, mau merah kek, kalau porsinya cuma ${pctSaham}% ya nggak bakal ngubah nasib, bro.`,
+                `Udah capek-capek coding grid buat card Reksadana warna pink, tapi pas lihat profitnya ${strReksaP} langsung pudar semangatnya.`,
+                `Kalau lu jual semua emas lu yang ${emasG} gram itu sekarang, mending buat traktir temen-temen sekantor biar mereka nggak mandang lu pelit.`,
+                `Tulisan 'Realita Porto' di easter egg ini sebenarnya lebih berharga daripada total cuan reksadana lu yang cuma ${strReksaP} itu.`,
+                `Porto isinya didominasi instrumen super aman. Fix lu adalah tipe orang yang kalau makan bubur ayam diaduk aja masih mikir risiko.`,
+                `Kalau aja keberanian lu buat investasi saham sebesar keberanian lu milih warna UI ini, mungkin lu udah jadi konglomerat. Sayang porsinya cuma ${pctSaham}%.`
+            ];
+        }
 
         let titleClickCount = 0;
         let titleClickTimer;
@@ -1678,8 +1713,9 @@
             clearTimeout(titleClickTimer);
             
             if (titleClickCount === 3) {
-                // Show Easter Egg with Random Quote
-                const randomQuote = sarcasticQuotes[Math.floor(Math.random() * sarcasticQuotes.length)];
+                // Show Easter Egg with Random Adaptive Quote
+                const quotes = getSarcasticQuotes();
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
                 easterEggQuote.textContent = `"${randomQuote}"`;
                 
                 easterEggModal.classList.remove('hidden');
