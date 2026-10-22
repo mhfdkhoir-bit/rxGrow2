@@ -246,37 +246,40 @@
     <!-- VIEW 2: DASHBOARD SCREEN                   -->
     <!-- ========================================== -->
     <div id="dashboard-view" class="hidden min-h-screen bg-[#FDF9F1] dark:bg-[#3f3f46] pb-10 transition-colors duration-300">
-        <!-- Added calc padding to ensure content starts below the solid ios status bar block -->
-        <div class="w-full max-w-[500px] mx-auto p-4 flex flex-col gap-5" style="padding-top: calc(1rem + env(safe-area-inset-top, 0px));">
-            
-            <!-- HEADER -->
-            <div class="flex justify-between items-center w-full pt-2">
-                <div class="flex items-center gap-3">
-                    <button id="hamburger-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    <!-- EASTER EGG TRIGGER ADDED HERE -->
-                    <div id="app-title-trigger" class="flex relative">
-                        <div class="bg-[#e9d5ff] text-black border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1 relative z-10">
-                            <h1 class="text-2xl font-bold italic tracking-tighter">rxGrow</h1>
-                        </div>
-                        <div class="bg-[#fbcfe8] text-black border-[2px] border-black rounded px-1.5 py-0.5 absolute -bottom-2.5 -right-4 rotate-12 z-20 shadow-brutal-sm">
-                            <p class="text-[9px] font-bold tracking-wider">by /MkhzZ</p>
+        
+        <!-- STICKY HEADER REVISI -->
+        <div class="sticky top-0 z-40 bg-[#FDF9F1] dark:bg-[#3f3f46] w-full transition-colors duration-300">
+            <div class="w-full max-w-[500px] mx-auto px-4 pb-2" style="padding-top: calc(1rem + env(safe-area-inset-top, 0px));">
+                <div class="flex justify-between items-center w-full pt-2">
+                    <div class="flex items-center gap-3">
+                        <button id="hamburger-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        <!-- EASTER EGG TRIGGER ADDED HERE -->
+                        <div id="app-title-trigger" class="flex relative cursor-pointer">
+                            <div class="bg-[#e9d5ff] text-black border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1 relative z-10">
+                                <h1 class="text-2xl font-bold italic tracking-tighter">rxGrow</h1>
+                            </div>
+                            <div class="bg-[#fbcfe8] text-black border-[2px] border-black rounded px-1.5 py-0.5 absolute -bottom-2.5 -right-4 rotate-12 z-20 shadow-brutal-sm">
+                                <p class="text-[9px] font-bold tracking-wider">by /MkhzZ</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <button id="sync-all-btn" class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Refresh Harga">
-                        <i class="fa-solid fa-rotate"></i>
-                    </button>
-                    <!-- Tampilan Kunci Direvisi: Warna Merah Pastel (bg-[#fca5a5]) dengan teks hitam -->
-                    <button id="lock-btn" class="bg-[#fca5a5] text-black border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Kunci Aplikasi">
-                        <i class="fa-solid fa-lock"></i>
-                    </button>
+                    
+                    <div class="flex items-center gap-2">
+                        <button id="sync-all-btn" class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Refresh Harga">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                        <button id="lock-btn" class="bg-[#fca5a5] text-black border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Kunci Aplikasi">
+                            <i class="fa-solid fa-lock"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
 
+        <div class="w-full max-w-[500px] mx-auto px-4 flex flex-col gap-5 mt-3">
+            
             <!-- ======================= -->
             <!-- TAB 1: HOME (DASHBOARD) -->
             <!-- ======================= -->
@@ -368,14 +371,18 @@
                                 </div>
                             </div>
                             <div class="w-full h-full relative">
-                                <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-2 pr-6" placeholder="0">
+                                <!-- REVISI: px-6 untuk perfect text-center alignment -->
+                                <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-6" placeholder="0">
                                 <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 dark:text-gray-300 text-xs pointer-events-none">g</span>
                             </div>
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">HARGA PASAR</span>
+                                <!-- REVISI: Menambahkan /g -->
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">HARGA PASAR /g</span>
                             </div>
-                            <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center font-bold text-center px-1">
+                            <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center font-bold text-center px-1 gap-1">
                                 <span id="gold-price-txt" class="text-[14px]">Memuat...</span>
+                                <!-- REVISI: Indikator Arrow -->
+                                <i id="gold-price-icon" class="hidden"></i>
                             </div>
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">NILAI TOTAL</span>
@@ -439,16 +446,21 @@
                     <div id="saham-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#3f3f46]">
                         <div class="accordion-inner">
                             <div class="p-4 flex flex-col gap-3">
+                                <!-- REVISI: Tampilan Total Saham Diubah Menjadi 3 Stats -->
                                 <div class="bg-[#222] text-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm mb-1">
-                                    <div class="flex justify-between items-center px-1">
-                                        <div class="flex flex-col">
-                                            <span class="text-[9px] font-bold uppercase text-gray-400 tracking-wider">Total Investasi Saham</span>
-                                            <span id="saham-grand-total" class="font-black text-lg text-white">Rp 0</span>
+                                    <div class="grid grid-cols-2 gap-2 mb-2 pb-2 border-b-2 border-dashed border-gray-600">
+                                        <div class="flex flex-col px-1">
+                                            <span class="text-[9px] font-bold uppercase text-gray-400 tracking-wider">Total Modal</span>
+                                            <span id="saham-modal-total" class="font-black text-sm text-white">Rp 0</span>
                                         </div>
-                                        <div class="flex flex-col items-end">
+                                        <div class="flex flex-col items-end px-1">
                                             <span class="text-[9px] font-bold uppercase text-gray-400 tracking-wider">Unrealized PnL</span>
-                                            <span id="saham-grand-pnl" class="font-black text-lg text-green-400">+Rp 0</span>
+                                            <span id="saham-grand-pnl" class="font-black text-sm text-green-400">+Rp 0</span>
                                         </div>
+                                    </div>
+                                    <div class="flex justify-between items-center px-1 pt-1">
+                                        <span class="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Total Nilai</span>
+                                        <span id="saham-grand-total" class="font-black text-lg text-white">Rp 0</span>
                                     </div>
                                 </div>
                                 <div id="saham-list" class="flex flex-col gap-3"></div>
@@ -559,7 +571,9 @@
             reksaHistory: [],
             darkMode: false,
             biometricEnabled: false, 
-            credentialId: null       
+            credentialId: null,
+            lastGoldPrice: 0,   // REVISI: Menyimpan Harga Emas Terakhir (Trend)
+            goldTrend: 'none'
         };
 
         const viewLogin = document.getElementById('login-view');
@@ -597,6 +611,8 @@
         const iconSaham = document.getElementById('saham-icon');
         const listSaham = document.getElementById('saham-list');
         const btnAddSaham = document.getElementById('add-saham-btn');
+        
+        const txtSahamModalTotal = document.getElementById('saham-modal-total');
         const txtSahamGrandTotal = document.getElementById('saham-grand-total');
         const txtSahamGrandPnl = document.getElementById('saham-grand-pnl');
         
@@ -694,6 +710,8 @@
                     if(!db.reksaHistory) db.reksaHistory = [];
                     if(db.darkMode === undefined) db.darkMode = false;
                     if(db.biometricEnabled === undefined) db.biometricEnabled = false;
+                    if(db.lastGoldPrice === undefined) db.lastGoldPrice = 0;
+                    if(db.goldTrend === undefined) db.goldTrend = 'none';
                 } catch(e) { console.error("Error parsing DB", e); }
             }
         }
@@ -949,7 +967,17 @@
                 const data = await res.json();
                 if (data && data.price && !isNaN(data.price)) {
                     // REVISI: Mengurangi Rp10000 per gram dari harga yang di-fetch
-                    HARGA_BUYBACK_EMAS = data.price - 10000;
+                    const newGoldPrice = data.price - 10000;
+                    
+                    // Evaluasi trend pergerakan emas
+                    if (db.lastGoldPrice && db.lastGoldPrice !== newGoldPrice) {
+                        if (newGoldPrice > db.lastGoldPrice) db.goldTrend = 'up';
+                        else if (newGoldPrice < db.lastGoldPrice) db.goldTrend = 'down';
+                    }
+                    
+                    HARGA_BUYBACK_EMAS = newGoldPrice;
+                    db.lastGoldPrice = HARGA_BUYBACK_EMAS;
+                    saveDB();
                 }
             } catch(e) { 
                 console.error("Error fetching gold price:", e); 
@@ -957,7 +985,19 @@
             }
             
             if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2367000; 
-            txtGoldPrice.textContent = `Rp ${HARGA_BUYBACK_EMAS.toLocaleString('id-ID')} /g`;
+            txtGoldPrice.textContent = `Rp ${HARGA_BUYBACK_EMAS.toLocaleString('id-ID')}`;
+            
+            const goldIcon = document.getElementById('gold-price-icon');
+            if (goldIcon) {
+                if (db.goldTrend === 'up') {
+                    goldIcon.className = "fa-solid fa-arrow-up rotate-45 text-green-600 text-xs";
+                } else if (db.goldTrend === 'down') {
+                    goldIcon.className = "fa-solid fa-arrow-down -rotate-45 text-red-600 text-xs";
+                } else {
+                    goldIcon.className = "hidden";
+                }
+            }
+
             calculateTotals();
         }
 
@@ -1074,6 +1114,7 @@
             const totReksa = rm + rp;
             txtRekTot.textContent = isCensored ? '••••••' : formatRp(totReksa);
 
+            let totModalSaham = 0;
             let totSaham = 0;
             let totPnlSaham = 0;
             db.saham.forEach(s => {
@@ -1081,15 +1122,20 @@
                 const avg = parseFloatNum(s.avg);
                 const harga = parseNum(s.harga);
                 const marketValue = lot * 100 * harga;
+                const modal = lot * 100 * avg;
                 const pnl = (harga - avg) * lot * 100;
+                
+                totModalSaham += modal;
                 totSaham += marketValue;
                 if(lot > 0 && avg > 0) totPnlSaham += pnl;
             });
 
+            if (txtSahamModalTotal) txtSahamModalTotal.textContent = isCensored ? '••••••' : formatRp(totModalSaham);
+
             if(txtSahamGrandTotal && txtSahamGrandPnl) {
                 txtSahamGrandTotal.textContent = isCensored ? '••••••' : formatRp(totSaham);
                 const pnlSign = totPnlSaham > 0 ? '+' : '';
-                txtSahamGrandPnl.className = `font-black text-lg ${isCensored ? 'text-gray-400' : (totPnlSaham >= 0 ? 'text-green-400' : 'text-red-400')}`;
+                txtSahamGrandPnl.className = `font-black text-sm ${isCensored ? 'text-gray-400' : (totPnlSaham >= 0 ? 'text-green-400' : 'text-red-400')}`;
                 txtSahamGrandPnl.textContent = isCensored ? '••••••' : `${pnlSign}${formatRp(totPnlSaham)}`;
             }
 
