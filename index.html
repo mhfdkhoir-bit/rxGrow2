@@ -41,7 +41,7 @@
     </script>
 
     <style>
-        /* Fixing Status Bar Color Bug: Ensure html background dictates the status bar over browser heuristics */
+        /* Fixing Status Bar Color Bug */
         html {
             background-color: #FDF9F1;
             transition: background-color 0.3s;
@@ -64,7 +64,7 @@
         }
         input[type=number] { -moz-appearance: textfield; }
         
-        /* SMOOTH REVEAL FOR ACCORDION (CSS Grid Transition) */
+        /* SMOOTH REVEAL FOR ACCORDION */
         .accordion-content {
             display: grid;
             grid-template-rows: 0fr;
@@ -130,19 +130,8 @@
 </head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#3f3f46] transition-colors duration-300">
 
-    <!-- ========================================== -->
-    <!-- iOS PWA STATUS BAR FIX                     -->
-    <!-- ========================================== -->
     <div id="ios-status-bar-bg" class="fixed top-0 left-0 w-full bg-[#FDF9F1] dark:bg-[#3f3f46] z-[99999] transition-colors duration-300 pointer-events-none" style="height: env(safe-area-inset-top, 0px);"></div>
-
-    <!-- ========================================== -->
-    <!-- TOAST NOTIFICATION CONTAINER               -->
-    <!-- ========================================== -->
     <div id="toast-container" class="fixed left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2 pointer-events-none w-[90%] max-w-[340px]" style="top: calc(1.25rem + env(safe-area-inset-top, 0px));"></div>
-
-    <!-- ========================================== -->
-    <!-- PRIVACY SCREEN (App Switcher / Recent Apps)-->
-    <!-- ========================================== -->
     <div id="privacy-screen" class="fixed left-0 right-0 bottom-0 bg-black z-[9999] hidden pointer-events-none" style="top: env(safe-area-inset-top, 0px);"></div>
 
     <!-- ========================================== -->
@@ -169,12 +158,9 @@
             <button id="login-btn" class="w-full bg-[#a78bfa] text-black border-[3px] border-black shadow-brutal-sm rounded-xl font-bold text-base py-3 mt-1 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 Simpan PIN & Masuk
             </button>
-
-            <!-- Face ID / Biometric Login Button -->
             <button id="biometric-login-btn" class="hidden w-full bg-[#34d399] text-black border-[3px] border-black shadow-brutal-sm rounded-xl font-bold text-base py-3 mt-1 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all flex items-center justify-center gap-2">
                 <i class="fa-solid fa-fingerprint text-xl"></i> Buka dengan Biometrics
             </button>
-
             <button id="reset-pin-link" class="hidden text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white text-xs font-semibold underline underline-offset-2 mt-2">
                 Lupa PIN? Reset Sekarang
             </button>
@@ -193,11 +179,18 @@
             </button>
         </div>
         <div class="flex flex-col p-4 gap-4 flex-grow">
-            <button id="nav-home" class="w-full bg-[#FFE268] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                <i class="fa-solid fa-house"></i> Home
+            <!-- REVISI: Warna hijau #004643 untuk menu HOME -->
+            <button id="nav-home" class="w-full bg-[#004643] text-white border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-house text-lg w-5 text-center"></i> Home
+            </button>
+            <button id="nav-emas" class="w-full bg-[#FEF08A] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-coins text-lg w-5 text-center"></i> Riwayat Emas
             </button>
             <button id="nav-riwayat" class="w-full bg-[#FBCFE8] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Reksadana
+                <i class="fa-solid fa-clock-rotate-left text-lg w-5 text-center"></i> Riwayat Reksadana
+            </button>
+            <button id="nav-saham-history" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <i class="fa-solid fa-chart-line text-lg w-5 text-center"></i> Riwayat Saham
             </button>
         </div>
         
@@ -224,7 +217,6 @@
             <div id="biometric-setting-container" class="w-full">
                 <button id="toggle-biometric" class="w-full bg-[#FED7AA] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
                     <span class="flex items-center gap-3"><i class="fa-solid fa-fingerprint text-lg w-5 text-center"></i> Biometrics</span>
-                    <!-- Toggle track with distinct background colors for ON/OFF -->
                     <div id="biometric-toggle-track" class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative border-[2px] border-black transition-colors duration-300">
                         <div id="biometric-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform duration-300 shadow-sm"></div>
                     </div>
@@ -247,7 +239,7 @@
     <!-- ========================================== -->
     <div id="dashboard-view" class="hidden min-h-screen bg-[#FDF9F1] dark:bg-[#3f3f46] pb-10 transition-colors duration-300">
         
-        <!-- STICKY HEADER REVISI -->
+        <!-- STICKY HEADER -->
         <div class="sticky top-0 z-40 bg-[#FDF9F1] dark:bg-[#3f3f46] w-full transition-colors duration-300">
             <div class="w-full max-w-[500px] mx-auto px-4 pb-2" style="padding-top: calc(1rem + env(safe-area-inset-top, 0px));">
                 <div class="flex justify-between items-center w-full pt-2">
@@ -255,7 +247,6 @@
                         <button id="hamburger-btn" class="bg-white dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-lg w-10 h-10 flex items-center justify-center text-lg active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all">
                             <i class="fa-solid fa-bars"></i>
                         </button>
-                        <!-- EASTER EGG TRIGGER ADDED HERE -->
                         <div id="app-title-trigger" class="flex relative cursor-pointer">
                             <div class="bg-[#e9d5ff] text-black border-[3px] border-black shadow-brutal-sm rounded-lg px-3 py-1 relative z-10">
                                 <h1 class="text-2xl font-bold italic tracking-tighter">rxGrow</h1>
@@ -287,7 +278,6 @@
                 <!-- TOP CARD (FLIP CONTAINER) -->
                 <div id="grand-total-container" class="perspective-1000 w-full mt-2 cursor-pointer group">
                     <div id="grand-total-flipper" class="relative transition-transform duration-700 transform-style-3d w-full">
-                        
                         <!-- FRONT FACE: GRAND TOTAL -->
                         <div class="relative backface-hidden z-[2] bg-[#3B82F6] border-[3px] border-black rounded-2xl p-5 text-white text-center shadow-brutal flex flex-col justify-center items-center w-full">
                             <button id="toggle-censor-btn" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors active:scale-95 z-20">
@@ -309,22 +299,14 @@
                                             <div id="pie-emas" class="h-full bg-[#FFE268] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
                                             <div id="pie-reksa" class="h-full bg-[#FF71A4] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
                                             <div id="pie-saham" class="h-full bg-[#93C5FD] transition-all duration-700 ease-out" style="width: 0%;"></div>
-                                            
                                             <div class="absolute inset-0 m-auto w-7 h-7 bg-[#FDF9F1] dark:bg-[#52525b] border-[2px] border-black rounded-full shadow-[2px_2px_0px_0px_#000] flex items-center justify-center z-10 transition-colors">
                                                 <span class="font-black text-[12px] text-green-600 dark:text-green-400 tracking-tighter">Rp</span>
                                             </div>
-
-                                            <div class="absolute top-0.5 left-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
-                                            <div class="absolute top-0.5 right-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
-                                            <div class="absolute bottom-0.5 left-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
-                                            <div class="absolute bottom-0.5 right-0.5 w-[3px] h-[3px] bg-black rounded-full z-10"></div>
                                         </div>
                                     </div>
                                 </div>
-                                
                                 <div class="w-1/2 flex flex-col justify-center gap-1.5 pl-3.5 border-l-[3px] border-black h-[75px]">
                                     <h3 class="text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-0.5">Alokasi Aset</h3>
-                                    
                                     <div class="flex items-center gap-2">
                                         <div class="w-3.5 h-3.5 rounded-sm bg-[#FFE268] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
                                         <div class="flex flex-col leading-none">
@@ -332,7 +314,6 @@
                                             <span id="pct-emas" class="text-[12px] font-black">0%</span>
                                         </div>
                                     </div>
-                                    
                                     <div class="flex items-center gap-2">
                                         <div class="w-3.5 h-3.5 rounded-sm bg-[#FF71A4] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
                                         <div class="flex flex-col leading-none">
@@ -340,7 +321,6 @@
                                             <span id="pct-reksa" class="text-[12px] font-black">0%</span>
                                         </div>
                                     </div>
-                                    
                                     <div class="flex items-center gap-2">
                                         <div class="w-3.5 h-3.5 rounded-sm bg-[#93C5FD] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
                                         <div class="flex flex-col leading-none">
@@ -371,17 +351,14 @@
                                 </div>
                             </div>
                             <div class="w-full h-full relative">
-                                <!-- REVISI: px-6 untuk perfect text-center alignment -->
                                 <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-6" placeholder="0">
                                 <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 dark:text-gray-300 text-xs pointer-events-none">g</span>
                             </div>
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
-                                <!-- REVISI: Menambahkan /g -->
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-black/80">HARGA PASAR /g</span>
                             </div>
                             <div class="w-full h-full bg-[#FEF08A] border-[3px] border-black rounded-lg shadow-brutal-sm flex items-center justify-center font-bold text-center px-1 gap-1">
                                 <span id="gold-price-txt" class="text-[14px]">Memuat...</span>
-                                <!-- REVISI: Indikator Arrow -->
                                 <i id="gold-price-icon" class="hidden"></i>
                             </div>
                             <div class="w-full h-full flex items-end justify-center pb-0.5">
@@ -446,7 +423,6 @@
                     <div id="saham-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#3f3f46]">
                         <div class="accordion-inner">
                             <div class="p-4 flex flex-col gap-3">
-                                <!-- REVISI: Tampilan Total Saham Diubah Menjadi 3 Stats -->
                                 <div class="bg-[#222] text-white border-[3px] border-black rounded-xl p-3 shadow-brutal-sm mb-1">
                                     <div class="grid grid-cols-2 gap-2 mb-2 pb-2 border-b-2 border-dashed border-gray-600">
                                         <div class="flex flex-col px-1">
@@ -474,7 +450,39 @@
             </div> <!-- END TAB HOME -->
 
             <!-- ========================== -->
-            <!-- TAB 2: RIWAYAT REKSADANA   -->
+            <!-- TAB 2: RIWAYAT EMAS        -->
+            <!-- ========================== -->
+            <div id="riwayat-emas-tab" class="hidden flex-col gap-4 mt-2">
+                <div class="flex items-center gap-3 px-1 mb-2 text-black dark:text-white">
+                    <div class="w-10 h-10 rounded-full bg-[#FEF08A] border-[3px] border-black shadow-brutal-sm flex items-center justify-center text-black">
+                        <i class="fa-solid fa-coins text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-black text-lg">Riwayat Emas</h2>
+                        <p class="text-xs font-bold text-gray-600 dark:text-gray-300">Jejak perubahan harga otomatis</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-[#52525b] border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden w-full transition-colors">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[340px]">
+                            <thead>
+                                <tr class="bg-[#FEF08A] text-black border-b-[3px] border-black">
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black">Tanggal</th>
+                                    <!-- REVISI: Penambahan kolom Aksi pada header -->
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-right">Harga Emas</th>
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-center">Naik/Turun</th>
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riwayat-emas-tbody" class="divide-y-[3px] divide-black text-sm font-semibold bg-[#FDF9F1] dark:bg-[#3f3f46] text-black dark:text-white transition-colors">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> <!-- END TAB RIWAYAT EMAS -->
+
+            <!-- ========================== -->
+            <!-- TAB 3: RIWAYAT REKSADANA   -->
             <!-- ========================== -->
             <div id="riwayat-tab" class="hidden flex-col gap-4 mt-2">
                 <div class="flex items-center gap-3 px-1 mb-2 text-black dark:text-white">
@@ -503,8 +511,72 @@
                         </table>
                     </div>
                 </div>
-            </div> <!-- END TAB RIWAYAT -->
+            </div> <!-- END TAB RIWAYAT REKSADANA -->
 
+            <!-- ========================== -->
+            <!-- TAB 4: RIWAYAT SAHAM       -->
+            <!-- ========================== -->
+            <div id="riwayat-saham-tab" class="hidden flex-col gap-4 mt-2">
+                <div class="flex items-center gap-3 px-1 mb-2 text-black dark:text-white">
+                    <div class="w-10 h-10 rounded-full bg-[#93C5FD] border-[3px] border-black shadow-brutal-sm flex items-center justify-center text-black">
+                        <i class="fa-solid fa-chart-line text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-black text-lg">Riwayat Saham</h2>
+                        <p class="text-xs font-bold text-gray-600 dark:text-gray-300">Akumulasi historis penjualan (Realized)</p>
+                    </div>
+                </div>
+                
+                <!-- REVISI: Filter Saham Badge -->
+                <div id="saham-filter-badge" class="hidden mb-1 inline-flex items-center gap-2 bg-[#93C5FD] text-black font-bold text-[10px] px-3 py-1.5 rounded-full border-[2px] border-black shadow-brutal-sm self-start ml-1">
+                    <span>Menampilkan: <span id="saham-filter-text"></span></span>
+                    <button id="reset-saham-filter" class="w-4 h-4 bg-white border-[2px] border-black rounded-full flex items-center justify-center hover:bg-red-200 transition-colors">
+                        <i class="fa-solid fa-times text-[8px]"></i>
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-[#52525b] border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden w-full transition-colors">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[340px]">
+                            <thead>
+                                <tr class="bg-[#93C5FD] text-black border-b-[3px] border-black">
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black">Tanggal</th>
+                                    <!-- REVISI: Penambahan kolom Aksi pada header -->
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-center">Kode</th>
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-center">Lot</th>
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-right">PNL</th>
+                                    <th class="p-3 font-black text-[11px] uppercase tracking-wider text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riwayat-saham-tbody" class="divide-y-[3px] divide-black text-sm font-semibold bg-[#FDF9F1] dark:bg-[#3f3f46] text-black dark:text-white transition-colors">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> <!-- END TAB RIWAYAT SAHAM -->
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SELL SAHAM MODAL                           -->
+    <!-- ========================================== -->
+    <div id="sell-saham-modal" class="fixed left-0 right-0 bottom-0 bg-black/60 z-[80] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" style="top: env(safe-area-inset-top, 0px);">
+        <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="sell-saham-card">
+            <div class="flex flex-col items-center">
+                <div class="w-12 h-12 bg-[#93C5FD] border-[3px] border-black rounded-full flex items-center justify-center shadow-brutal-sm mb-2">
+                    <i class="fa-solid fa-sack-dollar text-xl text-black"></i>
+                </div>
+                <h3 class="font-black text-xl text-center" id="sell-saham-title">Jual Saham</h3>
+                <p class="text-xs font-bold text-gray-600 dark:text-gray-300">Masukkan jumlah lot yang terjual</p>
+            </div>
+            <div class="relative w-full">
+                <input type="number" id="sell-lot-input" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-xl text-center font-black text-lg shadow-brutal-sm p-3 outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all" placeholder="0">
+            </div>
+            <div class="flex gap-3 mt-2">
+                <button id="cancel-sell-btn" class="flex-1 bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">Batal</button>
+                <button id="execute-sell-btn" class="flex-1 bg-[#93C5FD] text-black border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">Jual</button>
+            </div>
         </div>
     </div>
 
@@ -513,7 +585,8 @@
     <!-- ========================================== -->
     <div id="edit-history-modal" class="fixed left-0 right-0 bottom-0 bg-black/60 z-[80] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" style="top: env(safe-area-inset-top, 0px);">
         <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="edit-history-card">
-            <h3 class="font-black text-lg text-center">Edit Keuntungan</h3>
+            <!-- REVISI: Title Edit dapat berubah dinamis untuk Emas & Saham -->
+            <h3 class="font-black text-lg text-center" id="edit-history-title">Edit Keuntungan</h3>
             <div class="relative w-full">
                 <input type="text" id="edit-history-input" inputmode="numeric" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-xl text-center font-black text-lg shadow-brutal-sm p-3 outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all" placeholder="Rp 0">
             </div>
@@ -572,8 +645,10 @@
             darkMode: false,
             biometricEnabled: false, 
             credentialId: null,
-            lastGoldPrice: 0,   // REVISI: Menyimpan Harga Emas Terakhir (Trend)
-            goldTrend: 'none'
+            lastGoldPrice: 0,
+            goldTrend: 'none',
+            sahamHistory: [],
+            emasHistory: []
         };
 
         const viewLogin = document.getElementById('login-view');
@@ -588,7 +663,6 @@
         const lockBtn = document.getElementById('lock-btn');
         const syncAllBtn = document.getElementById('sync-all-btn');
 
-        // Biometric DOM Elements
         const btnBiometricLogin = document.getElementById('biometric-login-btn');
         const toggleBiometricBtn = document.getElementById('toggle-biometric');
         const biometricIndicator = document.getElementById('biometric-toggle-indicator');
@@ -625,11 +699,20 @@
         const btnCloseSidebar = document.getElementById('close-sidebar-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
+        
         const tabHome = document.getElementById('home-tab');
         const tabRiwayat = document.getElementById('riwayat-tab');
+        const tabEmas = document.getElementById('riwayat-emas-tab');
+        const tabSahamHistory = document.getElementById('riwayat-saham-tab');
+        
         const navHome = document.getElementById('nav-home');
         const navRiwayat = document.getElementById('nav-riwayat');
+        const navEmas = document.getElementById('nav-emas');
+        const navSahamHistory = document.getElementById('nav-saham-history');
+        
         const tbodyRiwayat = document.getElementById('riwayat-tbody');
+        const tbodyEmas = document.getElementById('riwayat-emas-tbody');
+        const tbodySahamHistory = document.getElementById('riwayat-saham-tbody');
 
         const btnExportData = document.getElementById('export-data-btn');
         const btnImportData = document.getElementById('import-data-btn');
@@ -638,9 +721,19 @@
         const modalEdit = document.getElementById('edit-history-modal');
         const cardEdit = document.getElementById('edit-history-card');
         const inputEdit = document.getElementById('edit-history-input');
+        const titleEdit = document.getElementById('edit-history-title');
         const btnCancelEdit = document.getElementById('cancel-edit-btn');
         const btnSaveEdit = document.getElementById('save-edit-btn');
         let currentEditIdx = -1;
+        let currentEditType = 'reksa'; // REVISI: Tipe edit dinamis (reksa, emas, saham)
+        
+        const modalSell = document.getElementById('sell-saham-modal');
+        const cardSell = document.getElementById('sell-saham-card');
+        const inputSellLot = document.getElementById('sell-lot-input');
+        const btnCancelSell = document.getElementById('cancel-sell-btn');
+        const btnExecuteSell = document.getElementById('execute-sell-btn');
+        const titleSell = document.getElementById('sell-saham-title');
+        let currentSellIdx = -1;
         
         const modalConfirm = document.getElementById('confirm-modal');
         const cardConfirm = document.getElementById('confirm-card');
@@ -654,7 +747,10 @@
         const darkToggleIndicator = document.getElementById('dark-toggle-indicator');
         const darkToggleTrack = document.getElementById('dark-toggle-track');
 
-        const parseNum = (str) => parseInt(str.toString().replace(/[^0-9]/g, ''), 10) || 0;
+        let currentSahamFilter = null; // REVISI: Status filter untuk riwayat saham
+
+        // REVISI: parseNum sekarang menangani "-" supaya nilai minus (loss pada saham) tidak terhapus
+        const parseNum = (str) => parseInt(str.toString().replace(/[^0-9\-]/g, ''), 10) || 0;
         const parseFloatNum = (str) => {
             if (!str) return 0;
             return parseFloat(str.toString().replace(/\./g, '').replace(',', '.')) || 0;
@@ -671,29 +767,21 @@
         const generateDateString = () => new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const generateShortDateString = () => new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
 
-        // Fitur Toast Notification Neo Brutalism
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             if (!container) return;
-            
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-[#86efac]' : 'bg-[#fca5a5]';
             const icon = type === 'success' ? '<i class="fa-solid fa-check-circle text-lg"></i>' : '<i class="fa-solid fa-triangle-exclamation text-lg"></i>';
-            
             toast.className = `${bgColor} text-black border-[3px] border-black shadow-brutal-sm rounded-xl px-4 py-3 flex items-center gap-3 font-bold text-sm transform -translate-y-10 opacity-0 transition-all duration-300 pointer-events-auto`;
             toast.innerHTML = `${icon} <span class="flex-1">${message}</span>`;
-            
             container.appendChild(toast);
-            
-            // Animasi masuk
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     toast.classList.remove('-translate-y-10', 'opacity-0');
                     toast.classList.add('translate-y-0', 'opacity-100');
                 });
             });
-            
-            // Animasi keluar dan hapus elemen
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('-translate-y-10', 'opacity-0');
@@ -708,6 +796,8 @@
                     const parsed = JSON.parse(saved);
                     db = { ...db, ...parsed };
                     if(!db.reksaHistory) db.reksaHistory = [];
+                    if(!db.sahamHistory) db.sahamHistory = []; 
+                    if(!db.emasHistory) db.emasHistory = [];   
                     if(db.darkMode === undefined) db.darkMode = false;
                     if(db.biometricEnabled === undefined) db.biometricEnabled = false;
                     if(db.lastGoldPrice === undefined) db.lastGoldPrice = 0;
@@ -783,7 +873,6 @@
                 biometricMsg.textContent = "Menunggu verifikasi wajah/sidik jari...";
                 biometricMsg.classList.remove('hidden');
                 biometricMsg.className = "text-[10px] text-gray-500 font-bold mt-1 text-center";
-
                 const publicKey = {
                     challenge: crypto.getRandomValues(new Uint8Array(32)),
                     rp: { name: "rxGrow App", id: window.location.hostname },
@@ -813,7 +902,6 @@
                 biometricMsg.textContent = "Biometrics berhasil diaktifkan!";
                 biometricMsg.classList.replace('text-gray-500', 'text-green-600');
                 setTimeout(() => biometricMsg.classList.add('hidden'), 3000);
-
             } catch (err) {
                 console.error("Biometric registration failed:", err);
                 biometricMsg.textContent = "Gagal mengaktifkan biometrik.";
@@ -827,7 +915,6 @@
             try {
                 pinError.textContent = "Memverifikasi Biometrics...";
                 pinError.classList.replace('text-[#fca5a5]', 'text-gray-400');
-
                 const publicKey = {
                     challenge: crypto.getRandomValues(new Uint8Array(32)),
                     allowCredentials: [{
@@ -837,7 +924,6 @@
                     userVerification: "required",
                     timeout: 60000
                 };
-                
                 const assertion = await navigator.credentials.get({ publicKey });
                 if (assertion) {
                     pinError.textContent = "";
@@ -858,7 +944,6 @@
                 setTimeout(() => biometricMsg.classList.add('hidden'), 3000);
                 return;
             }
-
             if (db.biometricEnabled) {
                 db.biometricEnabled = false;
                 db.credentialId = null;
@@ -947,7 +1032,6 @@
             saveDB();
             applyBiometricTheme();
             initAuth();
-            
             pinError.textContent = "PIN berhasil di-reset! Silakan buat PIN baru.";
             pinError.classList.replace('text-[#fca5a5]', 'text-green-400');
             setTimeout(() => {
@@ -966,13 +1050,25 @@
                 
                 const data = await res.json();
                 if (data && data.price && !isNaN(data.price)) {
-                    // REVISI: Mengurangi Rp10000 per gram dari harga yang di-fetch
                     const newGoldPrice = data.price - 10000;
                     
-                    // Evaluasi trend pergerakan emas
                     if (db.lastGoldPrice && db.lastGoldPrice !== newGoldPrice) {
-                        if (newGoldPrice > db.lastGoldPrice) db.goldTrend = 'up';
-                        else if (newGoldPrice < db.lastGoldPrice) db.goldTrend = 'down';
+                        let trend = 'none';
+                        if (newGoldPrice > db.lastGoldPrice) trend = 'up';
+                        else if (newGoldPrice < db.lastGoldPrice) trend = 'down';
+                        
+                        db.goldTrend = trend;
+
+                        if (trend !== 'none') {
+                            if (!db.emasHistory) db.emasHistory = [];
+                            db.emasHistory.unshift({
+                                date: generateShortDateString(),
+                                price: newGoldPrice,
+                                trend: trend
+                            });
+                            if (db.emasHistory.length > 50) db.emasHistory.pop();
+                            renderEmasHistory();
+                        }
                     }
                     
                     HARGA_BUYBACK_EMAS = newGoldPrice;
@@ -981,7 +1077,7 @@
                 }
             } catch(e) { 
                 console.error("Error fetching gold price:", e); 
-                throw e; // Lemparkan error agar ditangkap oleh syncAllBtn
+                throw e; 
             }
             
             if (HARGA_BUYBACK_EMAS === 0) HARGA_BUYBACK_EMAS = 2367000; 
@@ -997,7 +1093,6 @@
                     goldIcon.className = "hidden";
                 }
             }
-
             calculateTotals();
         }
 
@@ -1030,14 +1125,13 @@
                 if(targetInput) targetInput.placeholder = "0";
             } catch(e) {
                 if(targetInput) targetInput.placeholder = "0";
-                throw e; // Lemparkan error agar ditangkap oleh syncAllBtn
+                throw e;
             }
         }
 
         syncAllBtn.addEventListener('click', async () => {
             const icon = syncAllBtn.querySelector('i');
             icon.classList.add('fa-spin');
-            
             try {
                 await fetchGoldPrice();
                 const promises = db.saham.map((s, idx) => {
@@ -1045,13 +1139,10 @@
                     return Promise.resolve();
                 });
                 await Promise.all(promises);
-                
                 db.lastDate = generateDateString();
                 txtUpdate.textContent = db.lastDate;
                 saveDB();
-                
                 showToast('Data berhasil diperbarui!', 'success');
-
             } catch (err) {
                 console.error("Error syncing data:", err);
                 showToast('Gagal memuat beberapa data pasar.', 'error');
@@ -1068,7 +1159,6 @@
             const pctE = document.getElementById('pct-emas');
             const pctR = document.getElementById('pct-reksa');
             const pctS = document.getElementById('pct-saham');
-
             if (!pieE || !pctE) return;
 
             const valS = Math.max(0, totS + totP);
@@ -1078,16 +1168,13 @@
                 pctE.textContent = isCensored ? '••%' : '0%';
                 pctR.textContent = isCensored ? '••%' : '0%';
                 pctS.textContent = isCensored ? '••%' : '0%';
-                
                 pieE.style.width = '0%';
                 pieR.style.width = '0%';
                 pieS.style.width = '0%';
-                
                 pieE.style.borderRightWidth = '0px';
                 pieR.style.borderRightWidth = '0px';
                 return;
             }
-
             const pe = totE / safeGrand;
             const pr = totR / safeGrand;
             const ps = valS / safeGrand;
@@ -1095,11 +1182,9 @@
             pctE.textContent = isCensored ? '••%' : Math.round(pe * 100) + '%';
             pctR.textContent = isCensored ? '••%' : Math.round(pr * 100) + '%';
             pctS.textContent = isCensored ? '••%' : Math.round(ps * 100) + '%';
-
             pieE.style.width = `${pe * 100}%`;
             pieR.style.width = `${pr * 100}%`;
             pieS.style.width = `${ps * 100}%`;
-
             pieE.style.borderRightWidth = (pe > 0 && (pr > 0 || ps > 0)) ? '2px' : '0px';
             pieR.style.borderRightWidth = (pr > 0 && ps > 0) ? '2px' : '0px';
         }
@@ -1131,16 +1216,13 @@
             });
 
             if (txtSahamModalTotal) txtSahamModalTotal.textContent = isCensored ? '••••••' : formatRp(totModalSaham);
-
             if(txtSahamGrandTotal && txtSahamGrandPnl) {
                 txtSahamGrandTotal.textContent = isCensored ? '••••••' : formatRp(totSaham);
                 const pnlSign = totPnlSaham > 0 ? '+' : '';
                 txtSahamGrandPnl.className = `font-black text-sm ${isCensored ? 'text-gray-400' : (totPnlSaham >= 0 ? 'text-green-400' : 'text-red-400')}`;
                 txtSahamGrandPnl.textContent = isCensored ? '••••••' : `${pnlSign}${formatRp(totPnlSaham)}`;
             }
-
             txtGrandTot.textContent = isCensored ? 'Rp ••••••' : formatRp(totEmas + totReksa + totSaham + totPnlSaham);
-
             updatePieChart(totEmas, totReksa, totSaham, totPnlSaham);
         }
 
@@ -1161,29 +1243,34 @@
 
         function switchTab(tabName) {
             toggleSidebar(false);
-            tabHome.classList.remove('tab-active');
-            tabRiwayat.classList.remove('tab-active');
+            const allTabs = [tabHome, tabRiwayat, tabEmas, tabSahamHistory];
+            allTabs.forEach(t => {
+                t.classList.add('hidden');
+                t.classList.remove('flex', 'tab-active');
+            });
 
-            if (tabName === 'home') {
-                tabHome.classList.remove('hidden');
-                tabHome.classList.add('flex');
-                tabRiwayat.classList.add('hidden');
-                tabRiwayat.classList.remove('flex');
-                void tabHome.offsetWidth; 
-                tabHome.classList.add('tab-active');
-                calculateTotals();
-            } else if (tabName === 'riwayat') {
-                tabRiwayat.classList.remove('hidden');
-                tabRiwayat.classList.add('flex');
-                tabHome.classList.add('hidden');
-                tabHome.classList.remove('flex');
-                void tabRiwayat.offsetWidth;
-                tabRiwayat.classList.add('tab-active');
-                renderRiwayat();
+            let targetTab;
+            if (tabName === 'home') targetTab = tabHome;
+            else if (tabName === 'riwayat') targetTab = tabRiwayat;
+            else if (tabName === 'emas') targetTab = tabEmas;
+            else if (tabName === 'saham-history') targetTab = tabSahamHistory;
+
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
+                targetTab.classList.add('flex');
+                void targetTab.offsetWidth;
+                targetTab.classList.add('tab-active');
             }
+
+            if (tabName === 'home') calculateTotals();
+            if (tabName === 'riwayat') renderRiwayat();
+            if (tabName === 'emas') renderEmasHistory();
+            if (tabName === 'saham-history') renderSahamHistory();
         }
         navHome.addEventListener('click', () => switchTab('home'));
         navRiwayat.addEventListener('click', () => switchTab('riwayat'));
+        navEmas.addEventListener('click', () => switchTab('emas'));
+        navSahamHistory.addEventListener('click', () => switchTab('saham-history'));
 
         // Fitur Export Data
         btnExportData.addEventListener('click', () => {
@@ -1225,8 +1312,6 @@
                         applyTheme();
                         applyBiometricTheme();
                         toggleSidebar(false);
-                        calculateTotals();
-                        renderRiwayat();
                         showToast('Data berhasil diimpor!', 'success');
                     } else {
                         throw new Error("Invalid Format");
@@ -1235,7 +1320,7 @@
                     console.error('Import failed', err);
                     showToast('Gagal mengimpor data. File tidak valid!', 'error');
                 }
-                importFileInput.value = ''; // Reset
+                importFileInput.value = '';
             };
             reader.readAsText(file);
         });
@@ -1266,6 +1351,7 @@
 
             calculateTotals();
             renderRiwayat();
+            renderSahamHistory(); 
             if(db.saham.length > 0) db.saham.forEach((_, idx) => updateSahamRowUI(idx));
         }
 
@@ -1289,7 +1375,6 @@
             let raw = parseNum(e.target.value);
             e.target.value = raw > 0 ? 'Rp ' + raw.toLocaleString('id-ID') : '';
             db[keyName] = raw || 0;
-            
             if (isProfit) {
                 db.lastDate = generateDateString();
                 txtUpdate.textContent = db.lastDate;
@@ -1352,6 +1437,64 @@
             closeConfirmModal();
         });
 
+        // REVISI: Modifikasi general input formater untuk Edit History
+        inputEdit.addEventListener('input', (e) => {
+            let raw = parseNum(e.target.value);
+            if (raw === 0) {
+                e.target.value = '';
+            } else {
+                e.target.value = (raw < 0 ? '-' : '') + 'Rp ' + Math.abs(raw).toLocaleString('id-ID');
+            }
+        });
+
+        function openEditModal() {
+            modalEdit.classList.remove('hidden');
+            modalEdit.classList.add('flex');
+            requestAnimationFrame(() => {
+                modalEdit.classList.remove('opacity-0');
+                cardEdit.classList.remove('scale-95');
+            });
+        }
+
+        function closeEditModal() {
+            modalEdit.classList.add('opacity-0');
+            cardEdit.classList.add('scale-95');
+            setTimeout(() => {
+                modalEdit.classList.add('hidden');
+                modalEdit.classList.remove('flex');
+            }, 300);
+        }
+        
+        btnCancelEdit.addEventListener('click', closeEditModal);
+        
+        // REVISI: Handle Save Edit untuk berbagai tab (reksadana, emas, saham)
+        btnSaveEdit.addEventListener('click', () => {
+            if (currentEditIdx > -1) {
+                const newVal = parseNum(inputEdit.value);
+                
+                if (currentEditType === 'reksa') {
+                    db.reksaHistory[currentEditIdx].profit = newVal;
+                    recalculateHistoryGrowths();
+                    if (currentEditIdx === 0) {
+                        db.reksaProfit = newVal;
+                        inRekProfit.value = newVal > 0 ? 'Rp ' + newVal.toLocaleString('id-ID') : '';
+                        calculateTotals();
+                    }
+                    saveDB();
+                    renderRiwayat();
+                } else if (currentEditType === 'emas') {
+                    db.emasHistory[currentEditIdx].price = newVal;
+                    saveDB();
+                    renderEmasHistory();
+                } else if (currentEditType === 'saham') {
+                    db.sahamHistory[currentEditIdx].pnl = newVal;
+                    saveDB();
+                    renderSahamHistory();
+                }
+            }
+            closeEditModal();
+        });
+
         tbodyRiwayat.addEventListener('click', (e) => {
             const btnEdit = e.target.closest('button[data-action="edit-riwayat"]');
             const btnDelete = e.target.closest('button[data-action="delete-riwayat"]');
@@ -1370,46 +1513,34 @@
                     renderRiwayat();
                 });
             } else if (btnEdit) {
+                currentEditType = 'reksa';
                 currentEditIdx = parseInt(btnEdit.dataset.index);
                 const rawProfit = db.reksaHistory[currentEditIdx].profit;
                 inputEdit.value = rawProfit > 0 ? 'Rp ' + rawProfit.toLocaleString('id-ID') : '';
-                modalEdit.classList.remove('hidden');
-                modalEdit.classList.add('flex');
-                requestAnimationFrame(() => {
-                    modalEdit.classList.remove('opacity-0');
-                    cardEdit.classList.remove('scale-95');
+                titleEdit.textContent = "Edit Keuntungan";
+                openEditModal();
+            }
+        });
+
+        // REVISI: Listener edit/delete untuk Riwayat Emas
+        tbodyEmas.addEventListener('click', (e) => {
+            const btnEdit = e.target.closest('button[data-action="edit-emas"]');
+            const btnDelete = e.target.closest('button[data-action="delete-emas"]');
+            if (btnDelete) {
+                const idx = parseInt(btnDelete.dataset.index);
+                showConfirmModal("Hapus Riwayat?", "Riwayat harga emas ini akan dihapus permanen.", () => {
+                    db.emasHistory.splice(idx, 1);
+                    saveDB();
+                    renderEmasHistory();
                 });
+            } else if (btnEdit) {
+                currentEditType = 'emas';
+                currentEditIdx = parseInt(btnEdit.dataset.index);
+                const price = db.emasHistory[currentEditIdx].price;
+                inputEdit.value = price > 0 ? 'Rp ' + price.toLocaleString('id-ID') : '';
+                titleEdit.textContent = "Edit Harga Emas";
+                openEditModal();
             }
-        });
-
-        inputEdit.addEventListener('input', (e) => {
-            let raw = parseNum(e.target.value);
-            e.target.value = raw > 0 ? 'Rp ' + raw.toLocaleString('id-ID') : '';
-        });
-
-        function closeEditModal() {
-            modalEdit.classList.add('opacity-0');
-            cardEdit.classList.add('scale-95');
-            setTimeout(() => {
-                modalEdit.classList.add('hidden');
-                modalEdit.classList.remove('flex');
-            }, 300);
-        }
-        btnCancelEdit.addEventListener('click', closeEditModal);
-        btnSaveEdit.addEventListener('click', () => {
-            if (currentEditIdx > -1) {
-                const newProfit = parseNum(inputEdit.value);
-                db.reksaHistory[currentEditIdx].profit = newProfit;
-                recalculateHistoryGrowths();
-                if (currentEditIdx === 0) {
-                    db.reksaProfit = newProfit;
-                    inRekProfit.value = newProfit > 0 ? 'Rp ' + newProfit.toLocaleString('id-ID') : '';
-                    calculateTotals();
-                }
-                saveDB();
-                renderRiwayat();
-            }
-            closeEditModal();
         });
 
         function renderRiwayat() {
@@ -1438,6 +1569,110 @@
                     </td>
                 `;
                 tbodyRiwayat.appendChild(tr);
+            });
+        }
+
+        // REVISI: Render Riwayat Emas dengan penambahan tombol aksi
+        function renderEmasHistory() {
+            tbodyEmas.innerHTML = '';
+            if (!db.emasHistory || db.emasHistory.length === 0) {
+                tbodyEmas.innerHTML = '<tr><td colspan="4" class="p-6 text-center font-bold text-gray-500 text-xs italic">Belum ada pergerakan emas terekam.</td></tr>';
+                return;
+            }
+            db.emasHistory.forEach((item, idx) => {
+                const icon = item.trend === 'up' 
+                    ? '<i class="fa-solid fa-arrow-up rotate-45 text-green-600 dark:text-green-400"></i>' 
+                    : '<i class="fa-solid fa-arrow-down -rotate-45 text-red-600 dark:text-red-400"></i>';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${item.date}</td>
+                    <td class="p-3 border-r-[3px] border-black text-right font-black text-sm">${formatRp(item.price)}</td>
+                    <td class="p-3 border-r-[3px] border-black text-center font-black text-sm">${icon}</td>
+                    <td class="p-2 text-center align-middle">
+                        <div class="flex items-center justify-center gap-2">
+                            <button data-action="edit-emas" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
+                            <button data-action="delete-emas" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbodyEmas.appendChild(tr);
+            });
+        }
+
+        // REVISI: Event Listener Filter dan Aksi Riwayat Saham
+        tbodySahamHistory.addEventListener('click', (e) => {
+            const btnEdit = e.target.closest('button[data-action="edit-saham-hist"]');
+            const btnDelete = e.target.closest('button[data-action="delete-saham-hist"]');
+            const filterBtn = e.target.closest('span[data-action="filter-saham"]');
+            
+            if (filterBtn) {
+                currentSahamFilter = filterBtn.dataset.kode;
+                renderSahamHistory();
+            } else if (btnDelete) {
+                const idx = parseInt(btnDelete.dataset.index);
+                showConfirmModal("Hapus Riwayat?", "Riwayat saham ini akan dihapus permanen.", () => {
+                    db.sahamHistory.splice(idx, 1);
+                    saveDB();
+                    renderSahamHistory();
+                });
+            } else if (btnEdit) {
+                currentEditType = 'saham';
+                currentEditIdx = parseInt(btnEdit.dataset.index);
+                const pnl = db.sahamHistory[currentEditIdx].pnl;
+                inputEdit.value = (pnl < 0 ? '-' : '') + 'Rp ' + Math.abs(pnl).toLocaleString('id-ID');
+                titleEdit.textContent = "Edit PNL Saham";
+                openEditModal();
+            }
+        });
+
+        document.getElementById('reset-saham-filter').addEventListener('click', () => {
+            currentSahamFilter = null;
+            renderSahamHistory();
+        });
+
+        // REVISI: Render Riwayat Saham dengan filter, link kode, dan tombol aksi
+        function renderSahamHistory() {
+            tbodySahamHistory.innerHTML = '';
+            
+            const badge = document.getElementById('saham-filter-badge');
+            const filterText = document.getElementById('saham-filter-text');
+            if (badge && filterText) {
+                if (currentSahamFilter) {
+                    badge.classList.remove('hidden');
+                    filterText.textContent = currentSahamFilter;
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+
+            const dataToRender = currentSahamFilter ? db.sahamHistory.filter(h => h.kode === currentSahamFilter) : db.sahamHistory;
+
+            if (!dataToRender || dataToRender.length === 0) {
+                tbodySahamHistory.innerHTML = '<tr><td colspan="5" class="p-6 text-center font-bold text-gray-500 text-xs italic">Belum ada riwayat penjualan saham.</td></tr>';
+                return;
+            }
+            
+            dataToRender.forEach((item) => {
+                const idx = db.sahamHistory.indexOf(item); // get actual index for edit/delete
+                const pnlClass = item.pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+                const pnlSign = item.pnl > 0 ? '+' : '';
+                const pDisplay = isCensored ? '••••••' : `${pnlSign}${formatRp(item.pnl)}`;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${item.date}</td>
+                    <td class="p-3 border-r-[3px] border-black text-center font-black text-sm uppercase">
+                        <span class="cursor-pointer text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 transition-colors" data-action="filter-saham" data-kode="${item.kode}">${item.kode}</span>
+                    </td>
+                    <td class="p-3 border-r-[3px] border-black text-center font-black text-sm">${item.lot}</td>
+                    <td class="p-3 border-r-[3px] border-black text-right font-black text-sm ${isCensored ? 'text-gray-500' : pnlClass}">${pDisplay}</td>
+                    <td class="p-2 text-center align-middle">
+                        <div class="flex items-center justify-center gap-2">
+                            <button data-action="edit-saham-hist" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
+                            <button data-action="delete-saham-hist" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbodySahamHistory.appendChild(tr);
             });
         }
 
@@ -1518,6 +1753,11 @@
                                 <span id="saham-tot-${idx}" class="text-sm font-black text-blue-600 dark:text-blue-400">${isCensored ? '••••••' : formatRp(lot * 100 * avgFloat)}</span>
                             </div>
                         </div>
+                        <div class="w-full mt-1">
+                            <button data-action="sell" data-index="${idx}" class="w-full bg-[#93C5FD] text-black border-[3px] border-black rounded-xl py-2 font-black text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all ${isCensored ? 'opacity-50 pointer-events-none' : ''}">
+                                <i class="fa-solid fa-sack-dollar text-sm pointer-events-none"></i> SELL
+                            </button>
+                        </div>
                     </div>
                 `;
                 listSaham.insertAdjacentHTML('beforeend', html);
@@ -1529,7 +1769,6 @@
             saveDB();
             renderSahamList();
             calculateTotals();
-            
             setTimeout(() => {
                 const inputs = document.querySelectorAll('input[data-field="kode"]');
                 if (inputs.length > 0) {
@@ -1570,17 +1809,94 @@
         });
 
         listSaham.addEventListener('click', (e) => {
-            const btn = e.target.closest('button[data-action="delete"]');
-            if (!btn) return;
-            const idx = btn.dataset.index;
-            const namaSaham = db.saham[idx].kode || "Saham ini";
+            const btnDelete = e.target.closest('button[data-action="delete"]');
+            const btnSell = e.target.closest('button[data-action="sell"]'); 
             
-            showConfirmModal("Hapus Saham?", `Data portofolio ${namaSaham} akan dihapus secara permanen.`, () => {
-                db.saham.splice(idx, 1);
+            if (btnDelete) {
+                const idx = btnDelete.dataset.index;
+                const namaSaham = db.saham[idx].kode || "Saham ini";
+                showConfirmModal("Hapus Saham?", `Data portofolio ${namaSaham} akan dihapus secara permanen.`, () => {
+                    db.saham.splice(idx, 1);
+                    saveDB();
+                    renderSahamList();
+                    calculateTotals();
+                });
+            } else if (btnSell) {
+                currentSellIdx = parseInt(btnSell.dataset.index);
+                const s = db.saham[currentSellIdx];
+                
+                if (!s.kode || parseNum(s.lot) <= 0 || parseFloatNum(s.avg) <= 0 || parseNum(s.harga) <= 0) {
+                    showToast("Lengkapi kode, harga, lot, dan AVG sebelum menjual!", "error");
+                    return;
+                }
+                
+                titleSell.textContent = `Jual Saham ${s.kode}`;
+                inputSellLot.value = parseNum(s.lot); 
+                
+                modalSell.classList.remove('hidden');
+                modalSell.classList.add('flex');
+                requestAnimationFrame(() => {
+                    modalSell.classList.remove('opacity-0');
+                    cardSell.classList.remove('scale-95');
+                });
+            }
+        });
+
+        function closeSellModal() {
+            modalSell.classList.add('opacity-0');
+            cardSell.classList.add('scale-95');
+            setTimeout(() => {
+                modalSell.classList.add('hidden');
+                modalSell.classList.remove('flex');
+                currentSellIdx = -1;
+            }, 300);
+        }
+
+        btnCancelSell.addEventListener('click', closeSellModal);
+        btnExecuteSell.addEventListener('click', () => {
+            if (currentSellIdx > -1) {
+                const s = db.saham[currentSellIdx];
+                const sellLot = parseNum(inputSellLot.value);
+                const currentLot = parseNum(s.lot);
+                
+                if (sellLot <= 0 || sellLot > currentLot) {
+                    showToast("Jumlah lot tidak valid!", "error");
+                    return;
+                }
+
+                const avg = parseFloatNum(s.avg);
+                const harga = parseNum(s.harga);
+                const realizedPnl = (harga - avg) * sellLot * 100;
+
+                if (!db.sahamHistory) db.sahamHistory = [];
+                const existingIdx = db.sahamHistory.findIndex(h => h.kode === s.kode);
+                
+                if (existingIdx > -1) {
+                    db.sahamHistory[existingIdx].lot += sellLot;
+                    db.sahamHistory[existingIdx].pnl += realizedPnl;
+                    db.sahamHistory[existingIdx].date = generateShortDateString();
+                    const updatedItem = db.sahamHistory.splice(existingIdx, 1)[0];
+                    db.sahamHistory.unshift(updatedItem);
+                } else {
+                    db.sahamHistory.unshift({
+                        kode: s.kode,
+                        lot: sellLot,
+                        pnl: realizedPnl,
+                        date: generateShortDateString()
+                    });
+                }
+
+                s.lot = currentLot - sellLot;
+                if (s.lot === 0) s.lot = '';
+
                 saveDB();
                 renderSahamList();
                 calculateTotals();
-            });
+                renderSahamHistory();
+                
+                showToast(`Berhasil menjual ${sellLot} lot ${s.kode}`, "success");
+                closeSellModal();
+            }
         });
 
         function initDashboard() {
@@ -1594,6 +1910,8 @@
 
             fetchGoldPrice(); 
             renderRiwayat();
+            renderEmasHistory();    
+            renderSahamHistory();   
             calculateTotals();
         }
 
@@ -1613,28 +1931,12 @@
             }
         }
 
-        window.addEventListener('blur', () => {
-            showPrivacy();
-            autoTriggerCensor(true);
-        });
-        window.addEventListener('focus', () => {
-            hidePrivacy();
-        });
-        window.addEventListener('pagehide', () => {
-            showPrivacy();
-            autoTriggerCensor(true);
-        });
-        window.addEventListener('pageshow', () => {
-            hidePrivacy();
-        });
-
-        document.addEventListener('touchcancel', () => {
-            showPrivacy();
-            autoTriggerCensor(true);
-        });
-        document.addEventListener('touchstart', () => {
-            hidePrivacy();
-        }, {passive: true});
+        window.addEventListener('blur', () => { showPrivacy(); autoTriggerCensor(true); });
+        window.addEventListener('focus', () => { hidePrivacy(); });
+        window.addEventListener('pagehide', () => { showPrivacy(); autoTriggerCensor(true); });
+        window.addEventListener('pageshow', () => { hidePrivacy(); });
+        document.addEventListener('touchcancel', () => { showPrivacy(); autoTriggerCensor(true); });
+        document.addEventListener('touchstart', () => { hidePrivacy(); }, {passive: true});
 
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === "hidden") {
@@ -1653,13 +1955,11 @@
         // EASTER EGG LOGIC
         // ========================================== //
         function getSarcasticQuotes() {
-            // Kalkulasi real-time
             const emasG = parseFloatNum(inEmas.value) || 0;
             const totEmas = Math.round(emasG * HARGA_BUYBACK_EMAS);
             const reksaM = parseNum(inRekModal.value) || 0;
             const reksaP = parseNum(inRekProfit.value) || 0;
             const totReksa = reksaM + reksaP;
-            
             let totSahamBase = 0;
             let totPnlSaham = 0;
             db.saham.forEach(s => {
@@ -1670,12 +1970,10 @@
                 if (lot > 0 && avg > 0) totPnlSaham += ((harga - avg) * lot * 100);
             });
             const totSahamGrand = Math.max(0, totSahamBase + totPnlSaham); 
-            
             const safeGrand = totEmas + totReksa + totSahamGrand;
             const pctEmas = safeGrand > 0 ? Math.round((totEmas / safeGrand) * 100) : 0;
             const pctReksa = safeGrand > 0 ? Math.round((totReksa / safeGrand) * 100) : 0;
             const pctSaham = safeGrand > 0 ? Math.round((totSahamGrand / safeGrand) * 100) : 0;
-            
             const strReksaP = formatRp(reksaP);
             const strReksaM = formatRp(reksaM);
             const strTotReksa = formatRp(totReksa);
@@ -1685,7 +1983,6 @@
             const retPorto = safeGrand > 0 ? Math.round(((reksaP + totPnlSaham) / safeGrand) * 100) : 0;
 
             return [
-                // 30 Kalimat Roasting Awal (Beradaptasi dengan portofolio)
                 `Alokasi saham cuma ${pctSaham}%? Ini portofolio investasi atau sekadar bumbu penyedap rasa biar bisa ikut ngobrol di tongkrongan?`,
                 `Punya emas ${pctEmas}% dan reksadana ${pctReksa}%, ini profil risiko kamu "investor agresif" atau "kakek-kakek pensiunan nunggu kiamat"?`,
                 `Bikin UI aplikasinya gaya neobrutalism yang keren abis, tapi mindset investasinya masih kolot nyimpen emas kayak nenek-nenek di kampung.`,
@@ -1716,8 +2013,6 @@
                 `Bangga banget nulis "Update Terakhir: ${db.lastDate}", padahal harga emas dan reksadana pergerakan hariannya nggak bakal bikin kamu tiba-tiba bisa beli Rubicon hari ini.`,
                 `Punya duit nyaris ${strTotalAset} tapi strateginya super pasif, ini sih namanya kamu kerja keras buat uang, bukan uang kerja buat kamu.`,
                 `Alokasi ${pctReksa}% Reksadana dan ${pctEmas}% Emas adalah kombinasi paling sempurna untuk memastikan kamu aman dari kebangkrutan, sekaligus aman dari kemungkinan jadi kaya raya.`,
-
-                // 20 Kalimat Roasting Baru (Juga beradaptasi)
                 `Fitur biometrik dipasang cuma buat ngamanin aset senilai ${strTotalAset}? Hacker juga mikir dua kali, buang-buang waktu doang meretas ginian.`,
                 `Niat banget bikin tombol 'Sync All' biar muter-muter estetik, padahal harga emas ${strHargaEmas} juga nggak bakal berubah drastis dalam sejam.`,
                 `Porto saham ${pctSaham}% doang, tapi tiap buka HP ngeceknya tab Saham duluan. Ngarep apa lu, ARB jadi ARA beruntun?`,
@@ -1751,16 +2046,14 @@
         const closeEasterEggBtn = document.getElementById('close-easter-egg');
 
         titleTrigger.addEventListener('click', () => {
-            // Trigger quick pulse animation on the title
             titleTrigger.classList.remove('animate-pulse-click');
-            void titleTrigger.offsetWidth; // Trigger reflow to restart animation
+            void titleTrigger.offsetWidth; 
             titleTrigger.classList.add('animate-pulse-click');
 
             titleClickCount++;
             clearTimeout(titleClickTimer);
             
             if (titleClickCount === 3) {
-                // Show Easter Egg with Random Adaptive Quote
                 const quotes = getSarcasticQuotes();
                 const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
                 easterEggQuote.textContent = `"${randomQuote}"`;
@@ -1775,23 +2068,19 @@
                 });
                 titleClickCount = 0;
             } else {
-                titleClickTimer = setTimeout(() => {
-                    titleClickCount = 0;
-                }, 1000); 
+                titleClickTimer = setTimeout(() => { titleClickCount = 0; }, 1000); 
             }
         });
 
         closeEasterEggBtn.addEventListener('click', () => {
-            // Trigger pop-out animation
             easterEggCard.classList.remove('modal-pop-in');
             easterEggCard.classList.add('modal-pop-out');
             easterEggModal.classList.add('opacity-0');
-            
             setTimeout(() => {
                 easterEggModal.classList.add('hidden');
                 easterEggModal.classList.remove('flex');
-                easterEggCard.classList.remove('modal-pop-out'); // reset
-            }, 300); // Matches the exit animation duration
+                easterEggCard.classList.remove('modal-pop-out');
+            }, 300);
         });
         // ========================================== //
 
