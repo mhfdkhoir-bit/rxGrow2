@@ -20,7 +20,8 @@
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (Support both standalone browser & iframe sandbox) -->
+    <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -49,6 +50,13 @@
         html.dark {
             background-color: #3f3f46;
         }
+
+        /* Neobrutalism shadow fallbacks */
+        .shadow-brutal { box-shadow: 4px 4px 0px 0px #000 !important; }
+        .shadow-brutal-flipped { box-shadow: -4px 4px 0px 0px #000 !important; }
+        .shadow-brutal-sm { box-shadow: 2px 2px 0px 0px #000 !important; }
+        .shadow-brutal-sm-flipped { box-shadow: -2px 2px 0px 0px #000 !important; }
+        .shadow-brutal-pressed { box-shadow: 0px 0px 0px 0px #000 !important; }
 
         .card-grid-container {
             display: grid;
@@ -128,7 +136,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#3f3f46] transition-colors duration-300">
+<body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#3f3f46] transition-colors duration-300 min-h-[640px]">
 
     <div id="ios-status-bar-bg" class="fixed top-0 left-0 w-full bg-[#FDF9F1] dark:bg-[#3f3f46] z-[99999] transition-colors duration-300 pointer-events-none" style="height: env(safe-area-inset-top, 0px);"></div>
     <div id="toast-container" class="fixed left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2 pointer-events-none w-[90%] max-w-[340px]" style="top: calc(1.25rem + env(safe-area-inset-top, 0px));"></div>
@@ -178,44 +186,49 @@
                 <i class="fa-solid fa-times text-lg"></i>
             </button>
         </div>
-        <div class="flex flex-col p-4 gap-4 flex-grow">
-            <!-- REVISI: Warna hijau #004643 untuk menu HOME -->
-            <button id="nav-home" class="w-full bg-[#004643] text-white border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+        
+        <!-- SECTION 1: NAVIGASI UTAMA (UKURAN KOTAK SAMA BESAR & PANJANG: w-full h-12) -->
+        <div class="flex flex-col p-4 gap-3 flex-grow">
+            <!-- REVISI 1: Menu HOME warna hijau #004643 dengan text putih -->
+            <button id="nav-home" class="w-full h-12 bg-[#004643] text-white border-[3px] border-black shadow-brutal-sm rounded-xl px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-house text-lg w-5 text-center"></i> Home
             </button>
-            <button id="nav-emas" class="w-full bg-[#FEF08A] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+            <!-- REVISI 3: Menu RIWAYAT EMAS h-12 w-full seragam -->
+            <button id="nav-emas" class="w-full h-12 bg-[#FEF08A] text-black border-[3px] border-black shadow-brutal-sm rounded-xl px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-coins text-lg w-5 text-center"></i> Riwayat Emas
             </button>
-            <button id="nav-riwayat" class="w-full bg-[#FBCFE8] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+            <!-- REVISI 3: Menu RIWAYAT REKSADANA h-12 w-full seragam -->
+            <button id="nav-riwayat" class="w-full h-12 bg-[#FBCFE8] text-black border-[3px] border-black shadow-brutal-sm rounded-xl px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-clock-rotate-left text-lg w-5 text-center"></i> Riwayat Reksadana
             </button>
-            <button id="nav-saham-history" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+            <!-- REVISI 2: Menu RIWAYAT SAHAM warna biru #17184B dengan text putih seragam h-12 w-full -->
+            <button id="nav-saham-history" class="w-full h-12 bg-[#17184B] text-white border-[3px] border-black shadow-brutal-sm rounded-xl px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-chart-line text-lg w-5 text-center"></i> Riwayat Saham
             </button>
         </div>
         
-        <!-- EXPORT & IMPORT DATA SECTION -->
+        <!-- SECTION 2: EXPORT & IMPORT DATA (UKURAN KOTAK SAMA BESAR & PANJANG: w-full h-12) -->
         <div class="p-4 border-t-[3px] border-black flex flex-col gap-3 shrink-0">
             <div class="px-1 mb-[-4px]">
                 <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Backup & Restore</h3>
             </div>
-            <button id="export-data-btn" class="w-full bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+            <button id="export-data-btn" class="w-full h-12 bg-[#93C5FD] text-black border-[3px] border-black shadow-brutal-sm rounded-xl px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-upload text-lg w-5 text-center"></i> Export Data
             </button>
-            <button id="import-data-btn" class="w-full bg-[#A7F3D0] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
+            <button id="import-data-btn" class="w-full h-12 bg-[#A7F3D0] text-black border-[3px] border-black shadow-brutal-sm rounded-xl px-4 font-bold text-sm flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <i class="fa-solid fa-download text-lg w-5 text-center"></i> Import Data
             </button>
             <input type="file" id="import-file-input" accept=".json" class="hidden">
         </div>
         
-        <!-- Setting Toggles -->
+        <!-- SECTION 3: SETTING TOGGLES (UKURAN KOTAK SAMA BESAR & PANJANG: w-full h-12) -->
         <div class="p-4 border-t-[3px] border-black flex flex-col gap-3 shrink-0">
             <div class="px-1 mb-[-4px]">
                 <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Settings</h3>
             </div>
-            <!-- Biometric Toggle -->
+            <!-- Biometric Toggle (h-12 w-full seragam) -->
             <div id="biometric-setting-container" class="w-full">
-                <button id="toggle-biometric" class="w-full bg-[#FED7AA] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                <button id="toggle-biometric" class="w-full h-12 bg-[#FED7AA] text-black border-[3px] border-black shadow-brutal-sm rounded-xl px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
                     <span class="flex items-center gap-3"><i class="fa-solid fa-fingerprint text-lg w-5 text-center"></i> Biometrics</span>
                     <div id="biometric-toggle-track" class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative border-[2px] border-black transition-colors duration-300">
                         <div id="biometric-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform duration-300 shadow-sm"></div>
@@ -224,8 +237,8 @@
                 <p id="biometric-msg" class="text-[10px] font-bold mt-1 text-center hidden"></p>
             </div>
 
-            <!-- Dark Mode Toggle -->
-            <button id="toggle-dark-mode" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-xl py-3 px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
+            <!-- Dark Mode Toggle (h-12 w-full seragam) -->
+            <button id="toggle-dark-mode" class="w-full h-12 bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black shadow-brutal-sm rounded-xl px-4 font-bold text-sm flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px] transition-all">
                 <span id="theme-text-span" class="flex items-center gap-3"><i class="fa-solid fa-moon text-lg w-5 text-center"></i> Darkmode</span>
                 <div id="dark-toggle-track" class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative border-[2px] border-black transition-colors duration-300">
                     <div id="dark-toggle-indicator" class="w-3 h-3 bg-white border-[1px] border-black rounded-full absolute top-[1px] left-1 transition-transform duration-300 shadow-sm"></div>
@@ -468,7 +481,6 @@
                             <thead>
                                 <tr class="bg-[#FEF08A] text-black border-b-[3px] border-black">
                                     <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black">Tanggal</th>
-                                    <!-- REVISI: Penambahan kolom Aksi pada header -->
                                     <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-right">Harga Emas</th>
                                     <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-center">Naik/Turun</th>
                                     <th class="p-3 font-black text-[11px] uppercase tracking-wider text-center">Aksi</th>
@@ -526,14 +538,6 @@
                         <p class="text-xs font-bold text-gray-600 dark:text-gray-300">Akumulasi historis penjualan (Realized)</p>
                     </div>
                 </div>
-                
-                <!-- REVISI: Filter Saham Badge -->
-                <div id="saham-filter-badge" class="hidden mb-1 inline-flex items-center gap-2 bg-[#93C5FD] text-black font-bold text-[10px] px-3 py-1.5 rounded-full border-[2px] border-black shadow-brutal-sm self-start ml-1">
-                    <span>Menampilkan: <span id="saham-filter-text"></span></span>
-                    <button id="reset-saham-filter" class="w-4 h-4 bg-white border-[2px] border-black rounded-full flex items-center justify-center hover:bg-red-200 transition-colors">
-                        <i class="fa-solid fa-times text-[8px]"></i>
-                    </button>
-                </div>
 
                 <div class="bg-white dark:bg-[#52525b] border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden w-full transition-colors">
                     <div class="overflow-x-auto">
@@ -541,7 +545,6 @@
                             <thead>
                                 <tr class="bg-[#93C5FD] text-black border-b-[3px] border-black">
                                     <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black">Tanggal</th>
-                                    <!-- REVISI: Penambahan kolom Aksi pada header -->
                                     <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-center">Kode</th>
                                     <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-center">Lot</th>
                                     <th class="p-3 font-black text-[11px] uppercase tracking-wider border-r-[3px] border-black text-right">PNL</th>
@@ -555,6 +558,53 @@
                 </div>
             </div> <!-- END TAB RIWAYAT SAHAM -->
 
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- REVISI: MODAL RINCIAN RIWAYAT PENJUALAN   -->
+    <!-- ========================================== -->
+    <div id="detail-saham-modal" class="fixed left-0 right-0 bottom-0 bg-black/60 z-[85] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" style="top: env(safe-area-inset-top, 0px);">
+        <div class="w-full max-w-[360px] max-h-[85vh] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-3 transform scale-95 transition-transform duration-300 overflow-hidden" id="detail-saham-card">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center border-b-[3px] border-black pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 bg-[#93C5FD] border-[2px] border-black rounded-lg flex items-center justify-center shadow-brutal-sm text-black">
+                        <i class="fa-solid fa-receipt text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-base leading-tight" id="detail-saham-title">Rincian Saham</h3>
+                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-300">Riwayat Penjualan Akumulasi</p>
+                    </div>
+                </div>
+                <button id="close-detail-saham-btn" class="w-8 h-8 bg-white dark:bg-[#71717a] border-[2px] border-black rounded-lg flex items-center justify-center shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                    <i class="fa-solid fa-times text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Summary Banner -->
+            <div class="bg-[#17184B] text-white border-[2px] border-black rounded-xl p-3 shadow-brutal-sm shrink-0 flex justify-between items-center">
+                <div>
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-gray-300">Total Terjual</span>
+                    <p id="detail-total-lot" class="text-base font-black">0 Lot</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-gray-300">Total Realized PnL</span>
+                    <p id="detail-total-pnl" class="text-base font-black text-green-400">+Rp 0</p>
+                </div>
+            </div>
+
+            <!-- Sales Details List (Updated with AVG & Jual Price) -->
+            <div class="flex flex-col gap-2 overflow-y-auto max-h-[300px] pr-1 py-1" id="detail-saham-list">
+                <!-- Dynamic rows will be inserted here -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="pt-2 border-t-[2px] border-black shrink-0">
+                <button id="btn-done-detail-saham" class="w-full bg-[#FFE268] text-black border-[3px] border-black rounded-xl py-2.5 font-bold shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all text-sm">
+                    Tutup Rincian
+                </button>
+            </div>
         </div>
     </div>
 
@@ -585,7 +635,6 @@
     <!-- ========================================== -->
     <div id="edit-history-modal" class="fixed left-0 right-0 bottom-0 bg-black/60 z-[80] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" style="top: env(safe-area-inset-top, 0px);">
         <div class="w-full max-w-[320px] bg-[#FDF9F1] dark:bg-[#52525b] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-300" id="edit-history-card">
-            <!-- REVISI: Title Edit dapat berubah dinamis untuk Emas & Saham -->
             <h3 class="font-black text-lg text-center" id="edit-history-title">Edit Keuntungan</h3>
             <div class="relative w-full">
                 <input type="text" id="edit-history-input" inputmode="numeric" class="w-full bg-white dark:bg-[#71717a] text-black dark:text-white border-[3px] border-black rounded-xl text-center font-black text-lg shadow-brutal-sm p-3 outline-none focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all" placeholder="Rp 0">
@@ -725,7 +774,7 @@
         const btnCancelEdit = document.getElementById('cancel-edit-btn');
         const btnSaveEdit = document.getElementById('save-edit-btn');
         let currentEditIdx = -1;
-        let currentEditType = 'reksa'; // REVISI: Tipe edit dinamis (reksa, emas, saham)
+        let currentEditType = 'reksa'; // 'reksa', 'emas', atau 'saham'
         
         const modalSell = document.getElementById('sell-saham-modal');
         const cardSell = document.getElementById('sell-saham-card');
@@ -747,9 +796,16 @@
         const darkToggleIndicator = document.getElementById('dark-toggle-indicator');
         const darkToggleTrack = document.getElementById('dark-toggle-track');
 
-        let currentSahamFilter = null; // REVISI: Status filter untuk riwayat saham
+        // Modal Elements for Detail Saham
+        const modalDetailSaham = document.getElementById('detail-saham-modal');
+        const cardDetailSaham = document.getElementById('detail-saham-card');
+        const titleDetailSaham = document.getElementById('detail-saham-title');
+        const totalLotDetailSaham = document.getElementById('detail-total-lot');
+        const totalPnlDetailSaham = document.getElementById('detail-total-pnl');
+        const listDetailSaham = document.getElementById('detail-saham-list');
+        const btnCloseDetailSaham = document.getElementById('close-detail-saham-btn');
+        const btnDoneDetailSaham = document.getElementById('btn-done-detail-saham');
 
-        // REVISI: parseNum sekarang menangani "-" supaya nilai minus (loss pada saham) tidak terhapus
         const parseNum = (str) => parseInt(str.toString().replace(/[^0-9\-]/g, ''), 10) || 0;
         const parseFloatNum = (str) => {
             if (!str) return 0;
@@ -767,6 +823,7 @@
         const generateDateString = () => new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const generateShortDateString = () => new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
 
+        // FITUR REVISI 1: Durasi notifikasi disesuaikan menjadi normal (3000ms / 3 detik)
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -955,7 +1012,6 @@
         });
 
         btnBiometricLogin.addEventListener('click', authenticateBiometric);
-
 
         function initAuth() {
             inputPin.value = '';
@@ -1351,6 +1407,7 @@
 
             calculateTotals();
             renderRiwayat();
+            renderEmasHistory();
             renderSahamHistory(); 
             if(db.saham.length > 0) db.saham.forEach((_, idx) => updateSahamRowUI(idx));
         }
@@ -1437,7 +1494,6 @@
             closeConfirmModal();
         });
 
-        // REVISI: Modifikasi general input formater untuk Edit History
         inputEdit.addEventListener('input', (e) => {
             let raw = parseNum(e.target.value);
             if (raw === 0) {
@@ -1467,7 +1523,6 @@
         
         btnCancelEdit.addEventListener('click', closeEditModal);
         
-        // REVISI: Handle Save Edit untuk berbagai tab (reksadana, emas, saham)
         btnSaveEdit.addEventListener('click', () => {
             if (currentEditIdx > -1) {
                 const newVal = parseNum(inputEdit.value);
@@ -1484,10 +1539,19 @@
                     renderRiwayat();
                 } else if (currentEditType === 'emas') {
                     db.emasHistory[currentEditIdx].price = newVal;
+                    if (currentEditIdx === 0) {
+                        HARGA_BUYBACK_EMAS = newVal;
+                        db.lastGoldPrice = newVal;
+                        txtGoldPrice.textContent = formatRp(newVal);
+                        calculateTotals();
+                    }
                     saveDB();
                     renderEmasHistory();
                 } else if (currentEditType === 'saham') {
                     db.sahamHistory[currentEditIdx].pnl = newVal;
+                    if (db.sahamHistory[currentEditIdx].details && db.sahamHistory[currentEditIdx].details.length > 0) {
+                        db.sahamHistory[currentEditIdx].details[0].pnl = newVal;
+                    }
                     saveDB();
                     renderSahamHistory();
                 }
@@ -1495,6 +1559,7 @@
             closeEditModal();
         });
 
+        // Event listener Aksi Riwayat Reksadana (Edit & Delete)
         tbodyRiwayat.addEventListener('click', (e) => {
             const btnEdit = e.target.closest('button[data-action="edit-riwayat"]');
             const btnDelete = e.target.closest('button[data-action="delete-riwayat"]');
@@ -1522,13 +1587,13 @@
             }
         });
 
-        // REVISI: Listener edit/delete untuk Riwayat Emas
+        // Event listener Aksi Riwayat Emas (Edit & Delete)
         tbodyEmas.addEventListener('click', (e) => {
             const btnEdit = e.target.closest('button[data-action="edit-emas"]');
             const btnDelete = e.target.closest('button[data-action="delete-emas"]');
             if (btnDelete) {
                 const idx = parseInt(btnDelete.dataset.index);
-                showConfirmModal("Hapus Riwayat?", "Riwayat harga emas ini akan dihapus permanen.", () => {
+                showConfirmModal("Hapus Riwayat Emas?", "Riwayat harga emas ini akan dihapus permanen.", () => {
                     db.emasHistory.splice(idx, 1);
                     saveDB();
                     renderEmasHistory();
@@ -1563,8 +1628,8 @@
                     <td class="p-3 border-r-[3px] border-black text-right font-black text-sm ${appliedPnlClass}">${gDisplay}</td>
                     <td class="p-2 text-center align-middle">
                         <div class="flex items-center justify-center gap-2">
-                            <button data-action="edit-riwayat" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
-                            <button data-action="delete-riwayat" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
+                            <button data-action="edit-riwayat" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Edit"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
+                            <button data-action="delete-riwayat" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Hapus"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
                         </div>
                     </td>
                 `;
@@ -1572,7 +1637,7 @@
             });
         }
 
-        // REVISI: Render Riwayat Emas dengan penambahan tombol aksi
+        // Render Riwayat Emas dengan tombol Aksi
         function renderEmasHistory() {
             tbodyEmas.innerHTML = '';
             if (!db.emasHistory || db.emasHistory.length === 0) {
@@ -1582,16 +1647,16 @@
             db.emasHistory.forEach((item, idx) => {
                 const icon = item.trend === 'up' 
                     ? '<i class="fa-solid fa-arrow-up rotate-45 text-green-600 dark:text-green-400"></i>' 
-                    : '<i class="fa-solid fa-arrow-down -rotate-45 text-red-600 dark:text-red-400"></i>';
+                    : (item.trend === 'down' ? '<i class="fa-solid fa-arrow-down -rotate-45 text-red-600 dark:text-red-400"></i>' : '<i class="fa-solid fa-minus text-gray-400"></i>');
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${item.date}</td>
-                    <td class="p-3 border-r-[3px] border-black text-right font-black text-sm">${formatRp(item.price)}</td>
+                    <td class="p-3 border-r-[3px] border-black text-right font-black text-sm">${isCensored ? '••••••' : formatRp(item.price)}</td>
                     <td class="p-3 border-r-[3px] border-black text-center font-black text-sm">${icon}</td>
                     <td class="p-2 text-center align-middle">
                         <div class="flex items-center justify-center gap-2">
-                            <button data-action="edit-emas" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
-                            <button data-action="delete-emas" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
+                            <button data-action="edit-emas" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Edit"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
+                            <button data-action="delete-emas" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Hapus"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
                         </div>
                     </td>
                 `;
@@ -1599,18 +1664,130 @@
             });
         }
 
-        // REVISI: Event Listener Filter dan Aksi Riwayat Saham
+        // FITUR REVISI 2: Modal Rincian Penjualan Saham dengan Harga AVG dan Harga Jual
+        function openSahamDetailModal(stockCode) {
+            const item = db.sahamHistory.find(h => h.kode === stockCode);
+            if (!item) return;
+
+            // Pastikan array details ada untuk logic akumulasi
+            if (!item.details || !Array.isArray(item.details) || item.details.length === 0) {
+                item.details = [{
+                    date: item.date || generateShortDateString(),
+                    lot: item.lot,
+                    avg: item.avg || 0,
+                    hargaJual: item.hargaJual || 0,
+                    pnl: item.pnl
+                }];
+                saveDB();
+            }
+
+            titleDetailSaham.textContent = `Rincian Saham ${item.kode}`;
+            totalLotDetailSaham.textContent = isCensored ? '•• Lot' : `${item.lot} Lot`;
+            
+            const pnlSign = item.pnl > 0 ? '+' : '';
+            totalPnlDetailSaham.className = `text-base font-black ${isCensored ? 'text-gray-400' : (item.pnl >= 0 ? 'text-green-400' : 'text-red-400')}`;
+            totalPnlDetailSaham.textContent = isCensored ? '••••••' : `${pnlSign}${formatRp(item.pnl)}`;
+
+            listDetailSaham.innerHTML = '';
+            item.details.forEach((sale, sIdx) => {
+                const sign = sale.pnl > 0 ? '+' : '';
+                const pnlCol = isCensored ? 'text-gray-500' : (sale.pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400');
+                const avgVal = sale.avg !== undefined ? sale.avg : (sale.avgBeli || 0);
+                const jualVal = sale.hargaJual !== undefined ? sale.hargaJual : (sale.harga || 0);
+                const avgText = isCensored ? '••••••' : (avgVal > 0 ? formatRp(avgVal) : '-');
+                const jualText = isCensored ? '••••••' : (jualVal > 0 ? formatRp(jualVal) : '-');
+                const lotText = isCensored ? '•• Lot' : `${sale.lot} Lot`;
+                const pnlText = isCensored ? '••••••' : `${sign}${formatRp(sale.pnl)}`;
+
+                const row = document.createElement('div');
+                row.className = "bg-white dark:bg-[#71717a] border-[2px] border-black rounded-xl p-3 shadow-brutal-sm flex flex-col gap-2 text-xs transition-colors";
+                row.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-[11px] text-gray-500 dark:text-gray-300"><i class="fa-regular fa-clock mr-1"></i>${sale.date}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-black text-xs ${pnlCol}">${pnlText}</span>
+                            <button data-action="delete-sale-detail" data-kode="${item.kode}" data-sidx="${sIdx}" class="w-6 h-6 bg-[#f87171] border-[1.5px] border-black rounded flex items-center justify-center text-black hover:bg-red-400 active:translate-x-[1px] active:translate-y-[1px] transition-all ml-1" title="Hapus transaksi ini">
+                                <i class="fa-solid fa-trash text-[9px] pointer-events-none"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 pt-2 border-t border-dashed border-gray-300 dark:border-gray-500 text-[11px]">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400">Terjual</span>
+                            <span class="font-black text-black dark:text-white mt-0.5">${lotText}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400">Harga AVG</span>
+                            <span class="font-black text-black dark:text-white mt-0.5">${avgText}</span>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400">Harga Jual</span>
+                            <span class="font-black text-black dark:text-white mt-0.5">${jualText}</span>
+                        </div>
+                    </div>
+                `;
+                listDetailSaham.appendChild(row);
+            });
+
+            modalDetailSaham.classList.remove('hidden');
+            modalDetailSaham.classList.add('flex');
+            requestAnimationFrame(() => {
+                modalDetailSaham.classList.remove('opacity-0');
+                cardDetailSaham.classList.remove('scale-95');
+            });
+        }
+
+        function closeSahamDetailModal() {
+            modalDetailSaham.classList.add('opacity-0');
+            cardDetailSaham.classList.add('scale-95');
+            setTimeout(() => {
+                modalDetailSaham.classList.add('hidden');
+                modalDetailSaham.classList.remove('flex');
+            }, 300);
+        }
+
+        btnCloseDetailSaham.addEventListener('click', closeSahamDetailModal);
+        btnDoneDetailSaham.addEventListener('click', closeSahamDetailModal);
+
+        // Hapus transaksi individual dari dalam modal rincian saham
+        listDetailSaham.addEventListener('click', (e) => {
+            const btnDel = e.target.closest('button[data-action="delete-sale-detail"]');
+            if (btnDel) {
+                const kode = btnDel.dataset.kode;
+                const sIdx = parseInt(btnDel.dataset.sidx);
+                showConfirmModal("Hapus Transaksi?", "Rincian penjualan tanggal ini akan dihapus dari akumulasi.", () => {
+                    const item = db.sahamHistory.find(h => h.kode === kode);
+                    if (item && item.details) {
+                        item.details.splice(sIdx, 1);
+                        if (item.details.length === 0) {
+                            const idxInHist = db.sahamHistory.indexOf(item);
+                            if (idxInHist > -1) db.sahamHistory.splice(idxInHist, 1);
+                            closeSahamDetailModal();
+                        } else {
+                            item.lot = item.details.reduce((sum, d) => sum + (parseNum(d.lot) || 0), 0);
+                            item.pnl = item.details.reduce((sum, d) => sum + (parseNum(d.pnl) || 0), 0);
+                            item.date = item.details[0].date;
+                            openSahamDetailModal(kode);
+                        }
+                        saveDB();
+                        renderSahamHistory();
+                    }
+                });
+            }
+        });
+
+        // Event Listener Riwayat Saham (Klik Kode untuk Rincian + Edit & Delete Aksi)
         tbodySahamHistory.addEventListener('click', (e) => {
             const btnEdit = e.target.closest('button[data-action="edit-saham-hist"]');
             const btnDelete = e.target.closest('button[data-action="delete-saham-hist"]');
-            const filterBtn = e.target.closest('span[data-action="filter-saham"]');
+            const detailBtn = e.target.closest('button[data-action="view-saham-detail"]');
             
-            if (filterBtn) {
-                currentSahamFilter = filterBtn.dataset.kode;
-                renderSahamHistory();
+            if (detailBtn) {
+                const kode = detailBtn.dataset.kode;
+                openSahamDetailModal(kode);
             } else if (btnDelete) {
                 const idx = parseInt(btnDelete.dataset.index);
-                showConfirmModal("Hapus Riwayat?", "Riwayat saham ini akan dihapus permanen.", () => {
+                showConfirmModal("Hapus Riwayat Saham?", "Riwayat saham ini akan dihapus permanen.", () => {
                     db.sahamHistory.splice(idx, 1);
                     saveDB();
                     renderSahamHistory();
@@ -1625,35 +1802,16 @@
             }
         });
 
-        document.getElementById('reset-saham-filter').addEventListener('click', () => {
-            currentSahamFilter = null;
-            renderSahamHistory();
-        });
-
-        // REVISI: Render Riwayat Saham dengan filter, link kode, dan tombol aksi
+        // Render Riwayat Saham dengan kode yang dapat diklik + Tombol Aksi
         function renderSahamHistory() {
             tbodySahamHistory.innerHTML = '';
             
-            const badge = document.getElementById('saham-filter-badge');
-            const filterText = document.getElementById('saham-filter-text');
-            if (badge && filterText) {
-                if (currentSahamFilter) {
-                    badge.classList.remove('hidden');
-                    filterText.textContent = currentSahamFilter;
-                } else {
-                    badge.classList.add('hidden');
-                }
-            }
-
-            const dataToRender = currentSahamFilter ? db.sahamHistory.filter(h => h.kode === currentSahamFilter) : db.sahamHistory;
-
-            if (!dataToRender || dataToRender.length === 0) {
+            if (!db.sahamHistory || db.sahamHistory.length === 0) {
                 tbodySahamHistory.innerHTML = '<tr><td colspan="5" class="p-6 text-center font-bold text-gray-500 text-xs italic">Belum ada riwayat penjualan saham.</td></tr>';
                 return;
             }
             
-            dataToRender.forEach((item) => {
-                const idx = db.sahamHistory.indexOf(item); // get actual index for edit/delete
+            db.sahamHistory.forEach((item, idx) => {
                 const pnlClass = item.pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
                 const pnlSign = item.pnl > 0 ? '+' : '';
                 const pDisplay = isCensored ? '••••••' : `${pnlSign}${formatRp(item.pnl)}`;
@@ -1661,14 +1819,17 @@
                 tr.innerHTML = `
                     <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${item.date}</td>
                     <td class="p-3 border-r-[3px] border-black text-center font-black text-sm uppercase">
-                        <span class="cursor-pointer text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 transition-colors" data-action="filter-saham" data-kode="${item.kode}">${item.kode}</span>
+                        <button data-action="view-saham-detail" data-kode="${item.kode}" class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-[1.5px] border-black rounded shadow-brutal-sm hover:bg-blue-200 dark:hover:bg-blue-800 active:translate-x-[1px] active:translate-y-[1px] transition-all font-bold tracking-wider inline-flex items-center gap-1" title="Lihat Rincian Penjualan">
+                            <span>${item.kode}</span>
+                            <i class="fa-solid fa-chevron-right text-[9px] opacity-70"></i>
+                        </button>
                     </td>
-                    <td class="p-3 border-r-[3px] border-black text-center font-black text-sm">${item.lot}</td>
+                    <td class="p-3 border-r-[3px] border-black text-center font-black text-sm">${isCensored ? '••' : item.lot}</td>
                     <td class="p-3 border-r-[3px] border-black text-right font-black text-sm ${isCensored ? 'text-gray-500' : pnlClass}">${pDisplay}</td>
                     <td class="p-2 text-center align-middle">
                         <div class="flex items-center justify-center gap-2">
-                            <button data-action="edit-saham-hist" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
-                            <button data-action="delete-saham-hist" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
+                            <button data-action="edit-saham-hist" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Edit PnL"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
+                            <button data-action="delete-saham-hist" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Hapus"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
                         </div>
                     </td>
                 `;
@@ -1853,6 +2014,8 @@
         }
 
         btnCancelSell.addEventListener('click', closeSellModal);
+
+        // FITUR REVISI 2: Logika Jual Saham dengan Menyimpan Harga AVG dan Harga Jual ke Riwayat
         btnExecuteSell.addEventListener('click', () => {
             if (currentSellIdx > -1) {
                 const s = db.saham[currentSellIdx];
@@ -1867,14 +2030,35 @@
                 const avg = parseFloatNum(s.avg);
                 const harga = parseNum(s.harga);
                 const realizedPnl = (harga - avg) * sellLot * 100;
+                const currentDate = generateShortDateString();
 
                 if (!db.sahamHistory) db.sahamHistory = [];
                 const existingIdx = db.sahamHistory.findIndex(h => h.kode === s.kode);
                 
+                const saleRecord = {
+                    date: currentDate,
+                    lot: sellLot,
+                    avg: avg,
+                    hargaJual: harga,
+                    pnl: realizedPnl
+                };
+
                 if (existingIdx > -1) {
-                    db.sahamHistory[existingIdx].lot += sellLot;
-                    db.sahamHistory[existingIdx].pnl += realizedPnl;
-                    db.sahamHistory[existingIdx].date = generateShortDateString();
+                    const item = db.sahamHistory[existingIdx];
+                    if (!item.details || !Array.isArray(item.details)) {
+                        item.details = [{
+                            date: item.date || currentDate,
+                            lot: item.lot,
+                            avg: avg,
+                            hargaJual: harga,
+                            pnl: item.pnl
+                        }];
+                    }
+                    item.lot += sellLot;
+                    item.pnl += realizedPnl;
+                    item.date = currentDate;
+                    item.details.unshift(saleRecord);
+                    
                     const updatedItem = db.sahamHistory.splice(existingIdx, 1)[0];
                     db.sahamHistory.unshift(updatedItem);
                 } else {
@@ -1882,7 +2066,8 @@
                         kode: s.kode,
                         lot: sellLot,
                         pnl: realizedPnl,
-                        date: generateShortDateString()
+                        date: currentDate,
+                        details: [saleRecord]
                     });
                 }
 
