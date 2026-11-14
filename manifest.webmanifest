@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "rxGrow - Finance Tracker",
+  "short_name": "rxGrow",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#24262d",
+  "theme_color": "#FDF9F1",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

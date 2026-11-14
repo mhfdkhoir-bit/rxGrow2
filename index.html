@@ -12,34 +12,9 @@
     
     <title>rxGrow - Finance Tracker</title>
 
-    <!-- Google Fonts: Space Grotesk -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Tailwind CSS (Support both standalone browser & iframe sandbox) -->
-    <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class', 
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Space Grotesk"', 'sans-serif'] },
-                    boxShadow: {
-                        'brutal': '4px 4px 0px 0px #000',
-                        'brutal-flipped': '-4px 4px 0px 0px #000',
-                        'brutal-sm': '2px 2px 0px 0px #000',
-                        'brutal-sm-flipped': '-2px 2px 0px 0px #000',
-                        'brutal-pressed': '0px 0px 0px 0px #000',
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="./rxgrow.css">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="apple-touch-icon" href="./icon.svg">
 
     <style>
         /* Fixing Status Bar Color Bug */
@@ -4214,64 +4189,11 @@
         });
         // ========================================== //
 
-        (function initPWA() {
-            const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#a78bfa" rx="100"/><path fill="black" d="M149.33 213.33h42.67v85.34h128v-85.34h42.67v128h-213.34v-128z" /><circle fill="black" cx="256" cy="149.33" r="32"/></svg>`;
-            const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
-
-            const manifest = {
-                "name": "rxGrow - Finance Tracker",
-                "short_name": "rxGrow",
-                "start_url": window.location.href.split('?')[0] || ".",
-                "display": "standalone",
-                "background_color": "#24262d",
-                "theme_color": "#FDF9F1",
-                "description": "Aplikasi tracker investasi reksadana, emas, dan saham.",
-                "icons": [
-                    {
-                        "src": iconUrl,
-                        "sizes": "512x512",
-                        "type": "image/svg+xml",
-                        "purpose": "any maskable"
-                    }
-                ]
-            };
-            const manifestStr = JSON.stringify(manifest);
-            const manifestBlob = new Blob([manifestStr], {type: 'application/json'});
-            const manifestUrl = URL.createObjectURL(manifestBlob);
-
-            const linkManifest = document.createElement('link');
-            linkManifest.rel = 'manifest';
-            linkManifest.href = manifestUrl;
-            document.head.appendChild(linkManifest);
-
-            const linkAppleIcon = document.createElement('link');
-            linkAppleIcon.rel = 'apple-touch-icon';
-            linkAppleIcon.href = iconUrl;
-            document.head.appendChild(linkAppleIcon);
-
-            const swCode = `
-                const CACHE_NAME = 'rxgrow-v1';
-                self.addEventListener('install', (e) => {
-                    self.skipWaiting();
-                });
-                self.addEventListener('activate', (e) => {
-                    e.waitUntil(clients.claim());
-                });
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(fetch(e.request).catch(() => new Response('App is offline.')));
-                });
-            `;
-            const swBlob = new Blob([swCode], {type: 'text/javascript'});
-            const swUrl = URL.createObjectURL(swBlob);
-
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register(swUrl).then(() => {
-                        console.log('✅ rxGrow PWA Ready: Service Worker & Manifest Active');
-                    }).catch(console.error);
-                });
-            }
-        })();
+        if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(console.error);
+            });
+        }
 
         window.onload = function() {
             loadDB();
