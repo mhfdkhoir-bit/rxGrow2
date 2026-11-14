@@ -73,22 +73,9 @@
         }
 
         @media (max-width: 540px) {
-            html.dark #dashboard-view:has(#home-tab.tab-active:not(.hidden)) {
-                padding-bottom: calc(clamp(82px, 23vw, 122px) + env(safe-area-inset-bottom, 0px));
-            }
-            html.dark #dashboard-view:has(#home-tab.tab-active:not(.hidden)) > .sticky {
                 background-color: #191b29;
             }
             #dashboard-view:has(#home-tab.tab-active:not(.hidden)) > .sticky > div {
-                padding-top: max(5px, env(safe-area-inset-top, 0px)) !important;
-            }
-            #home-tab { gap: 14px; }
-            #home-tab #grand-total-flipper > :first-child { padding-block: 14px 18px; }
-            #home-tab .card-grid-container {
-                grid-template-rows: 42px 42px 17px 45px 17px 45px;
-                gap: 5px;
-            }
-            #home-tab #saham-toggle { padding-block: 11px; }
         }
 
         /* Neobrutalism shadow fallbacks */
