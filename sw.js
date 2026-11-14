@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'rxgrow-offline:' + self.registration.scope + ':';
-const CACHE_NAME = CACHE_PREFIX + 'fb29c0d93d97';
+const CACHE_NAME = CACHE_PREFIX + '11ffe021a6ca';
 const INDEX = new URL('index.html', self.registration.scope).href;
 const ASSETS = new Set(["rxgrow.css","space-grotesk.woff2","fa-solid-900.woff2","fa-regular-400.woff2","icon.svg","manifest.webmanifest"].map(path => new URL(path, self.registration.scope).href));
 
