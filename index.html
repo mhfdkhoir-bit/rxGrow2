@@ -2501,21 +2501,33 @@
             renderPortfolioGrowth();
         }
         
+        function syncStatusBarColor() {
+            const root = document.documentElement;
+            const dark = root.classList.contains('dark');
+            const home = document.querySelector('#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)');
+            const color = dark ? (home ? '#191b29' : '#24262d') : '#FDF9F1';
+            document.getElementById('ios-status-bar-bg').style.backgroundColor = color;
+            document.getElementById('meta-theme-color').setAttribute('content', color);
+        }
+
+        const statusBarObserver = new MutationObserver(syncStatusBarColor);
+        for (const target of [document.documentElement, document.getElementById('dashboard-view'), document.getElementById('home-tab')]) {
+            statusBarObserver.observe(target, { attributes: true, attributeFilter: ['class'] });
+        }
+
         function applyTheme() {
-            const metaThemeColor = document.getElementById('meta-theme-color');
             if (db.darkMode) {
                 document.documentElement.classList.add('dark');
                 darkToggleIndicator.classList.add('translate-x-[20px]');
                 darkToggleTrack.classList.remove('bg-gray-300', 'dark:bg-[#404450]');
                 darkToggleTrack.classList.add('bg-[#86efac]'); 
-                if (metaThemeColor) metaThemeColor.setAttribute('content', '#24262d');
             } else {
                 document.documentElement.classList.remove('dark');
                 darkToggleIndicator.classList.remove('translate-x-[20px]');
                 darkToggleTrack.classList.remove('bg-[#86efac]');
                 darkToggleTrack.classList.add('bg-gray-300', 'dark:bg-[#404450]'); 
-                if (metaThemeColor) metaThemeColor.setAttribute('content', '#FDF9F1');
             }
+            syncStatusBarColor();
         }
         
         btnToggleDarkMode.addEventListener('click', () => {
