@@ -4555,6 +4555,7 @@ $('finder').addEventListener('submit',async e=>{
             event.target.closest('input, textarea, select, [contenteditable], [role="dialog"]')) return;
         if (!home.contains(event.target)) return;
         bounce?.cancel();
+        home.style.removeProperty('translate');
         const touch = event.touches[0];
         start = { x: touch.clientX, y: touch.clientY };
     }, { passive: true });
@@ -4567,17 +4568,23 @@ $('finder').addEventListener('submit',async e=>{
         const atTop = page.scrollTop <= 1;
         const atBottom = page.scrollTop + page.clientHeight >= page.scrollHeight - 1;
         if ((dy > 0 && atTop) || (dy < 0 && atBottom)) {
-            bounce = home.animate([
-                { translate: '0 0' },
-                { translate: '0 ' + (dy > 0 ? 5 : -5) + 'px', offset: 0.32 },
-                { translate: '0 0' }
-            ], { duration: 200, easing: 'ease-out' });
+            const distance = Math.sign(dy) * Math.min(5, (Math.abs(dy) - 8) * 0.12);
+            home.style.translate = '0 ' + distance + 'px';
+        } else {
+            home.style.removeProperty('translate');
         }
-        start = null;
     }, { passive: true });
-    for (const type of ['touchend', 'touchcancel']) {
-        document.addEventListener(type, () => { start = null; }, { passive: true });
+    function release() {
+        start = null;
+        const position = home.style.translate;
+        home.style.removeProperty('translate');
+        if (position && !reducedMotion.matches) {
+            bounce = home.animate([{ translate: position }, { translate: '0 0' }],
+                { duration: 180, easing: 'ease-out' });
+        }
     }
+    document.addEventListener('touchend', release, { passive: true });
+    document.addEventListener('touchcancel', release, { passive: true });
 })();
 </script>
 </body>
