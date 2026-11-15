@@ -318,7 +318,8 @@
     max-height: calc(100dvh - 32px);
     margin: auto;
     padding: 0;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     overscroll-behavior: contain;
     background: var(--rx-settings-paper);
     color: var(--rx-settings-ink);
@@ -362,7 +363,7 @@
 #settings-close { margin-left: auto; background: #F87171; color: #171717; box-shadow: 2px 2px 0 var(--rx-brutal-shadow, #000); cursor: pointer; }
 #settings-close:active { transform: translate(2px, 2px); box-shadow: none; }
 #settings-tab h2 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 700; }
-#settings-tab .rx-settings-body { display: grid; gap: 16px; padding: 16px; }
+#settings-tab .rx-settings-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 16px; }
 #settings-tab h3 { margin: 0 0 4px; color: var(--rx-settings-muted); font-size: 12px; line-height: 16px; font-weight: 600; }
 #settings-tab .rx-settings-list { overflow: hidden; background: var(--rx-settings-row); border: 1px solid var(--rx-settings-line); border-radius: 8px; }
 #settings-tab .rx-settings-row {
@@ -650,9 +651,11 @@
 .wallpaper-settings summary::-webkit-details-marker { display:none; }
 .wallpaper-settings[open] .rx-settings-arrow { transform:rotate(90deg); }
 .wallpaper-controls { padding:0 12px 12px; }
-.wallpaper-controls input { display:block; max-width:100%; margin-block:4px 10px; }
+.wallpaper-controls label { display:block; min-width:0; }
+.wallpaper-controls input { display:block; box-sizing:border-box; width:100%; min-width:0; max-width:100%; margin-block:4px 10px; }
+#wallpaper-file { overflow:hidden; text-overflow:ellipsis; }
 .wallpaper-controls button { text-decoration:underline; padding-block:6px; }
-.wallpaper-previews { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.wallpaper-previews { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:10px; }
 .wallpaper-sample { height:144px; border-radius:8px; background-color:#fdf9f1; }
 .wallpaper-sample.wallpaper-dark { background-color:#24262d; }
 .wallpaper-sample,
