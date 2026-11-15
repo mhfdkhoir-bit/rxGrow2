@@ -602,15 +602,12 @@
     #saham-toggle { padding-right:72px; }
     #assistant-launch { position:absolute; right:6px; top:50%; bottom:auto; transform:translateY(-50%); z-index:1; }
     #home-tab > #assistant-launch {
-        position:sticky;
-        top:auto;
-        right:auto;
-        bottom:calc(12px + env(safe-area-inset-bottom, 0px));
-        align-self:flex-end;
-        margin-right:6px;
-        margin-bottom:4px;
+        position:fixed;
+        top:clamp(0px, var(--assistant-launch-top), calc(100dvh - 56px - env(safe-area-inset-bottom, 0px)));
+        right:var(--assistant-launch-right);
+        bottom:auto;
         transform:none;
-        z-index:3;
+        z-index:39;
     }
 }
 #assistant-tab { --chat-paper:#f4efe2; --chat-ink:#171717; --chat-header:#ede6d5; --chat-bot:#fff8e8; --chat-user:#bef264; --chat-edge:#161616; --chat-shadow:#161616; color:var(--chat-ink); }
@@ -3958,9 +3955,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         }
 
         btnToggleSaham.addEventListener('click', () => {
+            const launchBounds = document.getElementById('assistant-launch').getBoundingClientRect();
             const expanded = bodySaham.classList.toggle('open');
             const assistantLaunch = document.getElementById('assistant-launch');
-            if (expanded) document.getElementById('home-tab').append(assistantLaunch);
+            if (expanded) {
+                assistantLaunch.style.setProperty('--assistant-launch-top', launchBounds.top + 'px');
+                assistantLaunch.style.setProperty('--assistant-launch-right', document.documentElement.clientWidth - launchBounds.right + 'px');
+                document.getElementById('home-tab').append(assistantLaunch);
+            }
             else btnToggleSaham.parentElement.append(assistantLaunch);
             iconSaham.classList.toggle('rotate-180');
         });
