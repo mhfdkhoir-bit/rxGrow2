@@ -598,6 +598,9 @@
 #assistant-launch .robot-chat-icon { width:26px; height:26px; }
 #home-tab.hidden + #assistant-launch { display:none; }
 #assistant-launch { position:fixed; right:max(20px, env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); z-index:39; width:52px; height:52px; border:3px solid #000; border-radius:14px; box-shadow:4px 4px var(--rx-brutal-shadow, #000); background:#BEF264; color:#171717; }
+@media (max-width: 540px) {
+    #assistant-launch { position:static; align-self:flex-end; margin-bottom:calc(4px + env(safe-area-inset-bottom, 0px)); flex-shrink:0; }
+}
 #assistant-tab { --chat-paper:#f4efe2; --chat-ink:#171717; --chat-header:#ede6d5; --chat-bot:#fff8e8; --chat-user:#bef264; --chat-edge:#161616; --chat-shadow:#161616; color:var(--chat-ink); }
 .dark #assistant-tab { --chat-paper:#1b1b1f; --chat-ink:#f8f4e9; --chat-header:#29292e; --chat-bot:#f3e8ce; --chat-user:#bef264; --chat-edge:#101010; --chat-shadow:#747178; color-scheme:dark; }
 .dark #assistant-tab header { background:var(--chat-header); color:var(--chat-ink); }
