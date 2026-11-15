@@ -4568,7 +4568,7 @@ $('finder').addEventListener('submit',async e=>{
         const atTop = page.scrollTop <= 1;
         const atBottom = page.scrollTop + page.clientHeight >= page.scrollHeight - 1;
         if ((dy > 0 && atTop) || (dy < 0 && atBottom)) {
-            const distance = Math.sign(dy) * Math.min(5, (Math.abs(dy) - 8) * 0.12);
+            const distance = Math.sign(dy) * Math.min(10, (Math.abs(dy) - 8) * 0.12);
             home.style.translate = '0 ' + distance + 'px';
         } else {
             home.style.removeProperty('translate');
