@@ -676,6 +676,19 @@ html.dark #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden))
 html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .sticky {
     background-color:rgb(var(--wallpaper-shade) / .93);
 }
+</style><style>
+#market-change-button { position:absolute; inset-inline:8px; bottom:5px; margin-inline:auto; max-width:calc(100% - 16px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:clamp(.64rem, 3vw, .78rem); font-weight:500; line-height:1.3; color:#e5efff; padding:4px; }
+#market-change-button .market-change-amount { color:#b8d9ff; font-weight:700; }
+#market-change-button:focus-visible { outline:2px solid #fff; outline-offset:1px; border-radius:4px; }
+#market-change-dialog { margin:auto; width:min(380px, calc(100% - 32px)); max-height:calc(100dvh - 32px); padding:16px; border:3px solid #000; border-radius:14px; background:#fdf9f1; color:#171717; box-shadow:5px 5px 0 var(--rx-brutal-shadow,#000); }
+.dark #market-change-dialog { background:#2b2e37; color:#fff; }
+#market-change-dialog::backdrop { background:#0009; }
+#market-change-dialog header { display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:800; }
+#market-change-dialog header button { flex:none; width:36px; height:36px; border:2px solid #000; border-radius:8px; background:#ffa9a9; color:#000; font-size:22px; }
+#market-change-dialog dl { margin-block:12px; }
+#market-change-dialog dl div { padding-block:8px; border-bottom:1px solid #8886; }
+#market-change-dialog dd { white-space:pre-line; font-weight:700; }
+#market-change-dialog .market-asset { display:flex; justify-content:space-between; gap:12px; }
 </style></head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#24262d] transition-colors duration-300 min-h-[640px]">
 
@@ -807,6 +820,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                             <h2 id="grand-total-label" class="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-1">TOTAL INVESTASI</h2>
                             <div id="grand-total" class="font-bold text-4xl tracking-tight z-10">Rp 0</div>
                             <p id="grand-total-context" class="rx-price-context"></p>
+                            <button id="market-change-button" type="button" aria-haspopup="dialog" hidden></button>
                         </div>
 
                         <!-- BACK FACE: ASSET ALLOCATION (MONEY CHART) -->
@@ -2831,6 +2845,80 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             return (fresh ? 'Terbaru' : 'Data lama') + ' · ' + priceDateFormat.format(stamp);
         }
 
+        let marketComparisonBatch = 0;
+        function marketSnapshot() {
+            const gold = parseFloatNum(db.emasGram);
+            const capital = parseNum(db.reksaModal);
+            const units = reksaUnits(db.reksaUnits);
+            const fund = getReksaValuation(capital);
+            const holdings = db.saham.filter(stock => parseNum(stock.lot) > 0);
+            const stockQuotes = holdings.map(stock => parseNum(stock.harga));
+            const goldPrice = parseNum(db.lastGoldPrice);
+            if ((gold > 0 && goldPrice <= 0) || stockQuotes.some(price => price <= 0)
+                || (units > 0 && !fund.automatic)) return null;
+            const values = {
+                gold: Math.round(gold * goldPrice),
+                fund: fund.total,
+                stock: holdings.reduce((sum, stock, index) => sum + parseNum(stock.lot) * 100 * stockQuotes[index], 0)
+            };
+            return {
+                total: values.gold + values.fund + values.stock,
+                values,
+                at: Date.now(),
+                holdings: JSON.stringify([gold, capital, units, fund.automatic ? null : fund.total,
+                    holdings.map(stock => [stock.kode, parseNum(stock.lot)])]),
+                quotes: JSON.stringify([gold > 0 ? goldPrice : null,
+                    units > 0 && fund.automatic ? db.reksaNav.value : null, stockQuotes])
+            };
+        }
+
+        function recordMarketComparison(before) {
+            const after = marketSnapshot();
+            if (!before || !after || before.holdings !== after.holdings || before.quotes === after.quotes) return;
+            const previous = db.marketComparison?.after;
+            if (previous?.holdings === before.holdings && previous.quotes === before.quotes
+                && Number.isFinite(previous.at)) before.at = previous.at;
+            db.marketComparison = { before, after };
+        }
+
+        const marketChangeButton = document.getElementById('market-change-button');
+        function renderMarketComparison() {
+            const { before, after } = db.marketComparison ?? {};
+            const valid = [before, after].every(entry => Number.isFinite(entry?.total)
+                && Number.isFinite(entry?.at) && Math.abs(entry.at) <= 8640000000000000);
+            const dialog = document.getElementById('market-change-dialog');
+            marketChangeButton.hidden = isCensored || !valid;
+            if (marketChangeButton.hidden) {
+                marketChangeButton.textContent = '';
+                if (dialog.open) dialog.close();
+                for (const id of ['market-before','market-after','market-gold','market-fund','market-stock']) document.getElementById(id).textContent = '';
+                return;
+            }
+            const delta = after.total - before.total;
+            const label = (delta > 0 ? '+' : delta < 0 ? '−' : '') + formatRp(Math.abs(delta));
+            const amount = document.createElement('span');
+            amount.className = 'market-change-amount';
+            amount.textContent = label.replace('Rp ', 'Rp');
+            marketChangeButton.replaceChildren(amount, ' sejak pembaruan terakhir');
+            const formatTime = new Intl.DateTimeFormat('id-ID', {
+                dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta'
+            });
+            for (const [id, entry] of [['market-before', before], ['market-after', after]]) {
+                document.getElementById(id).textContent = formatTime.format(entry.at) + ' WIB\n' + formatRp(entry.total);
+            }
+            for (const key of ['gold', 'fund', 'stock']) {
+                const change = after.values?.[key] - before.values?.[key];
+                document.getElementById('market-' + key).textContent = Number.isFinite(change)
+                    ? (change > 0 ? '+' : change < 0 ? '−' : '') + formatRp(Math.abs(change))
+                    : '—';
+            }
+        }
+
+        marketChangeButton.addEventListener('click', event => {
+            event.stopPropagation();
+            if (!marketChangeButton.hidden && !isCensored) document.getElementById('market-change-dialog').showModal();
+        });
+
         async function fetchGoldPrice() {
             const request = ++goldQuoteRequest;
             try {
@@ -2852,10 +2940,12 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     if (db.emasHistory.length > 50) db.emasHistory.pop();
                     renderEmasHistory();
                 }
+                const comparisonBefore = marketComparisonBatch ? null : marketSnapshot();
                 HARGA_BUYBACK_EMAS = newGoldPrice;
                 db.lastGoldPrice = newGoldPrice;
                 db.goldPriceDate = sourceDate;
                 db.goldManualAt = null;
+                if (comparisonBefore) recordMarketComparison(comparisonBefore);
                 saveDB();
             } finally { calculateTotals(); }
         }
@@ -2878,9 +2968,11 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const priceAt = Number.isFinite(stamp) && stamp > 0 && stamp <= Date.now() + 300000 ? new Date(stamp).toISOString() : null;
             const previousStamp = priceTimestamp(stock.priceAt);
             if (previousStamp !== null && (!priceAt || Date.parse(priceAt) < previousStamp)) return;
+            const comparisonBefore = marketComparisonBatch ? null : marketSnapshot();
             stock.harga = price;
             stock.priceAt = priceAt;
             stock.priceManualAt = null;
+            if (comparisonBefore) recordMarketComparison(comparisonBefore);
             const input = document.querySelector(`input[data-field="harga"][data-index="${index}"]`);
             if (input) input.value = isCensored ? '••••••' : price.toLocaleString('id-ID');
             saveDB();
@@ -3020,7 +3112,9 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     const profitChanged = nextValuation.automatic
                         && (!previousValuation.automatic || previousValuation.profit !== nextValuation.profit);
                     const periodDate = profitChanged ? latest.date : reksaNavPeriodDate() ?? latest.date;
+                    const comparisonBefore = marketComparisonBatch ? null : marketSnapshot();
                     db.reksaNav = { value: latest.value, date: latest.date, periodDate, provider, checkedAt: Date.now() };
+                    if (comparisonBefore) recordMarketComparison(comparisonBefore);
                     reksaNavFailed = false;
                     const historyChanged = recordReksaNavProfit();
                     saveDB();
@@ -3071,11 +3165,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             syncAllBtn.disabled = true;
             const icon = syncAllBtn.querySelector('i');
             icon.classList.add('fa-spin');
+            const comparisonBefore = marketSnapshot();
+            marketComparisonBatch++;
             try {
                 restoreReksaHistory();
                 const updates = [fetchGoldPrice(), fetchReksaNav(true)];
                 db.saham.forEach((stock, index) => { if (stock.kode) updates.push(fetchStockPrice(stock.kode, index)); });
                 const results = await Promise.allSettled(updates);
+                recordMarketComparison(comparisonBefore);
                 if (results.some(result => result.status === 'fulfilled')) {
                     db.lastDate = generateDateString();
                     saveDB();
@@ -3083,6 +3180,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 if (results.some(result => result.status === 'rejected')) showToast('Gagal memuat beberapa harga. Periksa status pada kartu aset.', 'error');
                 else showToast('Pemeriksaan harga selesai.', 'success');
             } finally {
+                marketComparisonBatch--;
                 syncAllBtn.disabled = false;
                 icon.classList.remove('fa-spin');
                 calculateTotals();
@@ -3191,6 +3289,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             document.getElementById('stock-total-context').textContent = missingStocks ? 'Ada harga saham yang belum tersedia' : '';
             txtGrandTot.textContent = isCensored ? 'Rp ••••••' : noValuation ? '—' : formatRp(totEmas + totReksa + totSaham);
             updatePieChart(totEmas, totReksa, totSaham, noValuation);
+            renderMarketComparison();
         }
 
         function toggleSidebar(show) {
@@ -4781,5 +4880,17 @@ $('finder').addEventListener('submit',async e=>{
             get('status').textContent = 'Latar bawaan dipulihkan.';
         } catch { get('status').textContent = 'Latar bawaan gagal dipulihkan.'; }
     });
-})();</script></body>
+})();</script><dialog id="market-change-dialog" aria-labelledby="market-change-title">
+    <form method="dialog">
+        <header><h2 id="market-change-title">Perubahan harga dan NAB</h2><button autofocus aria-label="Tutup">×</button></header>
+        <dl>
+            <div><dt>Sebelum pembaruan</dt><dd id="market-before"></dd></div>
+            <div><dt>Sesudah pembaruan</dt><dd id="market-after"></dd></div>
+            <div class="market-asset"><dt>Emas</dt><dd id="market-gold"></dd></div>
+            <div class="market-asset"><dt>Reksadana</dt><dd id="market-fund"></dd></div>
+            <div class="market-asset"><dt>Saham</dt><dd id="market-stock"></dd></div>
+        </dl>
+    </form>
+</dialog>
+</body>
 </html>
