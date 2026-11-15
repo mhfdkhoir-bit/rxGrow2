@@ -890,7 +890,7 @@
                             <div class="w-8 h-8 rounded-full bg-[#93C5FD] border-[2px] border-black flex items-center justify-center text-black">
                                 <i class="fa-solid fa-chart-pie text-sm"></i>
                             </div>
-                            <span class="font-bold text-sm">Investasi Saham</span>
+                            <span class="font-bold text-sm">Saham IDX</span>
                         </div>
                         <i id="saham-icon" class="fa-solid fa-chevron-down text-sm transition-transform duration-300"></i>
                     </button>
@@ -4540,6 +4540,45 @@ $('finder').addEventListener('submit',async e=>{
 });
 })();
 
+</script>
+<script id="home-edge-bounce">
+(() => {
+    const home = document.getElementById('home-tab');
+    const dashboard = document.getElementById('dashboard-view');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let start = null;
+    let bounce;
+    document.addEventListener('touchstart', event => {
+        start = null;
+        if (reducedMotion.matches || dashboard.classList.contains('hidden') ||
+            !home.classList.contains('tab-active') || event.touches.length !== 1 ||
+            event.target.closest('input, textarea, select, [contenteditable], [role="dialog"]')) return;
+        if (!home.contains(event.target)) return;
+        bounce?.cancel();
+        const touch = event.touches[0];
+        start = { x: touch.clientX, y: touch.clientY };
+    }, { passive: true });
+    document.addEventListener('touchmove', event => {
+        if (!start || event.touches.length !== 1) return;
+        const touch = event.touches[0];
+        const dy = touch.clientY - start.y;
+        if (Math.abs(dy) < 8 || Math.abs(dy) <= Math.abs(touch.clientX - start.x)) return;
+        const page = document.scrollingElement;
+        const atTop = page.scrollTop <= 1;
+        const atBottom = page.scrollTop + page.clientHeight >= page.scrollHeight - 1;
+        if ((dy > 0 && atTop) || (dy < 0 && atBottom)) {
+            bounce = home.animate([
+                { translate: '0 0' },
+                { translate: '0 ' + (dy > 0 ? 5 : -5) + 'px', offset: 0.32 },
+                { translate: '0 0' }
+            ], { duration: 200, easing: 'ease-out' });
+        }
+        start = null;
+    }, { passive: true });
+    for (const type of ['touchend', 'touchcancel']) {
+        document.addEventListener(type, () => { start = null; }, { passive: true });
+    }
+})();
 </script>
 </body>
 </html>
