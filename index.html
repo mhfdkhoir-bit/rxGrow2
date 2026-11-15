@@ -60,6 +60,10 @@
         html.dark #home-tab #saham-toggle { background-color: #9abbe1; }
 
         html.dark #home-tab #reksa-total { background-color: #6ED697; }
+        html:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)),
+        body:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)) {
+            overscroll-behavior-y: none;
+        }
         /* Neobrutalism shadow fallbacks */
         .shadow-brutal { box-shadow: 4px 4px 0px 0px var(--rx-brutal-shadow, #000) !important; }
         .shadow-brutal-flipped { box-shadow: -4px 4px 0px 0px var(--rx-brutal-shadow, #000) !important; }
