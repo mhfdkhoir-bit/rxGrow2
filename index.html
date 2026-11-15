@@ -599,6 +599,12 @@
 #assistant-launch { position:fixed; right:max(20px, env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); z-index:39; width:52px; height:52px; border:3px solid #000; border-radius:14px; box-shadow:4px 4px var(--rx-brutal-shadow, #000); background:#BEF264; color:#171717; }
 @media (max-width: 540px) {
     .stock-card-header { position:relative; }
+    #home-tab > div:has(> #saham-body.open) { overflow:clip; }
+    .stock-card-header:has(+ #saham-body.open) {
+        position:sticky;
+        top:var(--rx-toolbar-height, calc(80px + env(safe-area-inset-top, 0px)));
+        z-index:2;
+    }
     #saham-toggle { padding-right:72px; }
     #assistant-launch { position:absolute; right:6px; top:50%; bottom:auto; transform:translateY(-50%); z-index:1; }
 }
@@ -2563,6 +2569,10 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         });
         kaNav.addEventListener('click', () => switchTab('assistant'));
         document.getElementById('assistant-launch').addEventListener('click', () => switchTab('assistant'));
+        const homeToolbar = document.querySelector('#dashboard-view > .sticky');
+        new ResizeObserver(() => {
+            document.getElementById('home-tab').style.setProperty('--rx-toolbar-height', homeToolbar.offsetHeight + 'px');
+        }).observe(homeToolbar);
 
         function loadDB() {
             const saved = localStorage.getItem('rxGrow_db');
