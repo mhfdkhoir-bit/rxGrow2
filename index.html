@@ -64,6 +64,19 @@
         body:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)) {
             overscroll-behavior-y: none;
         }
+        html.dark #dashboard-view:has(#home-tab.tab-active:not(.hidden)) {
+            background-color: #191b20;
+            background-image: linear-gradient(#24262d, #24262d00 70%, #24262d),
+                url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22144%22%20height%3D%22112%22%20viewBox%3D%220%200%20144%20112%22%3E%3Cdefs%3E%3Cfilter%20id%3D%22soft%22%3E%3CfeGaussianBlur%20stdDeviation%3D%222.4%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cg%20opacity%3D%22.20%22%20filter%3D%22url(%23soft)%22%20font-family%3D%22Apple%20Color%20Emoji%2C%20Segoe%20UI%20Emoji%2C%20sans-serif%22%20font-size%3D%2218%22%3E%3Ctext%20x%3D%2213%22%20y%3D%2231%22%20transform%3D%22rotate(-19%2013%2031)%22%3E%26%23128184%3B%3C%2Ftext%3E%3Ctext%20x%3D%2284%22%20y%3D%2247%22%20transform%3D%22rotate(-19%2084%2047)%22%3E%26%23128176%3B%3C%2Ftext%3E%3Ctext%20x%3D%2247%22%20y%3D%2288%22%20transform%3D%22rotate(-19%2047%2088)%22%3E%26%23129689%3B%3C%2Ftext%3E%3Ctext%20x%3D%22116%22%20y%3D%22101%22%20transform%3D%22rotate(-19%20116%20101)%22%3E%26%23128181%3B%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E"),
+                linear-gradient(#24262d 75%, #24262d00),
+                url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22144%22%20height%3D%22112%22%20viewBox%3D%220%200%20144%20112%22%3E%3Cdefs%3E%3Cfilter%20id%3D%22soft%22%3E%3CfeGaussianBlur%20stdDeviation%3D%222.4%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cg%20opacity%3D%22.27%22%20%20font-family%3D%22Apple%20Color%20Emoji%2C%20Segoe%20UI%20Emoji%2C%20sans-serif%22%20font-size%3D%2218%22%3E%3Ctext%20x%3D%2213%22%20y%3D%2231%22%20transform%3D%22rotate(-19%2013%2031)%22%3E%26%23128184%3B%3C%2Ftext%3E%3Ctext%20x%3D%2284%22%20y%3D%2247%22%20transform%3D%22rotate(-19%2084%2047)%22%3E%26%23128176%3B%3C%2Ftext%3E%3Ctext%20x%3D%2247%22%20y%3D%2288%22%20transform%3D%22rotate(-19%2047%2088)%22%3E%26%23129689%3B%3C%2Ftext%3E%3Ctext%20x%3D%22116%22%20y%3D%22101%22%20transform%3D%22rotate(-19%20116%20101)%22%3E%26%23128181%3B%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E"), linear-gradient(#24262d, #191b20);
+            background-size: 100% 168px, 144px 168px, 100% 168px, 144px 112px, 100% 100%;
+            background-repeat: no-repeat, repeat-x, no-repeat, repeat, no-repeat;
+        }
+        html.dark #dashboard-view:has(#home-tab.tab-active:not(.hidden)) > .sticky {
+            background-color: #24262df0;
+        }
+
         /* Neobrutalism shadow fallbacks */
         .shadow-brutal { box-shadow: 4px 4px 0px 0px var(--rx-brutal-shadow, #000) !important; }
         .shadow-brutal-flipped { box-shadow: -4px 4px 0px 0px var(--rx-brutal-shadow, #000) !important; }
