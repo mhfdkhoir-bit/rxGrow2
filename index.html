@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <!-- PWA / Homescreen Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="rxGrow">
     <meta name="mobile-web-app-capable" content="yes">
     <meta id="meta-theme-color" name="theme-color" content="#FDF9F1">
     
+    <script id="rxgrow-initial-theme">
+        try {
+            const dark = JSON.parse(localStorage.getItem('rxGrow_db'))?.darkMode;
+            document.documentElement.classList.toggle('dark', Boolean(dark));
+            document.getElementById('meta-theme-color').content = dark ? '#24262d' : '#FDF9F1';
+        } catch {}
+    </script>
     <title>rxGrow - Finance Tracker</title>
 
     <link rel="stylesheet" href="./rxgrow.css">
@@ -25,6 +32,11 @@
         html.dark {
             background-color: #24262d;
         }
+
+        html { color-scheme: light; }
+        html.dark { color-scheme: dark; }
+        #ios-status-bar-bg { background-color: #FDF9F1; }
+        html.dark #ios-status-bar-bg { background-color: #24262d; }
 
         html.dark { --rx-brutal-shadow: #7886a4; }
 
@@ -63,6 +75,10 @@
         html:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)),
         body:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)) {
             overscroll-behavior-y: none;
+        }
+        #dashboard-view:has(#home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open)) {
+            min-height: 100dvh;
+            padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
         }
         html.dark #dashboard-view:has(#home-tab.tab-active:not(.hidden)) {
             background-color: #191b20;
@@ -2511,6 +2527,7 @@
                 if (metaThemeColor) metaThemeColor.setAttribute('content', '#24262d');
             } else {
                 document.documentElement.classList.remove('dark');
+                if (metaThemeColor) metaThemeColor.setAttribute('content', '#FDF9F1');
                 darkToggleIndicator.classList.remove('translate-x-[20px]');
                 darkToggleTrack.classList.remove('bg-[#86efac]');
                 darkToggleTrack.classList.add('bg-gray-300', 'dark:bg-[#404450]'); 
@@ -4576,12 +4593,15 @@ $('finder').addEventListener('submit',async e=>{
         if (!start || event.touches.length !== 1) return;
         const touch = event.touches[0];
         const dy = touch.clientY - start.y;
-        if (Math.abs(dy) < 8 || Math.abs(dy) <= Math.abs(touch.clientX - start.x)) return;
+        if (Math.abs(dy) < 8 || Math.abs(dy) <= Math.abs(touch.clientX - start.x)) {
+            home.style.removeProperty('translate');
+            return;
+        }
         const page = document.scrollingElement;
         const atTop = page.scrollTop <= 1;
         const atBottom = page.scrollTop + page.clientHeight >= page.scrollHeight - 1;
         if ((dy > 0 && atTop) || (dy < 0 && atBottom)) {
-            const distance = Math.sign(dy) * Math.min(10, (Math.abs(dy) - 8) * 0.12);
+            const distance = Math.sign(dy) * Math.min(12, (Math.abs(dy) - 8) * 0.12);
             home.style.translate = '0 ' + distance + 'px';
         } else {
             home.style.removeProperty('translate');
