@@ -48,7 +48,7 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-        #home-tab > .grid > :first-child {
+        #home-tab :is(#gold-front, #gold-back) {
             background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20132%2090%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23654200%22%20stroke-opacity%3D%22.32%22%20stroke-width%3D%221.8%22%3E%3Cpath%20stroke-width%3D%221.45%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M43%2098C44%2047%2083%209%20141%2010%20M60%2098C61%2055%2092%2025%20141%2026%20M77%2098C78%2064%20102%2041%20141%2042%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20132%2090%22%3E%3Cg%20transform%3D%22translate(132%2090)%20rotate(180)%22%20opacity%3D%221%22%20fill%3D%22none%22%20stroke%3D%22%23654200%22%20stroke-opacity%3D%22.39%22%20stroke-width%3D%221.8%22%3E%3Cpath%20stroke-width%3D%221.45%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M43%2098C44%2047%2083%209%20141%2010%20M60%2098C61%2055%2092%2025%20141%2026%20M77%2098C78%2064%20102%2041%20141%2042%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
             background-size: min(68%, 124px) auto, min(34%, 62px) auto;
             background-position: right bottom, left top;
@@ -67,7 +67,7 @@
             background-repeat: no-repeat;
         }
         html.dark #home-tab #grand-total-flipper > :first-child { background-color: #2358b2; }
-        html.dark #home-tab > .grid > :first-child { background-color: #dfbd53; }
+        html.dark #home-tab :is(#gold-front, #gold-back) { background-color: #dfbd53; }
         html.dark #home-tab :is(#reksa-front, #reksa-back) { background-color: #dd6794; }
         html.dark #home-tab #saham-toggle { background-color: #9abbe1; }
 
@@ -299,8 +299,8 @@
 .rx-price-context{font-size:11px;line-height:15px;font-weight:600}
 #gold-price-context,#reksa-price-context,#grand-total-context{margin-top:6px}
 #grand-total-context:empty,#stock-total-context:empty{display:none}
-#reksa-front{min-height:100%}
-@media(prefers-reduced-motion:reduce){#reksa-flipper{transition:none}}
+#reksa-front,#gold-front{min-height:100%}
+@media(prefers-reduced-motion:reduce){#reksa-flipper,#gold-flipper{transition:none}}
 </style>
 <style id="rxgrow-settings">
 /* UI polish informed by Unslop by Damir Sokolovsky (@heydamir), CC BY 4.0. */
@@ -883,19 +883,22 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 
                 <div class="grid grid-cols-2 gap-3 w-full">
                     <!-- EMAS -->
-                    <div class="bg-[#FFE268] text-black border-[3px] border-black shadow-brutal rounded-2xl p-3">
+                    <div class="perspective-1000 min-w-0">
+                        <div id="gold-flipper" class="relative h-full transform-style-3d transition-transform duration-700">
+
+                    <div id="gold-front" class="backface-hidden bg-[#FFE268] text-black border-[3px] border-black shadow-brutal rounded-2xl p-3">
                         <div class="card-grid-container">
                             <div class="flex justify-between items-center w-full h-full">
                                 <div class="flex flex-col leading-tight">
                                     <span class="font-bold text-sm">Emas</span>
                                     <span class="text-[10px] font-semibold opacity-80">(Pegadaian)</span>
                                 </div>
-                                <div class="w-8 h-8 rounded-full bg-[#FEF08A] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
+                                <button id="gold-front-toggle" type="button" aria-label="Lihat modal dan P/L emas" class="w-8 h-8 shrink-0 rounded-full bg-[#FEF08A] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="#FDE047" stroke="black" stroke-width="2" stroke-linejoin="round">
                                         <polygon points="5,9 19,9 22,14 2,14" />
                                         <rect x="2" y="14" width="20" height="4" />
                                     </svg>
-                                </div>
+                                </button>
                             </div>
                             <div class="w-full h-full relative">
                                 <input type="text" id="emas-gram" inputmode="decimal" class="w-full h-full bg-white dark:bg-[#404450] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm focus:shadow-brutal-pressed focus:translate-x-[2px] focus:translate-y-[2px] transition-all outline-none px-6" placeholder="0">
@@ -915,6 +918,25 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                             </div>
                         </div>
                         <p id="gold-price-context" class="rx-price-context text-center">Belum tersedia</p>
+                    </div>
+
+
+                            <div id="gold-back" class="absolute inset-0 backface-hidden rotate-y-180-static bg-[#FFE268] text-black border-[3px] border-black shadow-brutal-flipped rounded-2xl p-3 flex flex-col justify-between" inert>
+                                <div class="flex justify-between items-center gap-1">
+                                    <span class="font-bold text-sm">Emas</span>
+                                    <button id="gold-back-toggle" type="button" class="w-8 h-8 shrink-0 rounded-full bg-[#FEF08A] border-[2px] border-black shadow-brutal-sm" aria-label="Kembali ke ringkasan emas"><i class="fa-solid fa-rotate" aria-hidden="true"></i></button>
+                                </div>
+                                <label class="flex flex-col gap-2 text-center text-[10px] font-bold uppercase">
+                                    Modal
+                                    <input id="gold-capital" type="text" inputmode="numeric" autocomplete="off" maxlength="25" placeholder="Rp" class="w-full min-w-0 bg-white dark:bg-[#404450] text-black dark:text-white border-[3px] border-black rounded-lg text-center font-bold text-[14px] shadow-brutal-sm py-2 px-1">
+                                </label>
+                                <div class="text-center">
+                                    <p class="text-[10px] font-bold uppercase mb-2">Total P/L</p>
+                                    <output id="gold-profit-percent" for="gold-capital emas-gram" class="block bg-[#FEF08A] text-black border-[3px] border-black rounded-lg shadow-brutal-sm py-3 px-1 font-bold text-lg">—</output>
+                                </div>
+                                <p id="gold-capital-status" class="text-[10px] font-semibold text-center" role="status"></p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- REKSADANA -->
@@ -3211,6 +3233,60 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             return reksaNavRequest;
         }
 
+
+        function flipGold(showBack) {
+            const front = document.getElementById('gold-front');
+            const back = document.getElementById('gold-back');
+            const next = showBack ? back : front;
+            next.inert = false;
+            document.getElementById('gold-flipper').classList.toggle('is-flipped', showBack);
+            next.querySelector('button').focus({ preventScroll: true });
+            (showBack ? front : back).inert = true;
+        }
+
+        function goldProfitPercent(total, capital, available) {
+            return available && Number.isFinite(capital) && capital > 0
+                ? (total - capital) / capital * 100 : null;
+        }
+
+        function renderGoldCapital(total, priceAvailable) {
+            const input = document.getElementById('gold-capital');
+            const output = document.getElementById('gold-profit-percent');
+            const status = document.getElementById('gold-capital-status');
+            const capital = db.portfolioGrowth.deposits.gold;
+            if (document.activeElement !== input || isCensored) {
+                input.value = isCensored ? '••••••' : capital === null ? '' : formatRp(capital);
+            }
+            input.disabled = isCensored;
+            const percent = goldProfitPercent(total, capital, priceAvailable);
+            output.textContent = isCensored ? '••%' : percent === null ? '—'
+                : (percent > 0 ? '+' : '') + percent.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+            output.style.color = isCensored || percent === null || percent === 0 ? '#171717'
+                : percent > 0 ? '#166534' : '#991b1b';
+            status.textContent = isCensored ? '' : capital === null || capital <= 0
+                ? 'Isi modal untuk menghitung P/L.' : !priceAvailable ? 'Harga emas belum tersedia.' : '';
+        }
+
+        document.getElementById('gold-front-toggle').addEventListener('click', () => flipGold(true));
+        document.getElementById('gold-back-toggle').addEventListener('click', () => flipGold(false));
+        const goldCapitalInput = document.getElementById('gold-capital');
+        goldCapitalInput.addEventListener('input', () => {
+            if (isCensored) return;
+            const digits = goldCapitalInput.value.replace(/[^0-9]/g, '');
+            const amount = digits === '' ? null : Number(digits);
+            if (amount !== null && !Number.isSafeInteger(amount)) {
+                goldCapitalInput.setCustomValidity('Nominal modal terlalu besar.');
+                goldCapitalInput.reportValidity();
+                return;
+            }
+            goldCapitalInput.setCustomValidity('');
+            db.portfolioGrowth.deposits.gold = amount;
+            goldCapitalInput.value = amount === null ? '' : formatRp(amount);
+            saveDB();
+            calculateTotals();
+        });
+        goldCapitalInput.addEventListener('blur', () => calculateTotals());
+
         function flipReksa(showBack) {
             const front = document.getElementById('reksa-front');
             const back = document.getElementById('reksa-back');
@@ -3310,6 +3386,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             goldIcon.className = HARGA_BUYBACK_EMAS > 0 && db.goldTrend === 'up' ? 'fa-solid fa-arrow-up rotate-45 text-green-600 text-xs' :
                 HARGA_BUYBACK_EMAS > 0 && db.goldTrend === 'down' ? 'fa-solid fa-arrow-down -rotate-45 text-red-600 text-xs' : 'hidden';
             txtEmasTot.textContent = isCensored ? '••••••' : missingGold ? '—' : formatRp(totEmas);
+
+            renderGoldCapital(totEmas, !missingGold && HARGA_BUYBACK_EMAS > 0);
 
             const rm = parseNum(inRekModal.value);
             const { automatic, profit: rp, total: totReksa } = getReksaValuation(rm);
