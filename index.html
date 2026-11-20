@@ -3785,7 +3785,9 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             dateLine.textContent = parts ? parts[1].trim() : rawDate;
             const timeLine = document.createElement('span');
             timeLine.style.display = 'block';
-            timeLine.style.marginTop = '4px';
+            dateLine.style.lineHeight = '1.2';
+            timeLine.style.marginTop = '1px';
+            timeLine.style.lineHeight = '1.2';
             timeLine.style.fontSize = '10px';
             timeLine.style.fontWeight = '500';
             const stamp = recordedAt ? Date.parse(recordedAt) : NaN;
@@ -3897,7 +3899,6 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     <td class="p-3 border-r-[3px] border-black text-center font-black text-sm">${icon}</td>
                     <td class="p-2 text-center align-middle">
                         <div class="flex items-center justify-center gap-2">
-                            <button data-action="edit-emas" data-index="${idx}" class="w-7 h-7 bg-[#FFE268] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Edit"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
                             <button data-action="delete-emas" data-index="${idx}" class="w-7 h-7 bg-[#f87171] border-[2px] border-black rounded flex justify-center items-center text-black shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] transition-all" title="Hapus"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
                         </div>
                     </td>
