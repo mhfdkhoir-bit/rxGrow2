@@ -2862,45 +2862,106 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             return (fresh ? 'Terbaru' : 'Data lama') + ' · ' + priceDateFormat.format(stamp);
         }
 
-        let marketComparisonBatch = 0;
-        function marketSnapshot() {
-            const gold = parseFloatNum(db.emasGram);
-            const capital = parseNum(db.reksaModal);
-            const units = reksaUnits(db.reksaUnits);
-            const fund = getReksaValuation(capital);
-            const holdings = db.saham.filter(stock => parseNum(stock.lot) > 0);
-            const stockQuotes = holdings.map(stock => parseNum(stock.harga));
-            const goldPrice = parseNum(db.lastGoldPrice);
-            if ((gold > 0 && goldPrice <= 0) || stockQuotes.some(price => price <= 0)
-                || (units > 0 && !fund.automatic)) return null;
-            const values = {
-                gold: Math.round(gold * goldPrice),
-                fund: fund.total,
-                stock: holdings.reduce((sum, stock, index) => sum + parseNum(stock.lot) * 100 * stockQuotes[index], 0)
-            };
-            return {
-                total: values.gold + values.fund + values.stock,
-                values,
-                at: Date.now(),
-                holdings: JSON.stringify([gold, capital, units, fund.automatic ? null : fund.total,
-                    holdings.map(stock => [stock.kode, parseNum(stock.lot)])]),
-                quotes: JSON.stringify([gold > 0 ? goldPrice : null,
-                    units > 0 && fund.automatic ? db.reksaNav.value : null, stockQuotes])
-            };
+
+        function marketDay(at) {
+            return new Date(at + 7 * 60 * 60 * 1000).toISOString().slice(0, 10);
         }
 
-        function recordMarketComparison(before) {
-            const after = marketSnapshot();
-            if (!before || !after || before.holdings !== after.holdings || before.quotes === after.quotes) return;
-            const previous = db.marketComparison?.after;
-            if (previous?.holdings === before.holdings && previous.quotes === before.quotes
-                && Number.isFinite(previous.at)) before.at = previous.at;
-            db.marketComparison = { before, after };
+        function marketSnapshot() {
+            const prices = {
+                gold: parseNum(db.lastGoldPrice),
+                fund: reksaNavRecord(db.reksaNav) ? db.reksaNav.value : null,
+                stocks: {}
+            };
+            for (const stock of db.saham) {
+                const code = stock.kode?.trim().toUpperCase();
+                const price = parseNum(stock.harga);
+                if (code && price > 0) prices.stocks[code] = price;
+            }
+            return { at: Date.now(), prices };
+        }
+
+        function migrateMarketComparison(day) {
+            const candidates = [db.marketComparison?.before, db.marketComparison?.after];
+            return candidates.flatMap(entry => {
+                try {
+                    if (!Number.isFinite(entry?.at) || marketDay(entry.at) >= day) return [];
+                    const [gold, , units, , stocks] = JSON.parse(entry.holdings);
+                    const [goldPrice, nav, quotes] = JSON.parse(entry.quotes);
+                    const prices = { gold: gold > 0 ? goldPrice : null, fund: units > 0 ? nav : null, stocks: {} };
+                    stocks.forEach(([code], index) => {
+                        if (code && quotes[index] > 0) prices.stocks[code.trim().toUpperCase()] = quotes[index];
+                    });
+                    return [{ at: entry.at, prices }];
+                } catch { return []; }
+            }).sort((a, b) => b.at - a.at)[0] ?? null;
+        }
+
+        function recordDailyMarketPrices() {
+            const snapshot = marketSnapshot();
+            const day = marketDay(snapshot.at);
+            let daily = db.dailyMarketComparison;
+            if (daily?.version !== 1 || !daily.latest?.prices || !Number.isFinite(daily.latest.at)) {
+                daily = { version: 1, day, previous: migrateMarketComparison(day), latest: snapshot };
+                db.dailyMarketComparison = daily;
+                return true;
+            }
+            if (day < daily.day) return false;
+            if (day > daily.day) {
+                daily.previous = daily.latest;
+                daily.day = day;
+                daily.latest = snapshot;
+                return true;
+            }
+            if (JSON.stringify(snapshot.prices) === JSON.stringify(daily.latest.prices)) return false;
+            daily.latest = snapshot;
+            return true;
+        }
+
+        function dailyMarketComparison() {
+            const daily = db.dailyMarketComparison;
+            const baseline = daily?.previous;
+            if (!baseline?.prices || !Number.isFinite(baseline.at) || !daily.latest?.prices) return {};
+            const gold = parseFloatNum(db.emasGram);
+            const units = reksaUnits(db.reksaUnits);
+            const fund = getReksaValuation();
+            const current = daily.latest.prices;
+            const previous = baseline.prices;
+            const validPrice = value => Number.isFinite(value) && value > 0;
+            const goldPrice = validPrice(current.gold) ? current.gold : 0;
+            const goldBase = validPrice(previous.gold) ? previous.gold : goldPrice;
+            if ((gold > 0 && !validPrice(current.gold)) || (units > 0 && !fund.automatic)) return {};
+            const beforeValues = {
+                gold: Math.round(gold * goldBase),
+                fund: fund.automatic && validPrice(previous.fund)
+                    ? Math.round(units * previous.fund) : fund.total,
+                stock: 0
+            };
+            const afterValues = { gold: Math.round(gold * goldPrice), fund: fund.total, stock: 0 };
+            let comparable = gold > 0 && validPrice(previous.gold)
+                || units > 0 && fund.automatic && validPrice(previous.fund);
+            for (const stock of db.saham) {
+                const lot = parseNum(stock.lot);
+                if (!(lot > 0)) continue;
+                const code = stock.kode?.trim().toUpperCase();
+                const price = current.stocks[code];
+                if (!validPrice(price)) return {};
+                const base = previous.stocks[code];
+                if (validPrice(base)) comparable = true;
+                beforeValues.stock += lot * 100 * (validPrice(base) ? base : price);
+                afterValues.stock += lot * 100 * price;
+            }
+            if (!comparable) return {};
+            const total = values => values.gold + values.fund + values.stock;
+            return {
+                before: { at: baseline.at, total: total(beforeValues), values: beforeValues },
+                after: { at: daily.latest.at, total: total(afterValues), values: afterValues }
+            };
         }
 
         const marketChangeButton = document.getElementById('market-change-button');
         function renderMarketComparison() {
-            const { before, after } = db.marketComparison ?? {};
+            const { before, after } = dailyMarketComparison();
             const valid = [before, after].every(entry => Number.isFinite(entry?.total)
                 && Number.isFinite(entry?.at) && Math.abs(entry.at) <= 8640000000000000);
             const dialog = document.getElementById('market-change-dialog');
@@ -2916,7 +2977,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const amount = document.createElement('span');
             amount.className = 'market-change-amount';
             amount.textContent = label.replace('Rp ', 'Rp');
-            marketChangeButton.replaceChildren(amount, ' sejak pembaruan terakhir');
+            marketChangeButton.replaceChildren(amount, ' perubahan hari ini');
             const formatTime = new Intl.DateTimeFormat('id-ID', {
                 dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta'
             });
@@ -2957,12 +3018,10 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     if (db.emasHistory.length > 50) db.emasHistory.pop();
                     renderEmasHistory();
                 }
-                const comparisonBefore = marketComparisonBatch ? null : marketSnapshot();
                 HARGA_BUYBACK_EMAS = newGoldPrice;
                 db.lastGoldPrice = newGoldPrice;
                 db.goldPriceDate = sourceDate;
                 db.goldManualAt = null;
-                if (comparisonBefore) recordMarketComparison(comparisonBefore);
                 saveDB();
             } finally { calculateTotals(); }
         }
@@ -2985,11 +3044,9 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const priceAt = Number.isFinite(stamp) && stamp > 0 && stamp <= Date.now() + 300000 ? new Date(stamp).toISOString() : null;
             const previousStamp = priceTimestamp(stock.priceAt);
             if (previousStamp !== null && (!priceAt || Date.parse(priceAt) < previousStamp)) return;
-            const comparisonBefore = marketComparisonBatch ? null : marketSnapshot();
             stock.harga = price;
             stock.priceAt = priceAt;
             stock.priceManualAt = null;
-            if (comparisonBefore) recordMarketComparison(comparisonBefore);
             const input = document.querySelector(`input[data-field="harga"][data-index="${index}"]`);
             if (input) input.value = isCensored ? '••••••' : price.toLocaleString('id-ID');
             saveDB();
@@ -3129,9 +3186,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     const profitChanged = nextValuation.automatic
                         && (!previousValuation.automatic || previousValuation.profit !== nextValuation.profit);
                     const periodDate = profitChanged ? latest.date : reksaNavPeriodDate() ?? latest.date;
-                    const comparisonBefore = marketComparisonBatch ? null : marketSnapshot();
                     db.reksaNav = { value: latest.value, date: latest.date, periodDate, provider, checkedAt: Date.now() };
-                    if (comparisonBefore) recordMarketComparison(comparisonBefore);
                     reksaNavFailed = false;
                     const historyChanged = recordReksaNavProfit();
                     saveDB();
@@ -3182,14 +3237,11 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             syncAllBtn.disabled = true;
             const icon = syncAllBtn.querySelector('i');
             icon.classList.add('fa-spin');
-            const comparisonBefore = marketSnapshot();
-            marketComparisonBatch++;
             try {
                 restoreReksaHistory();
                 const updates = [fetchGoldPrice(), fetchReksaNav(true)];
                 db.saham.forEach((stock, index) => { if (stock.kode) updates.push(fetchStockPrice(stock.kode, index)); });
                 const results = await Promise.allSettled(updates);
-                recordMarketComparison(comparisonBefore);
                 if (results.some(result => result.status === 'fulfilled')) {
                     db.lastDate = generateDateString();
                     saveDB();
@@ -3197,7 +3249,6 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 if (results.some(result => result.status === 'rejected')) showToast('Gagal memuat beberapa harga. Periksa status pada kartu aset.', 'error');
                 else showToast('Pemeriksaan harga selesai.', 'success');
             } finally {
-                marketComparisonBatch--;
                 syncAllBtn.disabled = false;
                 icon.classList.remove('fa-spin');
                 calculateTotals();
@@ -3306,6 +3357,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             document.getElementById('stock-total-context').textContent = missingStocks ? 'Ada harga saham yang belum tersedia' : '';
             txtGrandTot.textContent = isCensored ? 'Rp ••••••' : noValuation ? '—' : formatRp(totEmas + totReksa + totSaham);
             updatePieChart(totEmas, totReksa, totSaham, noValuation);
+            if (recordDailyMarketPrices()) saveDB();
             renderMarketComparison();
         }
 
@@ -4907,10 +4959,10 @@ $('finder').addEventListener('submit',async e=>{
     });
 })();</script><dialog id="market-change-dialog" aria-labelledby="market-change-title">
     <form method="dialog">
-        <header><h2 id="market-change-title">Perubahan harga dan NAB</h2><button autofocus aria-label="Tutup">×</button></header>
+        <header><h2 id="market-change-title">Perubahan hari ini</h2><button autofocus aria-label="Tutup">×</button></header>
         <dl>
-            <div><dt>Sebelum pembaruan</dt><dd id="market-before"></dd></div>
-            <div><dt>Sesudah pembaruan</dt><dd id="market-after"></dd></div>
+            <div><dt>Hari pembanding</dt><dd id="market-before"></dd></div>
+            <div><dt>Hari ini</dt><dd id="market-after"></dd></div>
             <div class="market-asset"><dt>Emas</dt><dd id="market-gold"></dd></div>
             <div class="market-asset"><dt>Reksadana</dt><dd id="market-fund"></dd></div>
             <div class="market-asset"><dt>Saham</dt><dd id="market-stock"></dd></div>
