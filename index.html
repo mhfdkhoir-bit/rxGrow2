@@ -3817,6 +3817,41 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             });
         }
 
+
+        function goldHistoryDay(item) {
+            const source = priceTimestamp(item.sourceDate);
+            if (source !== null) return new Date(source + jakartaOffset).toISOString().slice(0, 10);
+            const iso = priceTimestamp(item.date);
+            if (iso !== null) return new Date(iso + jakartaOffset).toISOString().slice(0, 10);
+            const match = String(item.date ?? '').toLowerCase().match(/^(\d{1,2})\s+([a-z]+)\s+(\d{2}|\d{4})(?=\s|$)/);
+            if (!match) return null;
+            const months = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'];
+            const month = months.indexOf(match[2]);
+            if (month < 0) return null;
+            const year = match[3].length === 2 ? '20' + match[3] : match[3];
+            const day = year + '-' + String(month + 1).padStart(2, '0') + '-' + match[1].padStart(2, '0');
+            const time = Date.parse(day);
+            return Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === day ? day : null;
+        }
+
+        function goldHistoryDifference(item, history) {
+            const day = goldHistoryDay(item);
+            const price = Number(item.price);
+            if (!day || !Number.isFinite(price) || price <= 0) return null;
+            let previous = null;
+            let previousDay = '';
+            for (const entry of history) {
+                const candidateDay = goldHistoryDay(entry);
+                const candidatePrice = Number(entry.price);
+                if (candidateDay && candidateDay < day && candidateDay > previousDay
+                    && Number.isFinite(candidatePrice) && candidatePrice > 0) {
+                    previous = candidatePrice;
+                    previousDay = candidateDay;
+                }
+            }
+            return previous === null ? null : price - previous;
+        }
+
         // Render Riwayat Emas dengan tombol Aksi
         function renderEmasHistory() {
             tbodyEmas.innerHTML = '';
@@ -3825,9 +3860,17 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 return;
             }
             db.emasHistory.forEach((item, idx) => {
-                const icon = item.trend === 'up' 
-                    ? '<i class="fa-solid fa-arrow-up rotate-45 text-green-600 dark:text-green-400"></i>' 
-                    : (item.trend === 'down' ? '<i class="fa-solid fa-arrow-down -rotate-45 text-red-600 dark:text-red-400"></i>' : '<i class="fa-solid fa-minus text-gray-400"></i>');
+                const difference = goldHistoryDifference(item, db.emasHistory);
+                const trend = difference === null ? item.trend : difference > 0 ? 'up' : difference < 0 ? 'down' : 'none';
+                const color = trend === 'up' ? 'text-green-600 dark:text-green-400'
+                    : trend === 'down' ? 'text-red-600 dark:text-red-400' : 'text-gray-400';
+                const iconClass = trend === 'up' ? 'fa-arrow-up rotate-45'
+                    : trend === 'down' ? 'fa-arrow-down -rotate-45' : 'fa-minus';
+                const change = isCensored ? '••••••' : difference === null ? '—'
+                    : (difference > 0 ? '+' : difference < 0 ? '−' : '') + formatRp(Math.abs(difference));
+                const icon = '<span class="inline-flex flex-col items-center gap-1 ' + color
+                    + '"><i aria-hidden="true" class="fa-solid ' + iconClass + '"></i>'
+                    + '<span class="text-xs whitespace-nowrap">' + change + '</span></span>';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${item.date}</td>
