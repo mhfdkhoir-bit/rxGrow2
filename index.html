@@ -300,6 +300,10 @@
 #gold-price-context,#reksa-price-context,#grand-total-context{margin-top:6px}
 #grand-total-context:empty,#stock-total-context:empty{display:none}
 #reksa-front,#gold-front{min-height:100%}
+#gold-capital-status:empty { display:none; }
+#gold-back > .text-center { position:relative; }
+:is(#gold-back,#reksa-back) > .text-center > p:first-child { min-height:2.5em; display:grid; align-content:center; }
+#gold-capital-status { position:absolute; top:100%; left:0; right:0; }
 @media(prefers-reduced-motion:reduce){#reksa-flipper,#gold-flipper{transition:none}}
 </style>
 <style id="rxgrow-settings">
@@ -984,7 +988,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                     <p class="text-[11px] font-semibold leading-tight mb-2">Majoris Pasar Uang Syariah Indonesia</p>
                                     <p class="text-[10px] font-bold uppercase">NAB per unit</p>
                                     <p id="reksa-nav-value" class="mt-1 bg-[#FBCFE8] border-[2px] border-black rounded-lg p-2 font-bold text-sm shadow-brutal-sm break-words">—</p>
-                                    <p id="reksa-nav-status" class="rx-price-context mt-2" role="status">Belum tersedia</p>
+                                    <p id="reksa-nav-status" hidden>Belum tersedia</p>
                                 </div>
                                 <label class="flex flex-col gap-1 text-center text-[10px] font-bold uppercase">
                                     Unit penyertaan
