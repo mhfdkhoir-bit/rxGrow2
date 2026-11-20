@@ -3129,7 +3129,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const navDate = reksaNavPeriodDate();
             const history = db.reksaNavHistory;
             const index = history.findIndex(entry => entry?.navDate === navDate);
-            const entry = { navDate, profit: valuation.profit };
+            const entry = { navDate, profit: valuation.profit, recordedAt: new Date().toISOString() };
             if (index >= 0) {
                 if (history[index].deleted || history[index].profit === entry.profit) return false;
                 history[index] = entry;
@@ -3776,6 +3776,25 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }
         });
 
+        function renderHistoryDate(cell, value, recordedAt = null) {
+            const rawDate = String(value ?? '');
+            const parts = rawDate.match(/^(.*?)[,\s]+(\d{1,2}[.:]\d{2}(?:[.:]\d{2})?)\s*$/);
+            const dateLine = document.createElement('span');
+            dateLine.style.display = 'block';
+            dateLine.style.whiteSpace = 'nowrap';
+            dateLine.textContent = parts ? parts[1].trim() : rawDate;
+            const timeLine = document.createElement('span');
+            timeLine.style.display = 'block';
+            timeLine.style.marginTop = '4px';
+            timeLine.style.fontSize = '10px';
+            timeLine.style.fontWeight = '500';
+            const stamp = recordedAt ? Date.parse(recordedAt) : NaN;
+            timeLine.textContent = parts ? parts[2] : Number.isFinite(stamp)
+                ? new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }).format(stamp)
+                : '—';
+            cell.replaceChildren(dateLine, timeLine);
+        }
+
         function renderRiwayat() {
             tbodyRiwayat.innerHTML = '';
             const rows = reksaHistoryRows();
@@ -3803,7 +3822,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                         </div>
                     </td>
                 `;
-                tr.firstElementChild.textContent = item.date;
+                renderHistoryDate(tr.firstElementChild, item.date, item.recordedAt);
                 if (idx === null) {
                     tr.querySelector('[data-action="edit-riwayat"]').remove();
                     const deleteButton = tr.querySelector('[data-action="delete-riwayat"]');
@@ -3873,7 +3892,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     + '<span class="text-xs whitespace-nowrap">' + change + '</span></span>';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${item.date}</td>
+                    <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap" data-gold-date></td>
                     <td class="p-3 border-r-[3px] border-black text-right font-black text-sm">${isCensored ? '••••••' : formatRp(item.price)}</td>
                     <td class="p-3 border-r-[3px] border-black text-center font-black text-sm">${icon}</td>
                     <td class="p-2 text-center align-middle">
@@ -3883,6 +3902,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                         </div>
                     </td>
                 `;
+                renderHistoryDate(tr.querySelector('[data-gold-date]'), item.date);
                 tbodyEmas.appendChild(tr);
             });
         }
@@ -4040,7 +4060,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 const pDisplay = isCensored ? '••••••' : `${pnlSign}${formatRp(item.pnl)}`;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${item.date}</td>
+                    <td class="p-3 border-r-[3px] border-black text-[11px] font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap"></td>
                     <td class="p-3 border-r-[3px] border-black text-center font-black text-sm uppercase">
                         <button data-action="view-saham-detail" data-kode="${item.kode}" class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-[1.5px] border-black rounded shadow-brutal-sm hover:bg-blue-200 dark:hover:bg-blue-800 active:translate-x-[1px] active:translate-y-[1px] transition-all font-bold tracking-wider inline-flex items-center gap-1" title="Lihat Rincian Penjualan">
                             <span>${item.kode}</span>
@@ -4056,6 +4076,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                         </div>
                     </td>
                 `;
+                renderHistoryDate(tr.firstElementChild, item.date, item.recordedAt);
                 tbodySahamHistory.appendChild(tr);
             });
         }
