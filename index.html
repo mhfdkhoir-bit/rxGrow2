@@ -298,6 +298,9 @@
 <style>
 .rx-price-context{font-size:11px;line-height:15px;font-weight:600}
 #gold-price-context,#reksa-price-context,#grand-total-context{margin-top:6px}
+#gold-price-context,#reksa-price-context { line-height:13px; }
+#gold-price-context > span,#reksa-price-context > span { display:block; }
+#gold-price-context > span + span,#reksa-price-context > span + span { margin-top:1px; }
 #grand-total-context:empty,#stock-total-context:empty{display:none}
 #reksa-front,#gold-front{min-height:100%}
 #gold-capital-status:empty { display:none; }
@@ -3369,12 +3372,24 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             pieR.style.borderRightWidth = (pr > 0 && ps > 0) ? '2px' : '0px';
         }
 
+        function renderAssetUpdate(id, date, status) {
+            const element = document.getElementById(id);
+            const label = document.createElement('span');
+            label.textContent = 'Update';
+            const value = document.createElement('span');
+            const stamp = priceTimestamp(date);
+            value.textContent = stamp === null ? 'Belum tersedia' : priceDateFormat.format(stamp);
+            element.replaceChildren(label, value);
+            element.title = status;
+        }
+
         function calculateTotals() {
             const g = parseFloatNum(inEmas.value);
             const totEmas = Math.round(g * HARGA_BUYBACK_EMAS);
             const missingGold = g > 0 && !(HARGA_BUYBACK_EMAS > 0);
             txtGoldPrice.textContent = HARGA_BUYBACK_EMAS > 0 ? formatRp(HARGA_BUYBACK_EMAS) : '—';
-            document.getElementById('gold-price-context').textContent = describeMarketPrice(HARGA_BUYBACK_EMAS, db.goldPriceDate, 'gold', db.goldManualAt);
+            renderAssetUpdate('gold-price-context', HARGA_BUYBACK_EMAS > 0 ? db.goldManualAt || db.goldPriceDate : null,
+                describeMarketPrice(HARGA_BUYBACK_EMAS, db.goldPriceDate, 'gold', db.goldManualAt));
             const goldIcon = document.getElementById('gold-price-icon');
             goldIcon.className = HARGA_BUYBACK_EMAS > 0 && db.goldTrend === 'up' ? 'fa-solid fa-arrow-up rotate-45 text-green-600 text-xs' :
                 HARGA_BUYBACK_EMAS > 0 && db.goldTrend === 'down' ? 'fa-solid fa-arrow-down -rotate-45 text-red-600 text-xs' : 'hidden';
@@ -3395,7 +3410,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 : reksaNavFailed ? 'Belum tersedia · Gagal memperbarui' : 'Belum tersedia';
             txtRekTot.textContent = isCensored ? '••••••' : formatRp(totReksa);
             const recordedAt = priceTimestamp(db.reksaRecordedAt);
-            document.getElementById('reksa-price-context').textContent = automatic ? 'NAB · ' + navDate : 'Input manual · ' + (recordedAt === null ? 'tanggal belum tercatat' : priceDateFormat.format(recordedAt));
+            renderAssetUpdate('reksa-price-context', automatic ? quote?.date : db.reksaRecordedAt,
+                automatic ? 'NAB · ' + navDate : 'Input manual · ' + (recordedAt === null ? 'tanggal belum tercatat' : priceDateFormat.format(recordedAt)));
 
             let missingStocks = 0;
             let valuedStocks = 0;
