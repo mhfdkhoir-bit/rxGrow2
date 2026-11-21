@@ -76,6 +76,17 @@
         body:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)) {
             overscroll-behavior-y: none;
         }
+        @media (max-width: 540px) {
+            html:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open, #crypto-body.open)),
+            body:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open, #crypto-body.open)) {
+                height: 100%;
+                overflow: hidden;
+            }
+            #dashboard-view:has(#home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open, #crypto-body.open)) {
+                height: 100dvh;
+                overflow: hidden;
+            }
+        }
         #dashboard-view:has(#home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open, #crypto-body.open)) {
             min-height: 100dvh;
             padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
@@ -748,7 +759,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
     #dashboard-view:has(#home-tab.tab-active):not(:has(#saham-body.open,#crypto-body.open)) { padding-bottom:max(10px,env(safe-area-inset-bottom,0px)); }
 }
 @media(max-width:540px) and (max-height:740px) {
-    #home-tab { gap:9px; }
+    #home-tab { gap:5px; }
     #grand-total-flipper > :first-child { min-height:104px; padding-top:10px!important; padding-bottom:26px!important; }
     #grand-total-flipper > :first-child .text-2xl { font-size:20px; }
     #home-tab .card-grid-container { grid-template-rows:34px 32px 16px 36px 16px 36px; gap:5px; }
@@ -5230,6 +5241,26 @@ $('finder').addEventListener('submit',async e=>{
     const home = document.getElementById('home-tab');
     const dashboard = document.getElementById('dashboard-view');
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const closedHome = () => matchMedia('(max-width: 540px)').matches && !dashboard.classList.contains('hidden')
+        && home.classList.contains('tab-active') && !home.classList.contains('hidden')
+        && !document.querySelector('#saham-body.open, #crypto-body.open');
+    function resetClosedHome() {
+        if (!closedHome()) return;
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        dashboard.scrollTop = 0;
+    }
+    const lockObserver = new MutationObserver(resetClosedHome);
+    for (const element of [dashboard, home, document.getElementById('saham-body'), document.getElementById('crypto-body')])
+        lockObserver.observe(element, { attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('resize', resetClosedHome);
+    document.addEventListener('touchmove', event => {
+        if (closedHome() && dashboard.contains(event.target) && !event.target.closest('dialog, [role="dialog"]') && event.cancelable)
+            event.preventDefault();
+    }, { passive: false });
+    document.addEventListener('wheel', event => {
+        if (closedHome() && dashboard.contains(event.target) && !event.target.closest('dialog, [role="dialog"]') && event.cancelable)
+            event.preventDefault();
+    }, { passive: false });
     let start = null;
     let bounce;
     document.addEventListener('touchstart', event => {
@@ -5255,7 +5286,7 @@ $('finder').addEventListener('submit',async e=>{
         const atTop = page.scrollTop <= 1;
         const atBottom = page.scrollTop + page.clientHeight >= page.scrollHeight - 1;
         if ((dy > 0 && atTop) || (dy < 0 && atBottom)) {
-            const distance = Math.sign(dy) * Math.min(8, (Math.abs(dy) - 8) * 0.08);
+            const distance = Math.sign(dy) * Math.min(4, (Math.abs(dy) - 8) * 0.04);
             home.style.translate = '0 ' + distance + 'px';
         } else {
             home.style.removeProperty('translate');
