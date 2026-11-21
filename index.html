@@ -76,7 +76,7 @@
         body:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)) {
             overscroll-behavior-y: none;
         }
-        #dashboard-view:has(#home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open)) {
+        #dashboard-view:has(#home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open, #crypto-body.open)) {
             min-height: 100dvh;
             padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
         }
@@ -606,7 +606,7 @@ body:not(:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden))) >
 #assistant-launch { position:fixed; right:max(20px, env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); z-index:39; width:52px; height:52px; border:3px solid #000; border-radius:14px; box-shadow:4px 4px var(--rx-brutal-shadow, #000); background:#BEF264; color:#171717; }
 @media (max-width: 540px) {
     .stock-card-header { position:relative; }
-    #saham-toggle { padding-right:72px; }
+    #crypto-toggle { padding-right:72px; }
     #assistant-launch { position:absolute; right:6px; top:50%; bottom:auto; transform:translateY(-50%); z-index:1; }
     body > #assistant-launch {
         position:fixed;
@@ -710,7 +710,57 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 #market-change-dialog dl div { padding-block:8px; border-bottom:1px solid #8886; }
 #market-change-dialog dd { white-space:pre-line; font-weight:700; }
 #market-change-dialog .market-asset { display:flex; justify-content:space-between; gap:12px; }
-</style></head>
+</style><style id="rxgrow-crypto">
+.crypto-card-header { position:relative; }
+#crypto-toggle { width:100%; min-height:66px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 72px 10px 16px; background:#c4a2f4; color:#171717; }
+.crypto-title { display:flex; align-items:center; gap:12px; text-align:left; }
+.crypto-title strong { display:block; font-size:16px; line-height:1.2; }
+.crypto-title small { display:block; font-size:11px; font-weight:600; margin-top:2px; }
+.crypto-coin { display:grid; place-items:center; width:34px; height:34px; flex:none; border:2px solid #000; border-radius:50%; font-size:23px; line-height:1; background:#d4bdf8; font-weight:800; }
+#crypto-chevron { font-size:14px; transition:transform .3s; }
+#crypto-card { box-shadow:4px 4px 0 #a580d4!important; }
+.crypto-content { padding:14px; display:grid; gap:12px; }
+.crypto-asset-title { display:flex; justify-content:space-between; align-items:center; font-size:14px; }
+.crypto-asset-title span,.crypto-status { font-size:11px; }
+.crypto-content label { display:grid; gap:4px; font-size:12px; font-weight:700; }
+.crypto-content input { min-width:0; width:100%; box-sizing:border-box; background:#fff; border:2px solid #000; border-radius:8px; padding:9px; color:#171717; }
+.dark .crypto-content input { background:#404450; color:#fff; }
+.crypto-content dl { margin:0; display:grid; gap:8px; font-size:12px; }
+.crypto-content dl div { display:flex; justify-content:space-between; gap:10px; }
+.crypto-content dd { font-weight:700; }
+.crypto-status { color:#6b6475; }
+.dark .crypto-status { color:#c9c3d0; }
+@media(max-width:540px) {
+    #dashboard-view:has(#home-tab.tab-active) > .sticky > div { padding-top:calc(8px + env(safe-area-inset-top,0px))!important; }
+    #home-tab { gap:12px; padding-top:4px; }
+    #grand-total-container { margin-top:0; }
+    #grand-total-flipper > :first-child { padding:12px 16px 28px!important; min-height:114px; }
+    #grand-total { font-size:clamp(26px,8.2vw,36px); }
+    #home-tab .card-grid-container { grid-template-rows:40px clamp(32px,4.7svh,42px) 17px clamp(36px,5.2svh,46px) 17px clamp(36px,5.2svh,46px); gap:5px; }
+    #home-tab :is(#gold-front,#gold-back,#reksa-front,#reksa-back) { padding:10px; }
+    #home-tab .card-grid-container > :is(:nth-child(3),:nth-child(5)) { transform:translateY(3px); }
+    #home-tab .card-grid-container input,#gold-price-txt,#emas-total,#reksa-total,#reksa-profit { font-size:clamp(11px,3.5vw,14px); }
+    #home-tab #saham-toggle { min-height:60px; padding-block:10px; }
+    #crypto-toggle { min-height:60px; }
+    #crypto-toggle .crypto-title strong { font-size:14px; }
+    #assistant-launch { width:48px; height:48px; }
+    #crypto-card .crypto-coin { width:32px; height:32px; }
+    #dashboard-view:has(#home-tab.tab-active):not(:has(#saham-body.open,#crypto-body.open)) { padding-bottom:max(10px,env(safe-area-inset-bottom,0px)); }
+}
+@media(max-width:540px) and (max-height:740px) {
+    #home-tab { gap:9px; }
+    #grand-total-flipper > :first-child { min-height:96px; padding-top:8px!important; padding-bottom:24px!important; }
+    #grand-total-flipper > :first-child .text-2xl { font-size:20px; }
+    #home-tab .card-grid-container { grid-template-rows:34px 30px 15px 34px 15px 34px; gap:4px; }
+    #home-tab #saham-toggle,#crypto-toggle { min-height:54px; padding-block:8px; }
+    .crypto-title small { font-size:10px; }
+}
+</style><style>#crypto-toggle {
+            background-image: url("data:image/svg+xml,%3Csvg%20preserveAspectRatio%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20130%2068%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23153559%22%20stroke-opacity%3D%22.24%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke-width%3D%221.45%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M-5%2073C59%2073%2079%2064%2099%2044S121%2024%20137%2018%20M-5%2084C62%2084%2084%2077%20105%2055S126%2036%20137%2031%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20130%2068%22%3E%3Cg%20transform%3D%22translate(130%2068)%20rotate(180)%22%20opacity%3D%221%22%20fill%3D%22none%22%20stroke%3D%22%23153559%22%20stroke-opacity%3D%22.39%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke-width%3D%221.45%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M-8%2062H26Q38%2062%2046%2052L55%2042Q62%2034%2074%2034H81Q91%2034%2099%2025L107%2016Q116%207%20138%207%20M-8%2076H22Q48%2076%2063%2055T85%2046H90Q103%2046%20112%2034T138%2025%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+            background-size: 100% 100%, min(34%, 62px) auto;
+            background-position: right bottom, left top;
+            background-repeat: no-repeat;
+        }</style></head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#24262d] transition-colors duration-300 min-h-[640px]">
 
     <div id="ios-status-bar-bg" class="fixed top-0 left-0 w-full bg-[#FDF9F1] dark:bg-[#24262d] z-[99999] transition-colors duration-300 pointer-events-none" style="height: env(safe-area-inset-top, 0px);"></div>
@@ -1015,7 +1065,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                         </div>
                         <i id="saham-icon" class="fa-solid fa-chevron-down text-sm transition-transform duration-300"></i>
                     </button>
-            <button id="assistant-launch" type="button" aria-label="Buka KhoirAssistant"><i aria-hidden="true"><svg class="robot-chat-icon" viewBox="3 3 30 30" width="22" height="22" fill="currentColor"><path fill-rule="evenodd" d="M16.5 8V6.5a2.3 2.3 0 1 1 3 0V8h5a7 7 0 0 1 7 7v7a7 7 0 0 1-7 7h-8l-7 4v-4.4A7 7 0 0 1 4.5 22v-7a7 7 0 0 1 7-7z M15 13h6a5 5 0 0 1 0 10h-6a5 5 0 0 1 0-10z"/><circle cx="14.25" cy="18" r="1.65"/><circle cx="21.75" cy="18" r="1.65"/></svg></i></button>
+
                     </div>
                     
                     <div id="saham-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#24262d]">
@@ -1042,6 +1092,27 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                 <button id="add-saham-btn" class="w-full bg-[#c4b5fd] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 font-bold text-sm flex items-center justify-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all mt-2">
                                     <i class="fa-solid fa-plus"></i> Tambah Saham
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="crypto-card" class="bg-white dark:bg-[#32353e] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden">
+                    <div class="crypto-card-header">
+                        <button id="crypto-toggle" type="button" aria-expanded="false" aria-controls="crypto-body">
+                            <span class="crypto-title"><span class="crypto-coin" aria-hidden="true">₿</span><span><strong>Crypto</strong><small>BTC</small></span></span>
+                            <i id="crypto-chevron" class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+            <button id="assistant-launch" type="button" aria-label="Buka KhoirAssistant"><i aria-hidden="true"><svg class="robot-chat-icon" viewBox="3 3 30 30" width="22" height="22" fill="currentColor"><path fill-rule="evenodd" d="M16.5 8V6.5a2.3 2.3 0 1 1 3 0V8h5a7 7 0 0 1 7 7v7a7 7 0 0 1-7 7h-8l-7 4v-4.4A7 7 0 0 1 4.5 22v-7a7 7 0 0 1 7-7z M15 13h6a5 5 0 0 1 0 10h-6a5 5 0 0 1 0-10z"/><circle cx="14.25" cy="18" r="1.65"/><circle cx="21.75" cy="18" r="1.65"/></svg></i></button>
+                    </div>
+                    <div id="crypto-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#24262d]" inert>
+                        <div class="accordion-inner">
+                            <div class="crypto-content">
+                                <div class="crypto-asset-title"><strong>Bitcoin</strong><span>BTC / IDR</span></div>
+                                <label>Jumlah BTC<input id="crypto-quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00000000" maxlength="24"></label>
+                                <label>Modal<input id="crypto-capital" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp" maxlength="24"></label>
+                                <dl><div><dt>Harga BTC / IDR</dt><dd>Belum tersedia</dd></div><div><dt>Nilai Total</dt><dd id="crypto-total">—</dd></div><div><dt>Total P/L</dt><dd id="crypto-profit">—</dd></div></dl>
+                                <p class="crypto-status" role="status">Harga BTC belum terhubung ke Worker.</p>
                             </div>
                         </div>
                     </div>
@@ -3454,7 +3525,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 txtSahamGrandPnl.className = `font-black text-sm ${isCensored ? 'text-gray-400' : (totPnlSaham >= 0 ? 'text-green-400' : 'text-red-400')}`;
                 txtSahamGrandPnl.textContent = isCensored ? '••••••' : missingStocks ? '—' : pnlSign + formatRp(totPnlSaham);
             }
-            const partial = missingGold || missingStocks > 0;
+            const partial = missingGold || missingStocks > 0 || db.cryptoBTC?.quantity > 0;
             const noValuation = partial && !valuedStocks && !(g > 0 && !missingGold) && rm === 0 && rp === 0;
             document.getElementById('grand-total-label').textContent = partial ? 'Total sementara' : 'Total investasi';
             document.getElementById('allocation-label').textContent = partial ? 'Alokasi sementara' : 'Alokasi Aset';
@@ -3464,6 +3535,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             updatePieChart(totEmas, totReksa, totSaham, noValuation);
             if (recordDailyMarketPrices()) saveDB();
             renderMarketComparison();
+            renderCryptoCard();
         }
 
         let sidebarCloseTimer;
@@ -4214,18 +4286,64 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             });
         }
 
+
         btnToggleSaham.addEventListener('click', () => {
-            const launchBounds = document.getElementById('assistant-launch').getBoundingClientRect();
-            const expanded = bodySaham.classList.toggle('open');
-            const assistantLaunch = document.getElementById('assistant-launch');
-            if (expanded) {
-                assistantLaunch.style.setProperty('--assistant-launch-top', launchBounds.top + 'px');
-                assistantLaunch.style.setProperty('--assistant-launch-right', document.documentElement.clientWidth - launchBounds.right + 'px');
-                document.body.append(assistantLaunch);
-            }
-            else btnToggleSaham.parentElement.append(assistantLaunch);
+            bodySaham.classList.toggle('open');
             iconSaham.classList.toggle('rotate-180');
         });
+
+        document.getElementById('crypto-toggle').addEventListener('click', () => {
+            const launch = document.getElementById('assistant-launch');
+            const rect = launch.getBoundingClientRect();
+            const body = document.getElementById('crypto-body');
+            const expanded = body.classList.toggle('open');
+            body.inert = !expanded;
+            document.getElementById('crypto-toggle').setAttribute('aria-expanded', String(expanded));
+            document.getElementById('crypto-chevron').classList.toggle('rotate-180', expanded);
+            if (expanded) {
+                launch.style.setProperty('--assistant-launch-top', rect.top + 'px');
+                launch.style.setProperty('--assistant-launch-right', document.documentElement.clientWidth - rect.right + 'px');
+                document.body.append(launch);
+            } else document.querySelector('.crypto-card-header').append(launch);
+        });
+
+        function renderCryptoCard() {
+            const data = db.cryptoBTC ?? { quantity: null, capital: null };
+            const quantity = document.getElementById('crypto-quantity');
+            const capital = document.getElementById('crypto-capital');
+            for (const input of [quantity, capital]) {
+                input.disabled = isCensored;
+                input.type = isCensored ? 'password' : 'text';
+            }
+            if (document.activeElement !== quantity || isCensored)
+                quantity.value = data.quantity === null ? '' : Number(data.quantity).toLocaleString('id-ID', { maximumFractionDigits: 8 });
+            if (document.activeElement !== capital || isCensored)
+                capital.value = data.capital === null ? '' : formatRp(data.capital);
+            document.getElementById('crypto-total').textContent = isCensored ? '••••••' : '—';
+            document.getElementById('crypto-profit').textContent = isCensored ? '••%' : '—';
+        }
+
+        for (const field of ['quantity', 'capital']) {
+            const input = document.getElementById('crypto-' + field);
+            input.addEventListener('input', () => {
+                if (isCensored) return;
+                const raw = input.value.trim();
+                const normalized = field === 'quantity' ? raw.replace(',', '.') : raw.replace(/[^0-9]/g, '');
+                const valid = field === 'quantity' ? /^\d*(?:[.,]\d{0,8})?$/.test(raw) : /^[\d\sRp.]*$/.test(raw);
+                const amount = raw === '' ? null : Number(normalized);
+                if (!valid || amount !== null && (!Number.isFinite(amount) || amount < 0 || amount > Number.MAX_SAFE_INTEGER
+                    || field === 'capital' && !Number.isSafeInteger(amount))) {
+                    input.setCustomValidity(field === 'quantity' ? 'Gunakan jumlah BTC dengan maksimal 8 angka desimal.' : 'Masukkan modal rupiah yang valid.');
+                    input.reportValidity();
+                    return;
+                }
+                input.setCustomValidity('');
+                db.cryptoBTC = { quantity: null, capital: null, ...db.cryptoBTC, [field]: amount };
+                saveDB();
+                calculateTotals();
+            });
+            input.addEventListener('blur', () => renderCryptoCard());
+        }
 
         function updateSahamRowUI(idx) {
             const s = db.saham[idx];
