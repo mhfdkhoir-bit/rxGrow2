@@ -735,7 +735,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
     #home-tab { gap:12px; padding-top:4px; }
     #grand-total-container { margin-top:0; }
     #grand-total-flipper > :first-child { padding:19px 16px 35px!important; min-height:132px; }
-    #grand-total { font-size:clamp(30px,10.6vw,42px); }
+    #grand-total { font-size:clamp(28px,9.1vw,36px); }
     #home-tab .card-grid-container { grid-template-rows:46px 48px 22px 58px 22px 58px; gap:8px; }
     #home-tab :is(#gold-front,#gold-back,#reksa-front,#reksa-back) { padding:10px; }
     #home-tab .card-grid-container > :is(:nth-child(3),:nth-child(5)) { transform:translateY(3px); }
@@ -890,7 +890,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                 <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
                             </div>
                             <h2 id="grand-total-label" class="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-1">TOTAL INVESTASI</h2>
-                            <div id="grand-total" class="font-bold text-4xl tracking-tight z-10">Rp 0</div>
+                            <div id="grand-total" class="font-bold text-[32px] tracking-tight z-10">Rp 0</div>
                             <p id="grand-total-context" class="rx-price-context"></p>
                             <button id="market-change-button" type="button" aria-haspopup="dialog" hidden></button>
                         </div>
@@ -2958,8 +2958,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const prices = {
                 gold: parseNum(db.lastGoldPrice),
                 fund: reksaNavRecord(db.reksaNav) ? db.reksaNav.value : null,
-                stocks: {},
-                crypto: cryptoValuation().quote?.price ?? null
+                stocks: {}
             };
             for (const stock of db.saham) {
                 const code = stock.kode?.trim().toUpperCase();
@@ -3019,20 +3018,15 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const goldPrice = validPrice(current.gold) ? current.gold : 0;
             const goldBase = validPrice(previous.gold) ? previous.gold : goldPrice;
             if ((gold > 0 && !validPrice(current.gold)) || (units > 0 && !fund.automatic)) return {};
-            const btc = cryptoValuation();
-            if (btc.total === null) return {};
-            const cryptoBase = validPrice(previous.crypto) ? previous.crypto : current.crypto;
             const beforeValues = {
                 gold: Math.round(gold * goldBase),
                 fund: fund.automatic && validPrice(previous.fund)
                     ? Math.round(units * previous.fund) : fund.total,
-                stock: 0,
-                crypto: btc.quantity > 0 && validPrice(cryptoBase) ? Math.round(btc.quantity * cryptoBase) : 0
+                stock: 0
             };
-            const afterValues = { gold: Math.round(gold * goldPrice), fund: fund.total, stock: 0, crypto: btc.total };
+            const afterValues = { gold: Math.round(gold * goldPrice), fund: fund.total, stock: 0 };
             let comparable = gold > 0 && validPrice(previous.gold)
-                || units > 0 && fund.automatic && validPrice(previous.fund)
-                || btc.quantity > 0 && validPrice(previous.crypto);
+                || units > 0 && fund.automatic && validPrice(previous.fund);
             for (const stock of db.saham) {
                 const lot = parseNum(stock.lot);
                 if (!(lot > 0)) continue;
@@ -3045,7 +3039,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 afterValues.stock += lot * 100 * price;
             }
             if (!comparable) return {};
-            const total = values => values.gold + values.fund + values.stock + values.crypto;
+            const total = values => values.gold + values.fund + values.stock;
             return {
                 before: { at: baseline.at, total: total(beforeValues), values: beforeValues },
                 after: { at: daily.latest.at, total: total(afterValues), values: afterValues }
@@ -3062,7 +3056,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             if (marketChangeButton.hidden) {
                 marketChangeButton.textContent = '';
                 if (dialog.open) dialog.close();
-                for (const id of ['market-before','market-after','market-gold','market-fund','market-stock','market-crypto']) document.getElementById(id).textContent = '';
+                for (const id of ['market-before','market-after','market-gold','market-fund','market-stock']) document.getElementById(id).textContent = '';
                 return;
             }
             const delta = after.total - before.total;
@@ -3077,7 +3071,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             for (const [id, entry] of [['market-before', before], ['market-after', after]]) {
                 document.getElementById(id).textContent = formatTime.format(entry.at) + '\n' + formatRp(entry.total);
             }
-            for (const key of ['gold', 'fund', 'stock', 'crypto']) {
+            for (const key of ['gold', 'fund', 'stock']) {
                 const change = after.values?.[key] - before.values?.[key];
                 document.getElementById('market-' + key).textContent = Number.isFinite(change)
                     ? (change > 0 ? '+' : change < 0 ? '−' : '') + formatRp(Math.abs(change))
@@ -5261,7 +5255,7 @@ $('finder').addEventListener('submit',async e=>{
         const atTop = page.scrollTop <= 1;
         const atBottom = page.scrollTop + page.clientHeight >= page.scrollHeight - 1;
         if ((dy > 0 && atTop) || (dy < 0 && atBottom)) {
-            const distance = Math.sign(dy) * Math.min(12, (Math.abs(dy) - 8) * 0.12);
+            const distance = Math.sign(dy) * Math.min(8, (Math.abs(dy) - 8) * 0.08);
             home.style.translate = '0 ' + distance + 'px';
         } else {
             home.style.removeProperty('translate');
@@ -5402,7 +5396,6 @@ $('finder').addEventListener('submit',async e=>{
             <div class="market-asset"><dt>Emas</dt><dd id="market-gold"></dd></div>
             <div class="market-asset"><dt>Reksadana</dt><dd id="market-fund"></dd></div>
             <div class="market-asset"><dt>Saham</dt><dd id="market-stock"></dd></div>
-            <div class="market-asset"><dt>Kripto</dt><dd id="market-crypto"></dd></div>
         </dl>
     </form>
 </dialog>
