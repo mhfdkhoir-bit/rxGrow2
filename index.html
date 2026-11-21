@@ -751,6 +751,32 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 .dark .crypto-content input { background:#404450; color:#fff; }
 .dark :is(.crypto-pnl-row,.crypto-content dl) { border-color:#8a91a366; }
 .dark :is(.crypto-status,.crypto-asset-title span) { color:#bbc0cc; }
+.crypto-buy-button { width:100%; min-height:44px; border:3px solid #000; border-radius:10px; background:#c4a2f4; color:#171717; font-size:13px; font-weight:700; box-shadow:3px 3px var(--rx-brutal-shadow,#000); }
+.crypto-buy-button:active { transform:translate(1px,1px); }
+.crypto-buy-button:disabled { opacity:.5; }
+.crypto-purchases { border-top:2px dashed #8a91a366; padding-top:12px; }
+.crypto-purchases summary { cursor:pointer; font-size:12px; font-weight:700; padding-block:4px; }
+#crypto-purchase-list { display:grid; gap:12px; max-height:320px; overflow:auto; overscroll-behavior:contain; margin-top:12px; font-size:11px; line-height:1.5; }
+.crypto-purchase-entry { padding:12px; border:2px solid #000; border-radius:8px; background:#eee5fc; display:grid; gap:4px; font-size:11px; }
+.crypto-purchase-entry strong { font-size:13px; }
+.crypto-purchase-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.crypto-purchase-delete { flex:none; display:grid; place-items:center; width:32px; height:32px; border:2px solid #000; border-radius:8px; background:#fca5a5; color:#171717; cursor:pointer; }
+.crypto-purchase-delete:focus-visible { outline:2px solid #8b5cf6; outline-offset:3px; }
+.dark .crypto-purchase-entry { background:#32353e; }
+#crypto-buy-dialog,#crypto-delete-dialog { margin:auto; width:min(380px,calc(100% - 32px)); max-height:calc(100dvh - 32px); overflow:auto; padding:16px; border:3px solid #000; border-radius:14px; background:#fdf9f1; color:#171717; box-shadow:5px 5px var(--rx-brutal-shadow,#000); }
+#crypto-buy-dialog::backdrop,#crypto-delete-dialog::backdrop { background:#0009; }
+.dark :is(#crypto-buy-dialog,#crypto-delete-dialog) { background:#24262d; color:#fff; }
+#crypto-delete-dialog h3 { margin:0 0 12px; font-size:16px; font-weight:700; }
+#crypto-delete-dialog p { margin:0 0 16px; font-size:13px; line-height:1.5; }
+.crypto-delete-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+#crypto-delete-confirm { background:#fca5a5; }
+#crypto-delete-cancel { background:#eee5fc; }
+#crypto-buy-form { display:grid; gap:16px; }
+.crypto-dialog-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.crypto-dialog-heading h3 { font-size:16px; font-weight:700; margin:0; }
+.crypto-dialog-heading button { width:32px; height:32px; border:2px solid #000; border-radius:8px; background:#fca5a5; color:#171717; }
+#crypto-buy-error { margin:0; font-size:12px; color:#b91c1c; }
+.dark #crypto-buy-error { color:#fca5a5; }
 @media(max-width:540px) {
     #dashboard-view:has(#home-tab.tab-active) > .sticky > div { padding-top:calc(4px + env(safe-area-inset-top,0px))!important; }
     #home-tab { gap:12px; padding-top:4px; }
@@ -1125,6 +1151,28 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                 </div>
                                 <dl><div><dt>Harga BTC saat ini</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt>Avg beli / BTC</dt><dd id="crypto-avg">—</dd></div></dl>
                                 <p id="crypto-status" class="crypto-status" role="status">Harga BTC belum tersedia.</p>
+                                <button id="crypto-add-buy" type="button" class="crypto-buy-button">+ Tambah pembelian</button>
+                                <details class="crypto-purchases"><summary>Riwayat pembelian</summary><div id="crypto-purchase-list"></div></details>
+                                <dialog id="crypto-buy-dialog" aria-labelledby="crypto-buy-title">
+                                    <form id="crypto-buy-form">
+                                        <div class="crypto-dialog-heading"><h3 id="crypto-buy-title">Tambah pembelian BTC</h3><button type="button" id="crypto-buy-cancel" aria-label="Tutup">×</button></div>
+                                        <label>Tanggal pembelian<input id="crypto-buy-date" type="date" required></label>
+                                        <label>Modal pembelian ini (termasuk biaya)<input id="crypto-buy-capital" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp" maxlength="20" required></label>
+                                        <label>BTC yang diterima<input id="crypto-buy-quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00000000" maxlength="24" required></label>
+                                        <p id="crypto-buy-error" role="alert" hidden></p>
+                                        <button type="submit" class="crypto-buy-button">Simpan pembelian</button>
+                                    </form>
+                                </dialog>
+                                <dialog id="crypto-delete-dialog" aria-labelledby="crypto-delete-title" aria-describedby="crypto-delete-description">
+                                    <h3 id="crypto-delete-title">Hapus pembelian?</h3>
+                                    <p id="crypto-delete-summary"></p>
+                                    <p id="crypto-delete-description">Catatan ini akan dihapus. Total BTC, modal, dan Avg akan dihitung ulang.</p>
+                                    <p id="crypto-delete-error" role="alert" hidden></p>
+                                    <div class="crypto-delete-actions">
+                                        <button id="crypto-delete-cancel" type="button" class="crypto-buy-button" autofocus>Batal</button>
+                                        <button id="crypto-delete-confirm" type="button" class="crypto-buy-button">Hapus</button>
+                                    </div>
+                                </dialog>
                             </div>
                         </div>
                     </div>
@@ -4421,6 +4469,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const capital = document.getElementById('crypto-capital');
             for (const input of [quantity, capital]) {
                 input.disabled = isCensored;
+                input.readOnly = Array.isArray(data.purchases) && data.purchases.length > 0;
                 input.type = isCensored ? 'password' : 'text';
             }
             if (document.activeElement !== quantity || isCensored)
@@ -4448,7 +4497,147 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
                 }).format(Date.parse(value.quote.priceAt)) + ' WIB · Harga tengah Pluang'
                 : cryptoQuoteFailed ? 'Harga BTC belum tersedia. Coba perbarui lagi.' : 'Memuat harga BTC dari Pluang…';
+            document.getElementById('crypto-add-buy').disabled = isCensored;
+            if (isCensored) {
+                document.getElementById('crypto-buy-dialog').close();
+                document.getElementById('crypto-delete-dialog').close();
+            }
+            renderCryptoPurchases();
         }
+
+        function cryptoOpeningBalance() {
+            const data = db.cryptoBTC ?? {};
+            if (data.quantity == null && data.capital == null) return { quantity: 0, capital: 0 };
+            if (!Number.isFinite(data.quantity) || data.quantity < 0 || !Number.isSafeInteger(data.capital) || data.capital < 0)
+                throw new Error('Lengkapi Jumlah BTC dan Modal saldo awal sebelum menambah pembelian.');
+            return { quantity: data.quantity, capital: data.capital };
+        }
+        function addCryptoPurchase(capital, quantity, day) {
+            if (isCensored) throw new Error('Matikan mode privasi terlebih dahulu.');
+            const today = marketDay(Date.now());
+            const validDay = /^\d{4}-\d{2}-\d{2}$/.test(day) && Number.isFinite(Date.parse(day))
+                && new Date(day).toISOString().slice(0, 10) === day && day <= today;
+            const satoshis = Math.round(quantity * 1e8);
+            if (!Number.isSafeInteger(capital) || capital <= 0 || !Number.isFinite(quantity) || quantity <= 0
+                || !Number.isSafeInteger(satoshis) || satoshis <= 0 || Math.abs(quantity * 1e8 - satoshis) > 0.000001 || !validDay)
+                throw new Error('Periksa tanggal, modal, dan jumlah BTC (maksimal 8 desimal).');
+            const opening = cryptoOpeningBalance();
+            const totalSatoshis = Math.round(opening.quantity * 1e8) + satoshis;
+            const totalCapital = opening.capital + capital;
+            if (!Number.isSafeInteger(totalSatoshis) || totalSatoshis > 21000000 * 1e8 || !Number.isSafeInteger(totalCapital))
+                throw new Error('Total modal atau jumlah BTC terlalu besar.');
+            const oldData = db.cryptoBTC;
+            const purchases = Array.isArray(oldData?.purchases) ? oldData.purchases : [];
+            const record = { id: crypto.randomUUID(), day, capital, satoshis, recordedAt: new Date().toISOString() };
+            const next = { ...oldData, quantity: totalSatoshis / 1e8, capital: totalCapital,
+                opening: purchases.length ? oldData.opening : opening, purchases: [...purchases, record] };
+            const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
+            db.cryptoBTC = next;
+            try { capturePortfolioGrowth(); localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
+            catch (error) { db.cryptoBTC = oldData; db.portfolioGrowth = oldGrowth; throw new Error('Pembelian belum tersimpan. Periksa ruang penyimpanan perangkat.'); }
+            calculateTotals();
+            renderPortfolioGrowth();
+        }
+        function deleteCryptoPurchase(id) {
+            if (isCensored) return false;
+            const oldData = db.cryptoBTC;
+            if (!oldData) return false;
+            const purchases = Array.isArray(oldData.purchases) ? oldData.purchases : [];
+            if (id !== 'opening' && !purchases.some(purchase => purchase.id === id)) return false;
+            const opening = id === 'opening' ? { quantity:0, capital:0 }
+                : purchases.length ? oldData.opening : oldData;
+            if (!Number.isFinite(opening?.quantity) || opening.quantity < 0 || !Number.isSafeInteger(opening?.capital) || opening.capital < 0)
+                throw new Error('Saldo awal tidak valid. Riwayat belum dihapus.');
+            const remaining = id === 'opening' ? purchases : purchases.filter(purchase => purchase.id !== id);
+            let satoshis = Math.round(opening.quantity * 1e8), capital = opening.capital;
+            for (const purchase of remaining) {
+                if (!Number.isSafeInteger(purchase.satoshis) || purchase.satoshis <= 0 || !Number.isSafeInteger(purchase.capital) || purchase.capital <= 0)
+                    throw new Error('Data pembelian tidak valid. Riwayat belum dihapus.');
+                satoshis += purchase.satoshis;capital += purchase.capital;
+            }
+            if (!Number.isSafeInteger(satoshis) || !Number.isSafeInteger(capital)) throw new Error('Total pembelian tidak valid.');
+            const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
+            db.cryptoBTC = { ...oldData, quantity:satoshis / 1e8, capital, opening:{ quantity:opening.quantity, capital:opening.capital }, purchases:remaining };
+            try { capturePortfolioGrowth();localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
+            catch (error) { db.cryptoBTC = oldData;db.portfolioGrowth = oldGrowth;throw new Error('Gagal menyimpan penghapusan. Coba lagi.'); }
+            calculateTotals();renderPortfolioGrowth();return true;
+        }
+        function renderCryptoPurchases() {
+            const list = document.getElementById('crypto-purchase-list');
+            list.replaceChildren();
+            if (isCensored) { list.textContent = 'Matikan mode privasi untuk melihat riwayat.'; return; }
+            const data = db.cryptoBTC ?? {};
+            const purchases = Array.isArray(data.purchases) ? data.purchases : [];
+            function row(title, capital, quantity, id) {
+                const article = document.createElement('article');article.className = 'crypto-purchase-entry';
+                const heading = document.createElement('strong');heading.textContent = title;
+                const head = document.createElement('div');head.className = 'crypto-purchase-heading';
+                const remove = document.createElement('button');remove.type = 'button';remove.className = 'crypto-purchase-delete';
+                remove.setAttribute('aria-label', 'Hapus ' + (id === 'opening' ? 'saldo awal BTC' : 'pembelian BTC ' + title));
+                remove.title = 'Hapus';
+                const icon = document.createElement('i');icon.className = 'fa-solid fa-trash-can';icon.setAttribute('aria-hidden','true');remove.append(icon);
+                remove.addEventListener('click', () => {
+                    if (isCensored) return;
+                    pendingCryptoDelete = id;
+                    document.getElementById('crypto-delete-title').textContent = id === 'opening' ? 'Hapus saldo awal?' : 'Hapus pembelian?';
+                    document.getElementById('crypto-delete-summary').textContent = title + ' · ' + formatRp(capital) + ' · '
+                        + quantity.toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC';
+                    document.getElementById('crypto-delete-error').hidden = true;
+                    document.getElementById('crypto-delete-dialog').showModal();
+                });
+                head.append(heading, remove);
+                const amount = document.createElement('span');amount.textContent = formatRp(capital) + ' · ' + quantity.toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC';
+                const avg = document.createElement('span');avg.textContent = 'Avg ' + (quantity > 0 ? 'Rp ' + (capital / quantity).toLocaleString('id-ID', { maximumFractionDigits:2 }) + '/BTC' : '—');
+                article.append(head, amount, avg);list.append(article);
+            }
+            for (const purchase of [...purchases].reverse()) {
+                if (!Number.isSafeInteger(purchase.capital) || !Number.isSafeInteger(purchase.satoshis) || purchase.satoshis <= 0
+                    || !/^\d{4}-\d{2}-\d{2}$/.test(purchase.day) || !Number.isFinite(Date.parse(purchase.day))) continue;
+                row(new Intl.DateTimeFormat('id-ID', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Jakarta' }).format(new Date(purchase.day)), purchase.capital, purchase.satoshis / 1e8, purchase.id);
+            }
+            const opening = purchases.length ? data.opening : data;
+            if (Number.isFinite(opening?.quantity) && Number.isFinite(opening?.capital) && (opening.quantity > 0 || opening.capital > 0))
+                row('Saldo awal · tanggal belum tercatat', opening.capital, opening.quantity, 'opening');
+            if (!list.childNodes.length) list.textContent = 'Belum ada pembelian tercatat.';
+        }
+        let pendingCryptoDelete = null;
+        const cryptoDeleteDialog = document.getElementById('crypto-delete-dialog');
+        cryptoDeleteDialog.addEventListener('close', () => {
+            if (cryptoDeleteDialog.open) return;
+            pendingCryptoDelete = null;
+            document.getElementById('crypto-delete-summary').textContent = '';
+        });
+        document.getElementById('crypto-delete-cancel').addEventListener('click', () => cryptoDeleteDialog.close());
+        document.getElementById('crypto-delete-confirm').addEventListener('click', () => {
+            if (pendingCryptoDelete === null || isCensored) { cryptoDeleteDialog.close();return; }
+            try {
+                if (deleteCryptoPurchase(pendingCryptoDelete)) showToast('Pembelian dihapus. Total BTC dan modal diperbarui.', 'success');
+                cryptoDeleteDialog.close();
+            } catch (error) {
+                const message = document.getElementById('crypto-delete-error');message.textContent = error.message;message.hidden = false;
+            }
+        });
+        const cryptoBuyDialog = document.getElementById('crypto-buy-dialog');
+        const cryptoBuyForm = document.getElementById('crypto-buy-form');
+        document.getElementById('crypto-add-buy').addEventListener('click', () => {
+            if (isCensored) return;
+            try { cryptoOpeningBalance(); } catch (error) { showToast(error.message, 'error'); return; }
+            cryptoBuyForm.reset();document.getElementById('crypto-buy-error').hidden = true;
+            const date = document.getElementById('crypto-buy-date');date.value = date.max = marketDay(Date.now());
+            cryptoBuyDialog.showModal();
+        });
+        document.getElementById('crypto-buy-cancel').addEventListener('click', () => cryptoBuyDialog.close());
+        cryptoBuyForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const capitalRaw = document.getElementById('crypto-buy-capital').value.trim();
+            const quantityRaw = document.getElementById('crypto-buy-quantity').value.trim();
+            try {
+                if (!/^(?:Rp\s*)?\d[\d.\s]*$/.test(capitalRaw) || !/^\d+(?:[.,]\d{1,8})?$/.test(quantityRaw))
+                    throw new Error('Masukkan nominal rupiah dan jumlah BTC yang valid.');
+                addCryptoPurchase(Number(capitalRaw.replace(/\D/g, '')), Number(quantityRaw.replace(',', '.')), document.getElementById('crypto-buy-date').value);
+                cryptoBuyDialog.close();cryptoBuyForm.reset();showToast('Pembelian BTC tersimpan.', 'success');
+            } catch (error) { const message = document.getElementById('crypto-buy-error');message.textContent = error.message;message.hidden = false; }
+        });
 
         function refreshVisibleCrypto() {
             if (document.visibilityState !== 'visible' || viewDash.classList.contains('hidden')) return;
@@ -4462,7 +4651,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         for (const field of ['quantity', 'capital']) {
             const input = document.getElementById('crypto-' + field);
             input.addEventListener('input', () => {
-                if (isCensored) return;
+                if (isCensored || input.readOnly) return;
                 const raw = input.value.trim();
                 const normalized = field === 'quantity' ? raw.replace(',', '.') : raw.replace(/[^0-9]/g, '');
                 const valid = field === 'quantity' ? /^\d*(?:[.,]\d{0,8})?$/.test(raw) : /^[\d\sRp.]*$/.test(raw);
