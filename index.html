@@ -734,14 +734,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
     #dashboard-view:has(#home-tab.tab-active) > .sticky > div { padding-top:calc(4px + env(safe-area-inset-top,0px))!important; }
     #home-tab { gap:12px; padding-top:4px; }
     #grand-total-container { margin-top:0; }
-    #grand-total-flipper > :first-child { padding:15px 16px 31px!important; min-height:120px; }
-    #grand-total { font-size:clamp(26px,8.2vw,36px); }
-    #home-tab .card-grid-container { grid-template-rows:44px 46px 22px 54px 22px 54px; gap:8px; }
+    #grand-total-flipper > :first-child { padding:19px 16px 35px!important; min-height:132px; }
+    #grand-total { font-size:clamp(30px,10.6vw,42px); }
+    #home-tab .card-grid-container { grid-template-rows:46px 48px 22px 58px 22px 58px; gap:8px; }
     #home-tab :is(#gold-front,#gold-back,#reksa-front,#reksa-back) { padding:10px; }
     #home-tab .card-grid-container > :is(:nth-child(3),:nth-child(5)) { transform:translateY(3px); }
     #home-tab .card-grid-container input,#gold-price-txt,#emas-total,#reksa-total,#reksa-profit { font-size:clamp(11px,3.5vw,14px); }
-    #home-tab #saham-toggle { min-height:60px; padding-block:10px; }
-    #crypto-toggle { min-height:60px; }
+    #home-tab #saham-toggle { min-height:54px; padding-block:7px; }
+    #crypto-toggle { min-height:54px; padding-block:7px; }
     #crypto-toggle .crypto-title strong { font-size:14px; }
     #assistant-launch { width:48px; height:48px; }
     #crypto-card .crypto-coin { width:32px; height:32px; }
@@ -749,10 +749,10 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 }
 @media(max-width:540px) and (max-height:740px) {
     #home-tab { gap:9px; }
-    #grand-total-flipper > :first-child { min-height:96px; padding-top:8px!important; padding-bottom:24px!important; }
+    #grand-total-flipper > :first-child { min-height:104px; padding-top:10px!important; padding-bottom:26px!important; }
     #grand-total-flipper > :first-child .text-2xl { font-size:20px; }
-    #home-tab .card-grid-container { grid-template-rows:34px 30px 15px 34px 15px 34px; gap:4px; }
-    #home-tab #saham-toggle,#crypto-toggle { min-height:54px; padding-block:8px; }
+    #home-tab .card-grid-container { grid-template-rows:34px 32px 16px 36px 16px 36px; gap:5px; }
+    #home-tab #saham-toggle,#crypto-toggle { min-height:52px; padding-block:6px; }
     .crypto-title small { font-size:10px; }
 }
 </style><style>#crypto-toggle {
