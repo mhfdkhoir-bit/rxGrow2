@@ -3005,10 +3005,10 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             amount.textContent = label.replace('Rp ', 'Rp');
             marketChangeButton.replaceChildren(amount, ' perubahan hari ini');
             const formatTime = new Intl.DateTimeFormat('id-ID', {
-                dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta'
+                dateStyle: 'medium', timeZone: 'Asia/Jakarta'
             });
             for (const [id, entry] of [['market-before', before], ['market-after', after]]) {
-                document.getElementById(id).textContent = formatTime.format(entry.at) + ' WIB\n' + formatRp(entry.total);
+                document.getElementById(id).textContent = formatTime.format(entry.at) + '\n' + formatRp(entry.total);
             }
             for (const key of ['gold', 'fund', 'stock']) {
                 const change = after.values?.[key] - before.values?.[key];
