@@ -76,7 +76,7 @@
         body:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden)) {
             overscroll-behavior-y: none;
         }
-        #dashboard-view:has(#home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open)) {
+        #dashboard-view:has(#home-tab.tab-active:not(.hidden)):not(:has(#saham-body.open, #crypto-body.open)) {
             min-height: 100dvh;
             padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
         }
@@ -606,7 +606,7 @@ body:not(:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden))) >
 #assistant-launch { position:fixed; right:max(20px, env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); z-index:39; width:52px; height:52px; border:3px solid #000; border-radius:14px; box-shadow:4px 4px var(--rx-brutal-shadow, #000); background:#BEF264; color:#171717; }
 @media (max-width: 540px) {
     .stock-card-header { position:relative; }
-    #saham-toggle { padding-right:72px; }
+    #crypto-toggle { padding-right:72px; }
     #assistant-launch { position:absolute; right:6px; top:50%; bottom:auto; transform:translateY(-50%); z-index:1; }
     body > #assistant-launch {
         position:fixed;
@@ -710,7 +710,57 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 #market-change-dialog dl div { padding-block:8px; border-bottom:1px solid #8886; }
 #market-change-dialog dd { white-space:pre-line; font-weight:700; }
 #market-change-dialog .market-asset { display:flex; justify-content:space-between; gap:12px; }
-</style></head>
+</style><style id="rxgrow-crypto">
+.crypto-card-header { position:relative; }
+#crypto-toggle { width:100%; min-height:66px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 72px 10px 16px; background:#c4a2f4; color:#171717; }
+.crypto-title { display:flex; align-items:center; gap:12px; text-align:left; }
+.crypto-title strong { display:block; font-size:16px; line-height:1.2; }
+.crypto-title small { display:block; font-size:11px; font-weight:600; margin-top:2px; }
+.crypto-coin { display:grid; place-items:center; width:34px; height:34px; flex:none; border:2px solid #000; border-radius:50%; font-size:23px; line-height:1; background:#d4bdf8; font-weight:800; }
+#crypto-chevron { font-size:14px; transition:transform .3s; }
+
+.crypto-content { padding:14px; display:grid; gap:12px; }
+.crypto-asset-title { display:flex; justify-content:space-between; align-items:center; font-size:14px; }
+.crypto-asset-title span,.crypto-status { font-size:11px; }
+.crypto-content label { display:grid; gap:4px; font-size:12px; font-weight:700; }
+.crypto-content input { min-width:0; width:100%; box-sizing:border-box; background:#fff; border:2px solid #000; border-radius:8px; padding:9px; color:#171717; }
+.dark .crypto-content input { background:#404450; color:#fff; }
+.crypto-content dl { margin:0; display:grid; gap:8px; font-size:12px; }
+.crypto-content dl div { display:flex; justify-content:space-between; gap:10px; }
+.crypto-content dd { font-weight:700; }
+.crypto-status { color:#6b6475; }
+.dark .crypto-status { color:#c9c3d0; }
+@media(max-width:540px) {
+    #dashboard-view:has(#home-tab.tab-active) > .sticky > div { padding-top:calc(4px + env(safe-area-inset-top,0px))!important; }
+    #home-tab { gap:12px; padding-top:4px; }
+    #grand-total-container { margin-top:0; }
+    #grand-total-flipper > :first-child { padding:19px 16px 35px!important; min-height:132px; }
+    #grand-total { font-size:clamp(30px,10.6vw,42px); }
+    #home-tab .card-grid-container { grid-template-rows:46px 48px 22px 58px 22px 58px; gap:8px; }
+    #home-tab :is(#gold-front,#gold-back,#reksa-front,#reksa-back) { padding:10px; }
+    #home-tab .card-grid-container > :is(:nth-child(3),:nth-child(5)) { transform:translateY(3px); }
+    #home-tab .card-grid-container input,#gold-price-txt,#emas-total,#reksa-total,#reksa-profit { font-size:clamp(11px,3.5vw,14px); }
+    #home-tab #saham-toggle { min-height:54px; padding-block:7px; }
+    #crypto-toggle { min-height:54px; padding-block:7px; }
+    #crypto-toggle .crypto-title strong { font-size:14px; }
+    #assistant-launch { width:48px; height:48px; }
+    #crypto-card .crypto-coin { width:32px; height:32px; }
+    #dashboard-view:has(#home-tab.tab-active):not(:has(#saham-body.open,#crypto-body.open)) { padding-bottom:max(10px,env(safe-area-inset-bottom,0px)); }
+}
+@media(max-width:540px) and (max-height:740px) {
+    #home-tab { gap:9px; }
+    #grand-total-flipper > :first-child { min-height:104px; padding-top:10px!important; padding-bottom:26px!important; }
+    #grand-total-flipper > :first-child .text-2xl { font-size:20px; }
+    #home-tab .card-grid-container { grid-template-rows:34px 32px 16px 36px 16px 36px; gap:5px; }
+    #home-tab #saham-toggle,#crypto-toggle { min-height:52px; padding-block:6px; }
+    .crypto-title small { font-size:10px; }
+}
+</style><style>#crypto-toggle {
+            background-image: url("data:image/svg+xml,%3Csvg%20preserveAspectRatio%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20130%2068%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23153559%22%20stroke-opacity%3D%22.24%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke-width%3D%221.45%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M-5%2073C59%2073%2079%2064%2099%2044S121%2024%20137%2018%20M-5%2084C62%2084%2084%2077%20105%2055S126%2036%20137%2031%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20130%2068%22%3E%3Cg%20transform%3D%22translate(130%2068)%20rotate(180)%22%20opacity%3D%221%22%20fill%3D%22none%22%20stroke%3D%22%23153559%22%20stroke-opacity%3D%22.39%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke-width%3D%221.45%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M-8%2062H26Q38%2062%2046%2052L55%2042Q62%2034%2074%2034H81Q91%2034%2099%2025L107%2016Q116%207%20138%207%20M-8%2076H22Q48%2076%2063%2055T85%2046H90Q103%2046%20112%2034T138%2025%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+            background-size: 100% 100%, min(34%, 62px) auto;
+            background-position: right bottom, left top;
+            background-repeat: no-repeat;
+        }</style></head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#24262d] transition-colors duration-300 min-h-[640px]">
 
     <div id="ios-status-bar-bg" class="fixed top-0 left-0 w-full bg-[#FDF9F1] dark:bg-[#24262d] z-[99999] transition-colors duration-300 pointer-events-none" style="height: env(safe-area-inset-top, 0px);"></div>
@@ -854,35 +904,19 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                             <div id="pie-emas" class="h-full bg-[#FFE268] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
                                             <div id="pie-reksa" class="h-full bg-[#FF71A4] transition-all duration-700 ease-out border-black" style="width: 0%;"></div>
                                             <div id="pie-saham" class="h-full bg-[#93C5FD] transition-all duration-700 ease-out" style="width: 0%;"></div>
+                                            <div id="pie-crypto" class="h-full bg-[#c4a2f4]" style="width:0%"></div>
                                             <div class="absolute inset-0 m-auto w-7 h-7 bg-[#FDF9F1] dark:bg-[#32353e] border-[2px] border-black rounded-full shadow-[2px_2px_0px_0px_#000] flex items-center justify-center z-10 transition-colors">
                                                 <span class="font-black text-[12px] text-green-600 dark:text-green-400 tracking-tighter">Rp</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="w-1/2 flex flex-col justify-center gap-1.5 pl-3.5 border-l-[3px] border-black h-[75px]">
-                                    <h3 class="text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-0.5" id="allocation-label">Alokasi Aset</h3>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-3.5 h-3.5 rounded-sm bg-[#FFE268] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
-                                        <div class="flex flex-col leading-none">
-                                            <span class="text-[10px] font-bold">Emas</span>
-                                            <span id="pct-emas" class="text-[12px] font-black">0%</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-3.5 h-3.5 rounded-sm bg-[#FF71A4] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
-                                        <div class="flex flex-col leading-none">
-                                            <span class="text-[10px] font-bold">Reksadana</span>
-                                            <span id="pct-reksa" class="text-[12px] font-black">0%</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-3.5 h-3.5 rounded-sm bg-[#93C5FD] border-[2px] border-black shrink-0 shadow-brutal-sm-flipped"></div>
-                                        <div class="flex flex-col leading-none">
-                                            <span class="text-[10px] font-bold">Saham</span>
-                                            <span id="pct-saham" class="text-[12px] font-black">0%</span>
-                                        </div>
-                                    </div>
+                                <div class="w-1/2 flex flex-col justify-center gap-1.5 pl-3.5 border-l-[3px] border-black">
+<h3 class="text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400" id="allocation-label">Alokasi Aset</h3>
+<div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm border-[2px] border-black shrink-0" style="background:#FFE268"></span><span class="text-[10px] font-bold">Emas</span><span id="pct-emas" class="text-[12px] font-black" style="margin-left:auto">0%</span></div>
+<div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm border-[2px] border-black shrink-0" style="background:#FF71A4"></span><span class="text-[10px] font-bold">Reksadana</span><span id="pct-reksa" class="text-[12px] font-black" style="margin-left:auto">0%</span></div>
+<div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm border-[2px] border-black shrink-0" style="background:#93C5FD"></span><span class="text-[10px] font-bold">Saham</span><span id="pct-saham" class="text-[12px] font-black" style="margin-left:auto">0%</span></div>
+<div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm border-[2px] border-black shrink-0" style="background:#c4a2f4"></span><span class="text-[10px] font-bold">Kripto</span><span id="pct-crypto" class="text-[12px] font-black" style="margin-left:auto">0%</span></div>
                                 </div>
                             </div>
                         </div>
@@ -1015,7 +1049,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                         </div>
                         <i id="saham-icon" class="fa-solid fa-chevron-down text-sm transition-transform duration-300"></i>
                     </button>
-            <button id="assistant-launch" type="button" aria-label="Buka KhoirAssistant"><i aria-hidden="true"><svg class="robot-chat-icon" viewBox="3 3 30 30" width="22" height="22" fill="currentColor"><path fill-rule="evenodd" d="M16.5 8V6.5a2.3 2.3 0 1 1 3 0V8h5a7 7 0 0 1 7 7v7a7 7 0 0 1-7 7h-8l-7 4v-4.4A7 7 0 0 1 4.5 22v-7a7 7 0 0 1 7-7z M15 13h6a5 5 0 0 1 0 10h-6a5 5 0 0 1 0-10z"/><circle cx="14.25" cy="18" r="1.65"/><circle cx="21.75" cy="18" r="1.65"/></svg></i></button>
+
                     </div>
                     
                     <div id="saham-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#24262d]">
@@ -1042,6 +1076,27 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                 <button id="add-saham-btn" class="w-full bg-[#c4b5fd] text-black border-[3px] border-black shadow-brutal-sm rounded-xl py-3 font-bold text-sm flex items-center justify-center gap-2 active:shadow-brutal-pressed active:translate-x-[2px] active:translate-y-[2px] transition-all mt-2">
                                     <i class="fa-solid fa-plus"></i> Tambah Saham
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="crypto-card" class="bg-white dark:bg-[#32353e] text-black dark:text-white border-[3px] border-black shadow-brutal rounded-2xl overflow-hidden">
+                    <div class="crypto-card-header">
+                        <button id="crypto-toggle" type="button" aria-expanded="false" aria-controls="crypto-body">
+                            <span class="crypto-title"><span class="crypto-coin" aria-hidden="true">₿</span><span><strong>Kripto</strong></span></span>
+                            <i id="crypto-chevron" class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+            <button id="assistant-launch" type="button" aria-label="Buka KhoirAssistant"><i aria-hidden="true"><svg class="robot-chat-icon" viewBox="3 3 30 30" width="22" height="22" fill="currentColor"><path fill-rule="evenodd" d="M16.5 8V6.5a2.3 2.3 0 1 1 3 0V8h5a7 7 0 0 1 7 7v7a7 7 0 0 1-7 7h-8l-7 4v-4.4A7 7 0 0 1 4.5 22v-7a7 7 0 0 1 7-7z M15 13h6a5 5 0 0 1 0 10h-6a5 5 0 0 1 0-10z"/><circle cx="14.25" cy="18" r="1.65"/><circle cx="21.75" cy="18" r="1.65"/></svg></i></button>
+                    </div>
+                    <div id="crypto-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#24262d]" inert>
+                        <div class="accordion-inner">
+                            <div class="crypto-content">
+                                <div class="crypto-asset-title"><strong>Bitcoin</strong><span>BTC / IDR</span></div>
+                                <label>Jumlah BTC<input id="crypto-quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00000000" maxlength="24"></label>
+                                <label>Modal<input id="crypto-capital" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp" maxlength="24"></label>
+                                <dl><div><dt>Harga BTC / IDR</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt>Nilai Total</dt><dd id="crypto-total">—</dd></div><div><dt>Total P/L</dt><dd id="crypto-profit">—</dd></div></dl>
+                                <p id="crypto-status" class="crypto-status" role="status">Harga BTC belum tersedia.</p>
                             </div>
                         </div>
                     </div>
@@ -1153,6 +1208,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                             <button type="button" data-growth-asset="gold" aria-pressed="false" style="--growth-choice:#FFE268">Emas</button>
                             <button type="button" data-growth-asset="fund" aria-pressed="false" style="--growth-choice:#FF71A4">Reksadana</button>
                             <button type="button" data-growth-asset="stock" aria-pressed="false" style="--growth-choice:#BFDBFE">Saham</button>
+                            <button type="button" data-growth-asset="crypto" aria-pressed="false" style="--growth-choice:#c4a2f4">Kripto</button>
                         </div>
                         <div class="growth-readout" aria-live="polite">
                             <span id="portfolio-growth-caption" class="growth-context">Nilai portofolio</span>
@@ -1168,11 +1224,12 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                         <details id="portfolio-growth-deposits">
                             <summary>Modal</summary>
                             <form id="portfolio-growth-form">
-                                <p class="growth-context">Modal mengikuti kartu Emas, Reksadana, dan Saham di Home.</p>
+                                <p class="growth-context">Modal mengikuti kartu Emas, Reksadana, Saham, dan Kripto di Home.</p>
                                 <div class="growth-fields">
                                     <label>Emas <input name="gold" type="text" readonly aria-label="Modal emas otomatis dari Home" placeholder="Rp"></label>
                                     <label>Reksadana <input name="fund" type="text" readonly aria-label="Modal reksadana otomatis dari Home" placeholder="Rp"></label>
                                     <label>Saham <input name="stock" type="text" readonly aria-label="Modal saham otomatis dari Home" placeholder="Rp"></label>
+                                    <label>Kripto <input name="crypto" type="text" readonly aria-label="Modal kripto otomatis dari Home" placeholder="Rp"></label>
                                 </div>
 
                             </form>
@@ -1579,7 +1636,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }, 3000);
         }
 
-        const growthAssetNames = { gold: 'Emas', fund: 'Reksadana', stock: 'Saham' };
+        const growthAssetNames = { gold: 'Emas', fund: 'Reksadana', stock: 'Saham', crypto: 'Kripto' };
         const growthAssets = Object.keys(growthAssetNames);
         const growthLimit = 366;
         const growthTabs = [...tabGrowth.querySelectorAll('[data-growth-asset]')];
@@ -1597,7 +1654,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         let growthSelection = 'all';
 
         function growthAmounts(source) {
-            return Object.fromEntries(growthAssets.map(asset => [asset, Number.isFinite(source?.[asset]) && Math.abs(source[asset]) <= Number.MAX_SAFE_INTEGER ? source[asset] : null]));
+            return Object.fromEntries(growthAssets.map(asset => [asset, Number.isFinite(source?.[asset]) && Math.abs(source[asset]) <= Number.MAX_SAFE_INTEGER ? source[asset] : asset === 'crypto' && source?.crypto === undefined ? 0 : null]));
         }
 
         function normalizePortfolioGrowth(source) {
@@ -1624,7 +1681,9 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const fund = Math.max(0, parseNum(db.reksaModal ?? 0));
             const stock = Math.round(db.saham.reduce((sum, item) =>
                 sum + Math.max(0, parseNum(item.lot)) * 100 * Math.max(0, parseFloatNum(item.avg)), 0) * 100) / 100;
-            const changed = deposits.gold !== db.emasModal || deposits.fund !== fund || deposits.stock !== stock;
+            const cryptoCapital = cryptoValuation().capital ?? 0;
+            const changed = deposits.crypto !== cryptoCapital || deposits.gold !== db.emasModal || deposits.fund !== fund || deposits.stock !== stock;
+            deposits.crypto = cryptoCapital;
             deposits.gold = db.emasModal;
             deposits.fund = fund;
             deposits.stock = stock;
@@ -1656,7 +1715,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const values = growthAmounts({
                 gold: gram > 0 && !goldPrice ? null : Math.round(gram * goldPrice),
                 fund,
-                stock: missingStock ? null : stock
+                stock: missingStock ? null : stock,
+                crypto: cryptoValuation().total
             });
             const current = { day, values, deposits: { ...deposits } };
             const index = history.findIndex(record => record.day === day);
@@ -2898,7 +2958,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const prices = {
                 gold: parseNum(db.lastGoldPrice),
                 fund: reksaNavRecord(db.reksaNav) ? db.reksaNav.value : null,
-                stocks: {}
+                stocks: {},
+                crypto: cryptoValuation().quote?.price ?? null
             };
             for (const stock of db.saham) {
                 const code = stock.kode?.trim().toUpperCase();
@@ -2958,15 +3019,20 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const goldPrice = validPrice(current.gold) ? current.gold : 0;
             const goldBase = validPrice(previous.gold) ? previous.gold : goldPrice;
             if ((gold > 0 && !validPrice(current.gold)) || (units > 0 && !fund.automatic)) return {};
+            const btc = cryptoValuation();
+            if (btc.total === null) return {};
+            const cryptoBase = validPrice(previous.crypto) ? previous.crypto : current.crypto;
             const beforeValues = {
                 gold: Math.round(gold * goldBase),
                 fund: fund.automatic && validPrice(previous.fund)
                     ? Math.round(units * previous.fund) : fund.total,
-                stock: 0
+                stock: 0,
+                crypto: btc.quantity > 0 && validPrice(cryptoBase) ? Math.round(btc.quantity * cryptoBase) : 0
             };
-            const afterValues = { gold: Math.round(gold * goldPrice), fund: fund.total, stock: 0 };
+            const afterValues = { gold: Math.round(gold * goldPrice), fund: fund.total, stock: 0, crypto: btc.total };
             let comparable = gold > 0 && validPrice(previous.gold)
-                || units > 0 && fund.automatic && validPrice(previous.fund);
+                || units > 0 && fund.automatic && validPrice(previous.fund)
+                || btc.quantity > 0 && validPrice(previous.crypto);
             for (const stock of db.saham) {
                 const lot = parseNum(stock.lot);
                 if (!(lot > 0)) continue;
@@ -2979,7 +3045,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 afterValues.stock += lot * 100 * price;
             }
             if (!comparable) return {};
-            const total = values => values.gold + values.fund + values.stock;
+            const total = values => values.gold + values.fund + values.stock + values.crypto;
             return {
                 before: { at: baseline.at, total: total(beforeValues), values: beforeValues },
                 after: { at: daily.latest.at, total: total(afterValues), values: afterValues }
@@ -2996,7 +3062,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             if (marketChangeButton.hidden) {
                 marketChangeButton.textContent = '';
                 if (dialog.open) dialog.close();
-                for (const id of ['market-before','market-after','market-gold','market-fund','market-stock']) document.getElementById(id).textContent = '';
+                for (const id of ['market-before','market-after','market-gold','market-fund','market-stock','market-crypto']) document.getElementById(id).textContent = '';
                 return;
             }
             const delta = after.total - before.total;
@@ -3011,7 +3077,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             for (const [id, entry] of [['market-before', before], ['market-after', after]]) {
                 document.getElementById(id).textContent = formatTime.format(entry.at) + '\n' + formatRp(entry.total);
             }
-            for (const key of ['gold', 'fund', 'stock']) {
+            for (const key of ['gold', 'fund', 'stock', 'crypto']) {
                 const change = after.values?.[key] - before.values?.[key];
                 document.getElementById('market-' + key).textContent = Number.isFinite(change)
                     ? (change > 0 ? '+' : change < 0 ? '−' : '') + formatRp(Math.abs(change))
@@ -3329,7 +3395,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             icon.classList.add('fa-spin');
             try {
                 restoreReksaHistory();
-                const updates = [fetchGoldPrice(), fetchReksaNav(true)];
+                const updates = [fetchGoldPrice(), fetchReksaNav(true), fetchCryptoPrice()];
                 db.saham.forEach((stock, index) => { if (stock.kode) updates.push(fetchStockPrice(stock.kode, index)); });
                 const results = await Promise.allSettled(updates);
                 if (results.some(result => result.status === 'fulfilled')) {
@@ -3345,17 +3411,19 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }
         });
 
-        function updatePieChart(totE, totR, totS, noValuation) {
+        function updatePieChart(totE, totR, totS, noValuation, totCrypto = 0) {
             const pieE = document.getElementById('pie-emas');
             const pieR = document.getElementById('pie-reksa');
             const pieS = document.getElementById('pie-saham');
             const pctE = document.getElementById('pct-emas');
             const pctR = document.getElementById('pct-reksa');
             const pctS = document.getElementById('pct-saham');
+            const pieCrypto = document.getElementById('pie-crypto');
+            const pctCrypto = document.getElementById('pct-crypto');
             if (!pieE || !pctE) return;
 
             const valS = Math.max(0, totS);
-            const safeGrand = totE + totR + valS;
+            const safeGrand = totE + totR + valS + totCrypto;
 
             if (safeGrand <= 0) {
                 pctE.textContent = isCensored ? '••%' : noValuation ? '—' : '0%';
@@ -3364,6 +3432,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 pieE.style.width = '0%';
                 pieR.style.width = '0%';
                 pieS.style.width = '0%';
+                pieCrypto.style.width = '0%';
+                pctCrypto.textContent = isCensored ? '••%' : noValuation ? '—' : '0%';
                 pieE.style.borderRightWidth = '0px';
                 pieR.style.borderRightWidth = '0px';
                 return;
@@ -3371,6 +3441,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const pe = totE / safeGrand;
             const pr = totR / safeGrand;
             const ps = valS / safeGrand;
+            pctCrypto.textContent = isCensored ? "••%" : Math.round(totCrypto / safeGrand * 100) + "%";
+            pieCrypto.style.width = (totCrypto / safeGrand * 100) + "%";
 
             pctE.textContent = isCensored ? '••%' : Math.round(pe * 100) + '%';
             pctR.textContent = isCensored ? '••%' : Math.round(pr * 100) + '%';
@@ -3454,16 +3526,18 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 txtSahamGrandPnl.className = `font-black text-sm ${isCensored ? 'text-gray-400' : (totPnlSaham >= 0 ? 'text-green-400' : 'text-red-400')}`;
                 txtSahamGrandPnl.textContent = isCensored ? '••••••' : missingStocks ? '—' : pnlSign + formatRp(totPnlSaham);
             }
-            const partial = missingGold || missingStocks > 0;
-            const noValuation = partial && !valuedStocks && !(g > 0 && !missingGold) && rm === 0 && rp === 0;
+            const btc = cryptoValuation();
+            const partial = missingGold || missingStocks > 0 || btc.total === null;
+            const noValuation = partial && !valuedStocks && !(g > 0 && !missingGold) && rm === 0 && rp === 0 && !(btc.total > 0);
             document.getElementById('grand-total-label').textContent = partial ? 'Total sementara' : 'Total investasi';
             document.getElementById('allocation-label').textContent = partial ? 'Alokasi sementara' : 'Alokasi Aset';
             document.getElementById('grand-total-context').textContent = partial ? 'Ada harga aset yang belum tersedia' : '';
             document.getElementById('stock-total-context').textContent = missingStocks ? 'Ada harga saham yang belum tersedia' : '';
-            txtGrandTot.textContent = isCensored ? 'Rp ••••••' : noValuation ? '—' : formatRp(totEmas + totReksa + totSaham);
-            updatePieChart(totEmas, totReksa, totSaham, noValuation);
+            txtGrandTot.textContent = isCensored ? 'Rp ••••••' : noValuation ? '—' : formatRp(totEmas + totReksa + totSaham + (btc.total ?? 0));
+            updatePieChart(totEmas, totReksa, totSaham, noValuation, btc.total ?? 0);
             if (recordDailyMarketPrices()) saveDB();
             renderMarketComparison();
+            renderCryptoCard();
         }
 
         let sidebarCloseTimer;
@@ -4214,18 +4288,172 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             });
         }
 
+
         btnToggleSaham.addEventListener('click', () => {
-            const launchBounds = document.getElementById('assistant-launch').getBoundingClientRect();
-            const expanded = bodySaham.classList.toggle('open');
-            const assistantLaunch = document.getElementById('assistant-launch');
-            if (expanded) {
-                assistantLaunch.style.setProperty('--assistant-launch-top', launchBounds.top + 'px');
-                assistantLaunch.style.setProperty('--assistant-launch-right', document.documentElement.clientWidth - launchBounds.right + 'px');
-                document.body.append(assistantLaunch);
-            }
-            else btnToggleSaham.parentElement.append(assistantLaunch);
+            bodySaham.classList.toggle('open');
             iconSaham.classList.toggle('rotate-180');
         });
+
+        document.getElementById('crypto-toggle').addEventListener('click', () => {
+            const launch = document.getElementById('assistant-launch');
+            const rect = launch.getBoundingClientRect();
+            const body = document.getElementById('crypto-body');
+            const expanded = body.classList.toggle('open');
+            body.inert = !expanded;
+            document.getElementById('crypto-toggle').setAttribute('aria-expanded', String(expanded));
+            document.getElementById('crypto-chevron').classList.toggle('rotate-180', expanded);
+            if (expanded) {
+                launch.style.setProperty('--assistant-launch-top', rect.top + 'px');
+                launch.style.setProperty('--assistant-launch-right', document.documentElement.clientWidth - rect.right + 'px');
+                document.body.append(launch);
+            } else document.querySelector('.crypto-card-header').append(launch);
+        });
+
+
+        const BTC_WORKER_URL = 'https://btc.m4hfud-backup.workers.dev/';
+        const BTC_PLUANG_URL = 'https://api-pluang.pluang.com/api/v4/asset/cryptocurrency/price/current?cryptocurrency=BTC';
+        let cryptoQuoteRequest = null;
+        let cryptoWorkerRetryAt = 0;
+        let cryptoQuoteFailed = false;
+        function cryptoQuoteValid(quote) {
+            return Number.isFinite(quote?.price) && quote.price > 0 && quote.price <= Number.MAX_SAFE_INTEGER
+                && typeof quote.priceAt === 'string' && Number.isFinite(Date.parse(quote.priceAt))
+                && Date.parse(quote.priceAt) <= Date.now() + 300000;
+        }
+        function cryptoValuation() {
+            const data = db.cryptoBTC ?? {};
+            const quantity = Number.isFinite(data.quantity) && data.quantity > 0 ? data.quantity : 0;
+            const capital = Number.isFinite(data.capital) && data.capital >= 0 ? data.capital : null;
+            const quote = cryptoQuoteValid(db.cryptoBTCQuote) ? db.cryptoBTCQuote : null;
+            const total = quantity === 0 ? 0 : quote ? Math.round(quantity * quote.price) : null;
+            return { quantity, capital, quote, total, profit: capital !== null && total !== null ? total - capital : null };
+        }
+        async function requestCryptoQuote(url, worker) {
+            const response = await fetch(url, {
+                mode: 'cors', cache: 'no-store', credentials: 'omit',
+                signal: AbortSignal.timeout(worker ? 3500 : 8000)
+            });
+            if (!response.ok) throw new Error('Sumber harga BTC mengembalikan HTTP ' + response.status);
+            const body = await response.json();
+            let quote;
+            if (worker) {
+                if (body.success !== true || body.symbol !== 'BTC' || body.currency !== 'IDR'
+                    || body.source !== 'pluang' || body.price_type !== 'mid') throw new Error('Data Worker BTC tidak sesuai.');
+                quote = { price: body.price, priceAt: body.price_at, stale: body.stale === true || body.source_stale === true };
+            } else {
+                if (body.statusCode !== 200 || !body.data) throw new Error('Data Pluang tidak sesuai.');
+                quote = { price: body.data.midPrice, priceAt: body.data.updatedAt, stale: body.data.isStalePrice === true };
+            }
+            if (!cryptoQuoteValid(quote)) throw new Error('Harga atau waktu BTC tidak valid.');
+            return { ...quote, checkedAt: Date.now(), source: 'pluang', via: worker ? 'worker' : 'direct' };
+        }
+        async function fetchCryptoPrice() {
+            if (cryptoQuoteRequest) return cryptoQuoteRequest;
+            const database = db;
+            cryptoQuoteRequest = (async () => {
+                let candidate = null;
+                try {
+                    if (Date.now() >= cryptoWorkerRetryAt) {
+                        try {
+                            candidate = await requestCryptoQuote(BTC_WORKER_URL, true);
+                            if (candidate.stale) cryptoWorkerRetryAt = Date.now() + 300000;
+                        } catch {
+                            cryptoWorkerRetryAt = Date.now() + 300000;
+                        }
+                    }
+                    const expired = !candidate || candidate.stale
+                        || Date.now() - Date.parse(candidate.priceAt) > 15 * 60000;
+                    if (expired) {
+                        try {
+                            const direct = await requestCryptoQuote(BTC_PLUANG_URL, false);
+                            if (!candidate || Date.parse(direct.priceAt) >= Date.parse(candidate.priceAt)) candidate = direct;
+                        } catch (error) {
+                            if (!candidate) throw error;
+                        }
+                    }
+                    if (db !== database) return;
+                    if (!candidate) throw new Error('Harga BTC belum tersedia.');
+                    const previous = db.cryptoBTCQuote;
+                    if (cryptoQuoteValid(previous) && Date.parse(candidate.priceAt) < Date.parse(previous.priceAt)) {
+                        cryptoQuoteFailed = true;
+                        return;
+                    }
+                    db.cryptoBTCQuote = candidate;
+                    cryptoQuoteFailed = false;
+                    saveDB();
+                } catch (error) {
+                    if (db === database) cryptoQuoteFailed = true;
+                    throw error;
+                } finally {
+                    cryptoQuoteRequest = null;
+                    calculateTotals();
+                }
+            })();
+            return cryptoQuoteRequest;
+        }
+
+        function renderCryptoCard() {
+            const data = db.cryptoBTC ?? { quantity: null, capital: null };
+            const quantity = document.getElementById('crypto-quantity');
+            const capital = document.getElementById('crypto-capital');
+            for (const input of [quantity, capital]) {
+                input.disabled = isCensored;
+                input.type = isCensored ? 'password' : 'text';
+            }
+            if (document.activeElement !== quantity || isCensored)
+                quantity.value = data.quantity === null ? '' : Number(data.quantity).toLocaleString('id-ID', { maximumFractionDigits: 8 });
+            if (document.activeElement !== capital || isCensored)
+                capital.value = data.capital === null ? '' : formatRp(data.capital);
+            const value = cryptoValuation();
+            document.getElementById('crypto-price').textContent = value.quote ? formatRp(value.quote.price) : 'Belum tersedia';
+            document.getElementById('crypto-total').textContent = isCensored ? '••••••' : value.total === null ? '—' : formatRp(value.total);
+            const profit = document.getElementById('crypto-profit');
+            const sign = value.profit > 0 ? '+' : value.profit < 0 ? '−' : '';
+            const percent = value.capital > 0 && value.profit !== null ? value.profit / value.capital * 100 : null;
+            profit.textContent = isCensored ? '••••••' : value.profit === null ? '—'
+                : sign + formatRp(Math.abs(value.profit)) + (percent === null ? ''
+                    : ' (' + (percent > 0 ? '+' : '') + percent.toLocaleString('id-ID', { maximumFractionDigits: 2 }) + '%)');
+            profit.style.color = isCensored || value.profit === null || value.profit === 0 ? ''
+                : value.profit > 0 ? '#16a34a' : '#ef4444';
+            const oldQuote = value.quote && (cryptoQuoteFailed || value.quote.stale || Date.now() - Date.parse(value.quote.priceAt) > 15 * 60000);
+            const status = document.getElementById('crypto-status');
+            status.textContent = value.quote
+                ? (oldQuote ? 'Data tersimpan' : 'Update') + ' · ' + new Intl.DateTimeFormat('id-ID', {
+                    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
+                }).format(Date.parse(value.quote.priceAt)) + ' WIB · Harga tengah Pluang'
+                : cryptoQuoteFailed ? 'Harga BTC belum tersedia. Coba perbarui lagi.' : 'Memuat harga BTC dari Pluang…';
+        }
+
+        function refreshVisibleCrypto() {
+            if (document.visibilityState !== 'visible' || viewDash.classList.contains('hidden')) return;
+            const checkedAt = db.cryptoBTCQuote?.checkedAt || 0;
+            if (Date.now() - checkedAt >= 60000) fetchCryptoPrice().catch(() => {});
+        }
+        setInterval(refreshVisibleCrypto, 5 * 60000);
+        window.addEventListener('online', refreshVisibleCrypto);
+        document.addEventListener('visibilitychange', refreshVisibleCrypto);
+
+        for (const field of ['quantity', 'capital']) {
+            const input = document.getElementById('crypto-' + field);
+            input.addEventListener('input', () => {
+                if (isCensored) return;
+                const raw = input.value.trim();
+                const normalized = field === 'quantity' ? raw.replace(',', '.') : raw.replace(/[^0-9]/g, '');
+                const valid = field === 'quantity' ? /^\d*(?:[.,]\d{0,8})?$/.test(raw) : /^[\d\sRp.]*$/.test(raw);
+                const amount = raw === '' ? null : Number(normalized);
+                if (!valid || amount !== null && (!Number.isFinite(amount) || amount < 0 || amount > Number.MAX_SAFE_INTEGER
+                    || field === 'capital' && !Number.isSafeInteger(amount))) {
+                    input.setCustomValidity(field === 'quantity' ? 'Gunakan jumlah BTC dengan maksimal 8 angka desimal.' : 'Masukkan modal rupiah yang valid.');
+                    input.reportValidity();
+                    return;
+                }
+                input.setCustomValidity('');
+                db.cryptoBTC = { quantity: null, capital: null, ...db.cryptoBTC, [field]: amount };
+                saveDB();
+                calculateTotals();
+            });
+            input.addEventListener('blur', () => renderCryptoCard());
+        }
 
         function updateSahamRowUI(idx) {
             const s = db.saham[idx];
@@ -4500,6 +4728,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             renderSahamList();
             applyCensorState(); 
 
+            fetchCryptoPrice().catch(() => {});
             fetchGoldPrice().catch(() => {});
             fetchReksaNav().catch(() => {});
             renderRiwayat();
@@ -5173,6 +5402,7 @@ $('finder').addEventListener('submit',async e=>{
             <div class="market-asset"><dt>Emas</dt><dd id="market-gold"></dd></div>
             <div class="market-asset"><dt>Reksadana</dt><dd id="market-fund"></dd></div>
             <div class="market-asset"><dt>Saham</dt><dd id="market-stock"></dd></div>
+            <div class="market-asset"><dt>Kripto</dt><dd id="market-crypto"></dd></div>
         </dl>
     </form>
 </dialog>
