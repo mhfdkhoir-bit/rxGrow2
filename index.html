@@ -727,20 +727,30 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 .crypto-title { display:flex; align-items:center; gap:12px; text-align:left; }
 .crypto-title strong { display:block; font-size:16px; line-height:1.2; }
 .crypto-title small { display:block; font-size:11px; font-weight:600; margin-top:2px; }
-.crypto-coin { display:grid; place-items:center; width:34px; height:34px; flex:none; border:2px solid #000; border-radius:50%; font-size:16px; line-height:1; background:#d4bdf8; font-weight:800; }
+.crypto-coin { display:grid; place-items:center; width:34px; height:34px; flex:none; border:2px solid #000; border-radius:50%; font-size:16px; line-height:1; background:#ede2ff; font-weight:800; }
 #crypto-chevron { font-size:14px; transition:transform .3s; }
 
-.crypto-content { padding:14px; display:grid; gap:12px; }
-.crypto-asset-title { display:flex; justify-content:space-between; align-items:center; font-size:14px; }
-.crypto-asset-title span,.crypto-status { font-size:11px; }
-.crypto-content label { display:grid; gap:4px; font-size:12px; font-weight:700; }
-.crypto-content input { min-width:0; width:100%; box-sizing:border-box; background:#fff; border:2px solid #000; border-radius:8px; padding:9px; color:#171717; }
+.crypto-content { padding:16px; display:grid; gap:16px; font-variant-numeric:tabular-nums; }
+.crypto-asset-title { display:flex; justify-content:space-between; align-items:center; font-size:16px; }
+.crypto-asset-title span { font-size:11px; font-weight:700; color:#625b70; }
+.crypto-position { padding:16px; border:3px solid #000; border-radius:12px; box-shadow:3px 3px var(--rx-brutal-shadow,#000); background:#eee5fc; }
+.crypto-position-label { font-size:11px; font-weight:700; }
+#crypto-total { display:block; margin-top:4px; font-size:clamp(22px,6vw,28px); font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
+.crypto-pnl-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; border-top:2px dashed #0003; padding-top:12px; margin-top:12px; font-size:11px; font-weight:700; }
+#crypto-profit { font-size:13px; text-align:right; overflow-wrap:anywhere; }
+.crypto-inputs { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; }
+.crypto-content label { display:grid; gap:8px; font-size:11px; font-weight:700; }
+.crypto-content input { min-width:0; width:100%; min-height:44px; box-sizing:border-box; background:#fff; border:3px solid #000; border-radius:8px; padding:8px; color:#171717; font-size:13px; font-weight:700; box-shadow:2px 2px var(--rx-brutal-shadow,#000); }
+.crypto-content input:focus-visible { outline:2px solid #8b5cf6; outline-offset:3px; }
+.crypto-content input:disabled { opacity:.65; }
+.crypto-content dl { margin:0; display:grid; gap:12px; font-size:11px; border-top:2px dashed #0003; padding-top:16px; }
+.crypto-content dl div { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+.crypto-content dd { margin:0; font-size:13px; font-weight:700; text-align:right; overflow-wrap:anywhere; }
+.crypto-status { margin:0; color:#625b70; font-size:11px; line-height:1.5; }
+.dark .crypto-position { background:#32353e; }
 .dark .crypto-content input { background:#404450; color:#fff; }
-.crypto-content dl { margin:0; display:grid; gap:8px; font-size:12px; }
-.crypto-content dl div { display:flex; justify-content:space-between; gap:10px; }
-.crypto-content dd { font-weight:700; }
-.crypto-status { color:#6b6475; }
-.dark .crypto-status { color:#c9c3d0; }
+.dark :is(.crypto-pnl-row,.crypto-content dl) { border-color:#8a91a366; }
+.dark :is(.crypto-status,.crypto-asset-title span) { color:#bbc0cc; }
 @media(max-width:540px) {
     #dashboard-view:has(#home-tab.tab-active) > .sticky > div { padding-top:calc(4px + env(safe-area-inset-top,0px))!important; }
     #home-tab { gap:12px; padding-top:4px; }
@@ -1104,9 +1114,16 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                         <div class="accordion-inner">
                             <div class="crypto-content">
                                 <div class="crypto-asset-title"><strong>Bitcoin</strong><span>BTC / IDR</span></div>
+                                <div class="crypto-position">
+                                    <span class="crypto-position-label">NILAI TOTAL</span>
+                                    <strong id="crypto-total">—</strong>
+                                    <div class="crypto-pnl-row"><span>Total P/L</span><span id="crypto-profit">—</span></div>
+                                </div>
+                                <div class="crypto-inputs">
                                 <label>Jumlah BTC<input id="crypto-quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00000000" maxlength="24"></label>
                                 <label>Modal<input id="crypto-capital" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp" maxlength="24"></label>
-                                <dl><div><dt>Harga BTC / IDR</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt>Nilai Total</dt><dd id="crypto-total">—</dd></div><div><dt>Total P/L</dt><dd id="crypto-profit">—</dd></div></dl>
+                                </div>
+                                <dl><div><dt>Harga BTC saat ini</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt>Avg beli / BTC</dt><dd id="crypto-avg">—</dd></div></dl>
                                 <p id="crypto-status" class="crypto-status" role="status">Harga BTC belum tersedia.</p>
                             </div>
                         </div>
@@ -4331,7 +4348,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const capital = Number.isFinite(data.capital) && data.capital >= 0 ? data.capital : null;
             const quote = cryptoQuoteValid(db.cryptoBTCQuote) ? db.cryptoBTCQuote : null;
             const total = quantity === 0 ? 0 : quote ? Math.round(quantity * quote.price) : null;
-            return { quantity, capital, quote, total, profit: capital !== null && total !== null ? total - capital : null };
+            const average = quantity > 0 && capital !== null ? capital / quantity : null;
+            return { quantity, capital, quote, total, average, profit: capital !== null && total !== null ? total - capital : null };
         }
         async function requestCryptoQuote(url, worker) {
             const response = await fetch(url, {
@@ -4410,6 +4428,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             if (document.activeElement !== capital || isCensored)
                 capital.value = data.capital === null ? '' : formatRp(data.capital);
             const value = cryptoValuation();
+            document.getElementById('crypto-avg').textContent = isCensored ? '••••••'
+                : Number.isFinite(value.average) ? 'Rp ' + value.average.toLocaleString('id-ID', { maximumFractionDigits: 2 }) : '—';
             document.getElementById('crypto-price').textContent = value.quote ? formatRp(value.quote.price) : 'Belum tersedia';
             document.getElementById('crypto-total').textContent = isCensored ? '••••••' : value.total === null ? '—' : formatRp(value.total);
             const profit = document.getElementById('crypto-profit');
@@ -4419,7 +4439,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 : sign + formatRp(Math.abs(value.profit)) + (percent === null ? ''
                     : ' (' + (percent > 0 ? '+' : '') + percent.toLocaleString('id-ID', { maximumFractionDigits: 2 }) + '%)');
             profit.style.color = isCensored || value.profit === null || value.profit === 0 ? ''
-                : value.profit > 0 ? '#16a34a' : '#ef4444';
+                : value.profit > 0 ? (document.documentElement.classList.contains('dark') ? '#86efac' : '#166534')
+                : (document.documentElement.classList.contains('dark') ? '#fca5a5' : '#b91c1c');
             const oldQuote = value.quote && (cryptoQuoteFailed || value.quote.stale || Date.now() - Date.parse(value.quote.priceAt) > 15 * 60000);
             const status = document.getElementById('crypto-status');
             status.textContent = value.quote
