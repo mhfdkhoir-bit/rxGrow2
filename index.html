@@ -3023,6 +3023,13 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             if (!marketChangeButton.hidden && !isCensored) document.getElementById('market-change-dialog').showModal();
         });
 
+        function goldPricePeriodDate() {
+            if (db.goldPricePeriodDate !== undefined) return db.goldPricePeriodDate;
+            const previousChange = db.emasHistory?.find(entry =>
+                Number(entry.price) === db.lastGoldPrice && priceTimestamp(entry.sourceDate) !== null);
+            return previousChange?.sourceDate ?? db.goldPriceDate ?? null;
+        }
+
         async function fetchGoldPrice() {
             const request = ++goldQuoteRequest;
             try {
@@ -3036,6 +3043,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 const previousStamp = priceTimestamp(db.goldPriceDate);
                 if (previousStamp !== null && (stamp === null || stamp < previousStamp)) return;
                 const sourceDate = stamp === null ? null : data.date;
+                const periodDate = db.lastGoldPrice !== newGoldPrice ? sourceDate : goldPricePeriodDate();
                 if (db.lastGoldPrice && db.lastGoldPrice !== newGoldPrice) {
                     const trend = newGoldPrice > db.lastGoldPrice ? 'up' : 'down';
                     db.goldTrend = trend;
@@ -3047,6 +3055,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 HARGA_BUYBACK_EMAS = newGoldPrice;
                 db.lastGoldPrice = newGoldPrice;
                 db.goldPriceDate = sourceDate;
+                db.goldPricePeriodDate = periodDate;
                 db.goldManualAt = null;
                 saveDB();
             } finally { calculateTotals(); }
@@ -3388,7 +3397,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const totEmas = Math.round(g * HARGA_BUYBACK_EMAS);
             const missingGold = g > 0 && !(HARGA_BUYBACK_EMAS > 0);
             txtGoldPrice.textContent = HARGA_BUYBACK_EMAS > 0 ? formatRp(HARGA_BUYBACK_EMAS) : '—';
-            renderAssetUpdate('gold-price-context', HARGA_BUYBACK_EMAS > 0 ? db.goldManualAt || db.goldPriceDate : null,
+            renderAssetUpdate('gold-price-context', HARGA_BUYBACK_EMAS > 0 ? db.goldManualAt || goldPricePeriodDate() : null,
                 describeMarketPrice(HARGA_BUYBACK_EMAS, db.goldPriceDate, 'gold', db.goldManualAt));
             const goldIcon = document.getElementById('gold-price-icon');
             goldIcon.className = HARGA_BUYBACK_EMAS > 0 && db.goldTrend === 'up' ? 'fa-solid fa-arrow-up rotate-45 text-green-600 text-xs' :
