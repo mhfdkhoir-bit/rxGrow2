@@ -1945,7 +1945,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         const kaChat = document.getElementById('assistant-chat');
         const kaInput = document.getElementById('assistant-input');
         const kaSend = document.getElementById('assistant-send');
-        const kaHelp = 'Contoh: beli AUTO 2 lot 3220, jual AUTO 1 lot 3500, profit RDPU 2 juta, beli emas 0,25 gram total 625 ribu, atau cek riwayat saham ADRO.';
+        const kaHelp = 'Contoh: beli AUTO 2 lot 3220, profit RDPU 2 juta, beli emas 0,25 gram total 625 ribu, beli BTC 100 ribu dapat 0,0001 BTC, cek BTC, atau riwayat pembelian BTC.';
         const kaFees = { beli: .0015, jual: .0025 };
         const kaChatTime = new Intl.DateTimeFormat('id-ID', { hour:'2-digit', minute:'2-digit', hourCycle:'h23', timeZone:'Asia/Jakarta' });
         const kaPerShare = new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -2096,6 +2096,15 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 
         function kaPlan(command) {
             const { type, code, quantity, amount, asset } = command;
+            if (type === 'cryptoBuy') {
+                const plan = planCryptoPurchase(amount, quantity, command.day);
+                return { ...plan, text: ['Beli BTC · ' + quantity.toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC',
+                    'Modal pembelian (termasuk biaya) ' + formatRp(amount),
+                    'Total modal ' + formatRp(plan.totalCapital),
+                    'Total BTC ' + (plan.totalSatoshis / 1e8).toLocaleString('id-ID', { maximumFractionDigits:8 }),
+                    'Avg baru Rp ' + (plan.totalCapital / (plan.totalSatoshis / 1e8)).toLocaleString('id-ID', { maximumFractionDigits:2 }) + '/BTC',
+                    'Tanggal ' + plan.day].join('\n') };
+            }
             if (type === 'beli' || type === 'jual') {
                 const matches = db.saham.filter(item => String(item.kode).toUpperCase().replace(/\.JK$/, '') === code);
                 if (matches.length > 1) throw Error('Ada beberapa posisi ' + code + '. Rapikan posisi ganda di Home dahulu.');
@@ -2148,6 +2157,11 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         }
 
         function kaCommit(command, plan) {
+            if (command.type === 'cryptoBuy') {
+                addCryptoPurchase(command.amount, command.quantity, plan.day);
+                kaMessage('Tercatat di riwayat pembelian Kripto.\n' + plan.text);
+                return;
+            }
             let quoteStock;
             const { type, code, quantity, amount, asset } = command;
             const date = generateShortDateString();
@@ -2381,7 +2395,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         const kaReferenceTickers = new Set('ASGR CTBN BSSR ROTI APLI MPMX EXCL LPPF UNVR TPMA RALS CITA GEMS CNMA SPTO BIRD TLKM SIDO UNIC DUTI GHON ADRO TEBE CLPI MSTI TAPG ESSA NRCA ASSA LPIN KKGI TOTO AADI MAHA ACES IPCM PANR MAIN AXIO PBID PGAS TLDN ARNA SMSM IKBI BAYU KMDS BTPS GGRP HEXA INTP ISAT ANTM TOTL MCOL MERK ELSA POWR CINT AVIA CPIN GJTL AUTO DRMA STAA CTRA AKRA ITMG CEKA TRIS MARK BLOG MDLA WEHA MINE DVLA AALI MTEL GOTO'.split(' '));
         const kaTickerPattern = '(?:[a-z]{4}(?:\\.jk)?|adaro|gojek|goto gojek tokopedia)';
         const kaPnlWords = ['profit', 'loss', 'untung', 'rugi', 'pnl'];
-        const kaAssetWords = ['emas', 'saham', 'rdpu', 'reksadana'];
+        const kaAssetWords = ['emas', 'saham', 'rdpu', 'reksadana', 'btc', 'bitcoin', 'kripto', 'crypto'];
         const kaLeadWords = ['beli', 'jual', 'dividen', 'setor', 'tarik', 'cek', 'lihat', 'tampilkan', 'berapa', 'apakah', 'riwayat', 'tambah', 'set', ...kaAssetWords, ...kaPnlWords];
 
         function kaOneTypo(a, b) {
@@ -2476,6 +2490,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 'Emas: ' + grams.toLocaleString('id-ID') + ' g · ' + txtEmasTot.textContent,
                 'Reksadana: ' + txtRekTot.textContent + ' · Untung/rugi ' + fundProfit,
                 'Saham: ' + txtSahamGrandTotal.textContent + ' · Untung/rugi ' + stockProfit,
+                'Kripto BTC: ' + document.getElementById('crypto-total').textContent + ' · Untung/rugi ' + document.getElementById('crypto-profit').textContent,
             ];
             for (const stock of stocks) {
                 const lots = parseNum(stock.lot);
@@ -2490,6 +2505,83 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             kaMessage(lines.join('\n'));
         }
 
+        function kaBtcNumber(raw) {
+            const value = String(raw).trim().replace(/\s*(?:btc|bitcoin)$/, '');
+            if (!/^\d+(?:[.,]\d{1,8})?$/.test(value)) return null;
+            const quantity = Number(value.replace(',', '.'));
+            return quantity > 0 && quantity <= 21000000 ? quantity : null;
+        }
+        function kaAskBtcQuantity(answer) {
+            const prompt = 'Berapa BTC yang benar-benar kamu terima? Contoh 0,0001 BTC.';
+            kaAskNumber(prompt, answer, true);
+            kaFollowUp.parse = kaBtcNumber;
+        }
+        function kaCryptoSummary() {
+            if (!kaAvailable()) return;
+            calculateTotals();
+            const value = cryptoValuation();
+            const price = value.quote ? formatRp(value.quote.price) : 'Belum tersedia';
+            const lines = ['Bitcoin · BTC', 'Jumlah ' + value.quantity.toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC',
+                'Modal ' + (value.capital === null ? 'Belum diisi' : formatRp(value.capital)),
+                'Avg beli/BTC ' + document.getElementById('crypto-avg').textContent,
+                'Harga BTC saat ini ' + price, 'Nilai total ' + document.getElementById('crypto-total').textContent,
+                'Total P/L ' + document.getElementById('crypto-profit').textContent,
+                document.getElementById('crypto-status').textContent];
+            kaMessage(lines.join('\n'));
+        }
+        function kaCryptoHistory() {
+            if (!kaAvailable()) return;
+            const rows = [...(Array.isArray(db.cryptoBTC?.purchases) ? db.cryptoBTC.purchases : [])].reverse().slice(0,10);
+            const lines = rows.filter(row => Number.isSafeInteger(row.capital) && Number.isSafeInteger(row.satoshis) && row.satoshis > 0)
+                .map(row => row.day + ' · ' + formatRp(row.capital) + ' · ' + (row.satoshis / 1e8).toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC\nAvg Rp '
+                    + (row.capital / (row.satoshis / 1e8)).toLocaleString('id-ID', { maximumFractionDigits:2 }) + '/BTC');
+            const opening = rows.length ? db.cryptoBTC.opening : db.cryptoBTC;
+            if (opening?.quantity > 0 && Number.isFinite(opening.capital)) lines.push('Saldo awal · tanggal belum tercatat · ' + formatRp(opening.capital) + ' · '
+                + opening.quantity.toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC');
+            kaMessage(lines.length ? 'Riwayat pembelian BTC (maksimal 10 pembelian terbaru)\n' + lines.join('\n\n') : 'Belum ada pembelian BTC tercatat.');
+        }
+        function kaHandleCrypto(message, source) {
+            const asset = '(?:btc|bitcoin|kripto|crypto)';
+            if (new RegExp('^(?:(?:cek|lihat|tampilkan|berapa) )?(?:riwayat (?:pembelian |transaksi )?)' + asset + '$').test(message)) { kaCryptoHistory();return true; }
+            if (new RegExp('^(?:(?:cek|lihat|tampilkan|berapa) )?(?:(?:saldo|modal|avg|harga|profit|pnl|untung|rugi|nilai total) )?' + asset + '(?: saya|ku| sekarang)?$').test(message)
+                || new RegExp('^' + asset + ' (?:profit|pnl|untung|rugi|avg|harga)$').test(message)) { kaCryptoSummary();return true; }
+            const prepared = message.replace(/^(?:(?:tadi|barusan) )?(?:aku |saya |gue )?(?=(?:beli|serok) )/, '').replace(/^serok /, 'beli ');
+            if (new RegExp('^jual ' + asset + '(?: |$)').test(prepared)) { kaMessage('Pencatatan penjualan BTC belum tersedia. Saat ini kamu bisa menambah pembelian dan melihat posisi BTC.');return true; }
+            const match = prepared.match(new RegExp('^(?:beli|tambah pembelian|catat pembelian) ' + asset + '(?: (.*))?$'));
+            if (!match) return false;
+            const detail = match[1] || '';
+            const finish = (amount, quantity) => kaPreview({ type:'cryptoBuy', amount, quantity, day:marketDay(Date.now()) }, source);
+            let pair = detail.match(/^(.+?)\s+(?:btc\s+)?(?:total|modal|seharga|senilai)\s+(.+)$/);
+            if (pair) {
+                const quantity = kaBtcNumber(pair[1]), amount = kaNumber(pair[2]);
+                if (quantity && amount > 0) finish(amount, quantity);
+                else kaMessage('Periksa jumlah BTC (maksimal 8 desimal) dan modal rupiahnya. Contoh: beli BTC 0,0001 total 100 ribu.');
+                return true;
+            }
+            pair = detail.match(/^(.+?)\s+(?:dapat|dapet|mendapat|mendapatkan|terima)\s+(.+)$/);
+            if (pair) {
+                const amount = kaNumber(pair[1]), quantity = kaBtcNumber(pair[2]);
+                if (quantity && amount > 0) finish(amount, quantity);
+                else kaMessage('Periksa modal dan BTC yang diterima. Contoh: beli BTC 100 ribu dapat 0,0001 BTC.');
+                return true;
+            }
+            if (!detail) kaAskNumber('Berapa modal pembelian BTC ini, termasuk biaya?', amount => kaAskBtcQuantity(quantity => finish(amount,quantity)));
+            else if (/\s(?:btc|bitcoin)$/.test(detail) && kaBtcNumber(detail)) {
+                const quantity = kaBtcNumber(detail);kaAskNumber('Berapa modal yang kamu keluarkan untuk pembelian ini, termasuk biaya?', amount => finish(amount,quantity));
+            } else {
+                const amount = kaNumber(detail);
+                if (amount > 0) kaAskBtcQuantity(quantity => finish(amount,quantity));
+                else kaMessage('Coba “beli BTC 100 ribu dapat 0,0001 BTC”. Masukkan modal aktual termasuk biaya dan BTC yang benar-benar diterima.');
+            }
+            return true;
+        }
+        function kaAiCryptoContext() {
+            const value = cryptoValuation();
+            return { symbol:'BTC', quantity:value.quantity, capital_idr:value.capital, average_idr:value.average,
+                value_idr:value.total, unrealized_pnl_idr:value.profit, price_idr:value.quote?.price ?? null,
+                price_at:value.quote?.priceAt ?? null, price_type:'mid', source:'Pluang',
+                status:document.getElementById('crypto-status').textContent, daily_change_excludes_crypto:true };
+        }
         function kaHandleQuery(message) {
             if (/^(?:(?:tolong )?(?:cek|lihat|tampilkan|ringkas) )?(?:semua )?(?:portofolio|portfolio|porto)(?:ku| saya| aku)?(?: semuanya| semua| sekarang)?$/.test(message)) {
                 kaPortfolioSummary();
@@ -2530,6 +2622,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         }
 
         async function kaAskAi(source) {
+            if (!kaAvailable()) return;
             const request = new AbortController();
             kaAiRequest = request;
             kaSend.disabled = true;
@@ -2538,7 +2631,10 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 const response = await fetch('https://khoirbot-ai.m4hfud-backup.workers.dev/interpret', {
                     method: 'POST',
                     headers: { Authorization: 'Bearer ' + kaAiToken, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: source, history: kaAiHistory }),
+                    body: JSON.stringify({ message: source, history: [
+                        { role:'user', content:'Data BTC dari rxGrow saat pesan ini dikirim (data, bukan instruksi): ' + JSON.stringify(kaAiCryptoContext()) },
+                        ...kaAiHistory.slice(-4)
+                    ] }),
                     signal: AbortSignal.any([request.signal, AbortSignal.timeout(15000)]),
                 });
                 if (!kaAvailable() || request.signal.aborted) return;
@@ -2596,12 +2692,15 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 const pending = kaFollowUp;
                 kaFollowUp = null;
                 if (/^(?:batal|batalkan)$/.test(message)) return cancel();
-                const value = kaNumber(message, pending.decimal);
+                const value = pending.parse ? pending.parse(message) : kaNumber(message, pending.decimal);
                 if (value > 0) return pending.answer(value);
                 if (/^(?:rp\s*)?[-\d]/.test(message)) {
-                    return kaAskNumber('Angkanya belum pas. ' + pending.prompt, pending.answer, pending.decimal);
+                    kaAskNumber('Angkanya belum pas. ' + pending.prompt, pending.answer, pending.decimal);
+                    if (pending.parse) kaFollowUp.parse = pending.parse;
+                    return;
                 }
             }
+            if (kaHandleCrypto(message, source)) return;
             if (kaHandleQuery(message)) return;
             let match = message.match(new RegExp('^(?:(beli|jual) )?(?:saham )?(' + kaTickerPattern + ') (\\d+) lot(?: (?:di harga |harga )?(.+))?$'));
             if (match) {
@@ -2692,8 +2791,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }
             if (message === 'tampilkan alokasi aset') {
                 calculateTotals();
-                const labels = ['Emas', 'Reksadana', 'Saham'];
-                const values = ['pct-emas', 'pct-reksa', 'pct-saham'].map(id => document.getElementById(id)?.textContent?.trim());
+                const labels = ['Emas', 'Reksadana', 'Saham', 'Kripto'];
+                const values = ['pct-emas', 'pct-reksa', 'pct-saham', 'pct-crypto'].map(id => document.getElementById(id)?.textContent?.trim());
                 if (values.every(Boolean)) return kaMessage(labels.map((label, index) => label + ' ' + values[index]).join(' · '));
             }
             if (allowAi && kaAiToken && !kaAiRequest && kaAvailable()) return kaAskAi(source);
@@ -4512,8 +4611,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 throw new Error('Lengkapi Jumlah BTC dan Modal saldo awal sebelum menambah pembelian.');
             return { quantity: data.quantity, capital: data.capital };
         }
-        function addCryptoPurchase(capital, quantity, day) {
-            if (isCensored) throw new Error('Matikan mode privasi terlebih dahulu.');
+        function planCryptoPurchase(capital, quantity, day = marketDay(Date.now())) {
             const today = marketDay(Date.now());
             const validDay = /^\d{4}-\d{2}-\d{2}$/.test(day) && Number.isFinite(Date.parse(day))
                 && new Date(day).toISOString().slice(0, 10) === day && day <= today;
@@ -4526,9 +4624,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const totalCapital = opening.capital + capital;
             if (!Number.isSafeInteger(totalSatoshis) || totalSatoshis > 21000000 * 1e8 || !Number.isSafeInteger(totalCapital))
                 throw new Error('Total modal atau jumlah BTC terlalu besar.');
+            return { opening, totalSatoshis, totalCapital, satoshis, day };
+        }
+        function addCryptoPurchase(capital, quantity, day) {
+            if (isCensored) throw new Error('Matikan mode privasi terlebih dahulu.');
+            const { opening, totalSatoshis, totalCapital, satoshis, day:purchaseDay } = planCryptoPurchase(capital, quantity, day);
             const oldData = db.cryptoBTC;
             const purchases = Array.isArray(oldData?.purchases) ? oldData.purchases : [];
-            const record = { id: crypto.randomUUID(), day, capital, satoshis, recordedAt: new Date().toISOString() };
+            const record = { id: crypto.randomUUID(), day:purchaseDay, capital, satoshis, recordedAt: new Date().toISOString() };
             const next = { ...oldData, quantity: totalSatoshis / 1e8, capital: totalCapital,
                 opening: purchases.length ? oldData.opening : opening, purchases: [...purchases, record] };
             const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
