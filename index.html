@@ -731,12 +731,12 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 .crypto-status { color:#6b6475; }
 .dark .crypto-status { color:#c9c3d0; }
 @media(max-width:540px) {
-    #dashboard-view:has(#home-tab.tab-active) > .sticky > div { padding-top:calc(8px + env(safe-area-inset-top,0px))!important; }
+    #dashboard-view:has(#home-tab.tab-active) > .sticky > div { padding-top:calc(4px + env(safe-area-inset-top,0px))!important; }
     #home-tab { gap:12px; padding-top:4px; }
     #grand-total-container { margin-top:0; }
-    #grand-total-flipper > :first-child { padding:12px 16px 28px!important; min-height:114px; }
+    #grand-total-flipper > :first-child { padding:15px 16px 31px!important; min-height:120px; }
     #grand-total { font-size:clamp(26px,8.2vw,36px); }
-    #home-tab .card-grid-container { grid-template-rows:40px clamp(32px,4.7svh,42px) 17px clamp(36px,5.2svh,46px) 17px clamp(36px,5.2svh,46px); gap:5px; }
+    #home-tab .card-grid-container { grid-template-rows:44px 46px 22px 54px 22px 54px; gap:8px; }
     #home-tab :is(#gold-front,#gold-back,#reksa-front,#reksa-back) { padding:10px; }
     #home-tab .card-grid-container > :is(:nth-child(3),:nth-child(5)) { transform:translateY(3px); }
     #home-tab .card-grid-container input,#gold-price-txt,#emas-total,#reksa-total,#reksa-profit { font-size:clamp(11px,3.5vw,14px); }
