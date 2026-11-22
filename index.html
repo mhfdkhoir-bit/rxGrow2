@@ -734,12 +734,20 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 .crypto-asset-title { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; font-size:16px; }
 .crypto-asset-title span { font-size:11px; font-weight:700; color:#625b70; }
 #crypto-price { font-size:16px; font-weight:700; color:inherit; white-space:nowrap; }
-.crypto-position { padding:16px; border:3px solid #000; border-radius:12px; box-shadow:3px 3px var(--rx-brutal-shadow,#000); background:#eee5fc; }
-.crypto-position-label { font-size:11px; font-weight:700; }
-#crypto-total { display:block; margin-top:4px; font-size:clamp(22px,6vw,28px); font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
-.crypto-pnl-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; border-top:2px dashed #0003; padding-top:12px; margin-top:12px; font-size:11px; font-weight:700; }
-#crypto-profit { font-size:13px; text-align:right; overflow-wrap:anywhere; }
-.crypto-inputs { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; }
+.crypto-position { padding:12px; border:3px solid #000; border-radius:12px; box-shadow:2px 2px var(--rx-brutal-shadow,#000); background:#222; color:#fff; margin-bottom:4px; }
+.crypto-summary-top { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; margin-bottom:8px; padding-bottom:8px; border-bottom:2px dashed #4b5563; }
+.crypto-summary-top > div { display:flex; flex-direction:column; padding-inline:4px; min-width:0; }
+.crypto-summary-top > div:last-child { align-items:flex-end; }
+.crypto-position-label,.crypto-position label.crypto-position-label { display:block; font-size:9px; line-height:1.5; font-weight:700; text-transform:uppercase; color:#9ca3af; letter-spacing:.05em; }
+.crypto-summary-bottom { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:4px 4px 0; }
+.crypto-summary-bottom .crypto-position-label { font-size:10px; }
+#crypto-total { font-size:18px; font-weight:900; line-height:28px; overflow-wrap:anywhere; text-align:right; }
+#crypto-profit { font-size:14px; line-height:20px; font-weight:900; text-align:right; overflow-wrap:anywhere; }
+#crypto-profit .crypto-profit-percent { font-size:10px; white-space:nowrap; }
+#saham-grand-pnl .stock-profit-percent { font-size:10px; white-space:nowrap; }
+.crypto-content #crypto-capital { min-height:20px; padding:0; font-size:14px; line-height:20px; font-weight:900; border:0; border-radius:0; box-shadow:none; background:transparent; color:#fff; opacity:1; }
+.crypto-inputs { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; }
+.crypto-content #crypto-quantity { font-size:20px; min-height:48px; }
 .crypto-content label { display:grid; gap:8px; font-size:11px; font-weight:700; }
 .crypto-content input { min-width:0; width:100%; min-height:44px; box-sizing:border-box; background:#fff; border:3px solid #000; border-radius:8px; padding:8px; color:#171717; font-size:13px; font-weight:700; box-shadow:2px 2px var(--rx-brutal-shadow,#000); }
 .crypto-content input:focus-visible { outline:2px solid #8b5cf6; outline-offset:3px; }
@@ -755,7 +763,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 #crypto-avg-save:disabled { opacity:.5; cursor:default; }
 #crypto-avg-feedback { margin:0; font-size:11px; line-height:1.5; }
 .crypto-status { margin:0; color:#625b70; font-size:11px; line-height:1.5; }
-.dark .crypto-position { background:#32353e; }
+.dark .crypto-position { background:#222; }
 .dark .crypto-content input { background:#404450; color:#fff; }
 .dark :is(.crypto-pnl-row,.crypto-content dl) { border-color:#8a91a366; }
 .dark :is(.crypto-status,.crypto-asset-title span) { color:#bbc0cc; }
@@ -1149,13 +1157,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                             <div class="crypto-content">
                                 <div class="crypto-asset-title"><strong>BTC / IDR</strong><span id="crypto-price" aria-label="Harga BTC saat ini">Belum tersedia</span></div>
                                 <div class="crypto-position">
-                                    <span class="crypto-position-label">NILAI TOTAL</span>
-                                    <strong id="crypto-total">—</strong>
-                                    <div class="crypto-pnl-row"><span>Total P/L</span><span id="crypto-profit">—</span></div>
+                                    <div class="crypto-summary-top">
+                                        <div><label for="crypto-capital" class="crypto-position-label">Total Modal</label><input id="crypto-capital" aria-label="Total modal kripto" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp 0" maxlength="24"></div>
+                                        <div><span class="crypto-position-label">Unrealized PnL</span><span id="crypto-profit">—</span></div>
+                                    </div>
+                                    <div class="crypto-summary-bottom"><span class="crypto-position-label">Nilai Total</span><strong id="crypto-total">—</strong></div>
                                 </div>
                                 <div class="crypto-inputs">
                                 <label>Jumlah BTC<input id="crypto-quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00000000" maxlength="24"></label>
-                                <label>Modal<input id="crypto-capital" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp" maxlength="24"></label>
                                 </div>
                                 <dl><div><dt><label for="crypto-avg">Avg beli / BTC</label></dt><dd class="crypto-average-edit"><input id="crypto-avg" type="text" inputmode="decimal" autocomplete="off" aria-label="Avg beli per BTC" maxlength="28" placeholder="—"><span class="crypto-average-actions"><button id="crypto-avg-auto" type="button" hidden>Otomatis</button><button id="crypto-avg-save" type="button">Simpan</button></span></dd></div></dl>
                                 <p id="crypto-avg-feedback" role="status" hidden></p>
@@ -3255,7 +3264,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const label = (delta > 0 ? '+' : delta < 0 ? '−' : '') + formatRp(Math.abs(delta));
             const amount = document.createElement('span');
             amount.className = 'market-change-amount';
-            amount.textContent = label.replace('Rp ', 'Rp');
+            amount.textContent = label;
             marketChangeButton.replaceChildren(amount, ' perubahan hari ini');
             const formatTime = new Intl.DateTimeFormat('id-ID', {
                 dateStyle: 'medium', timeZone: 'Asia/Jakarta'
@@ -3713,6 +3722,12 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 const pnlSign = totPnlSaham > 0 ? '+' : '';
                 txtSahamGrandPnl.className = `font-black text-sm ${isCensored ? 'text-gray-400' : (totPnlSaham >= 0 ? 'text-green-400' : 'text-red-400')}`;
                 txtSahamGrandPnl.textContent = isCensored ? '••••••' : missingStocks ? '—' : pnlSign + formatRp(totPnlSaham);
+                if (!isCensored && !missingStocks && totModalSaham > 0) {
+                    const percentage = document.createElement('span');percentage.className = 'stock-profit-percent';
+                    const rate = totPnlSaham / totModalSaham * 100;
+                    percentage.textContent = ' (' + (rate > 0 ? '+' : '') + rate.toLocaleString('id-ID', { maximumFractionDigits:2 }) + '%)';
+                    txtSahamGrandPnl.append(percentage);
+                }
             }
             const btc = cryptoValuation();
             const partial = missingGold || missingStocks > 0 || btc.total === null;
@@ -4638,9 +4653,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             profit.textContent = isCensored ? '••••••' : value.profit === null ? '—'
                 : sign + formatRp(Math.abs(value.profit)) + (percent === null ? ''
                     : ' (' + (percent > 0 ? '+' : '') + percent.toLocaleString('id-ID', { maximumFractionDigits: 2 }) + '%)');
+            if (!isCensored && value.profit !== null && percent !== null) {
+                const percentage = document.createElement('span');percentage.className = 'crypto-profit-percent';
+                const offset = profit.textContent.lastIndexOf(' (');
+                percentage.textContent = profit.textContent.slice(offset);
+                profit.replaceChildren(profit.textContent.slice(0,offset), percentage);
+            }
             profit.style.color = isCensored || value.profit === null || value.profit === 0 ? ''
-                : value.profit > 0 ? (document.documentElement.classList.contains('dark') ? '#86efac' : '#166534')
-                : (document.documentElement.classList.contains('dark') ? '#fca5a5' : '#b91c1c');
+                : value.profit > 0 ? '#4ade80' : '#f87171';
             const oldQuote = value.quote && (cryptoQuoteFailed || value.quote.stale || Date.now() - Date.parse(value.quote.priceAt) > 15 * 60000);
             const status = document.getElementById('crypto-status');
             status.textContent = value.quote
