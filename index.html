@@ -731,8 +731,9 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 #crypto-chevron { font-size:14px; transition:transform .3s; }
 
 .crypto-content { padding:16px; display:grid; gap:16px; font-variant-numeric:tabular-nums; }
-.crypto-asset-title { display:flex; justify-content:space-between; align-items:center; font-size:16px; }
+.crypto-asset-title { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; font-size:16px; }
 .crypto-asset-title span { font-size:11px; font-weight:700; color:#625b70; }
+#crypto-price { font-size:16px; font-weight:700; color:inherit; white-space:nowrap; }
 .crypto-position { padding:16px; border:3px solid #000; border-radius:12px; box-shadow:3px 3px var(--rx-brutal-shadow,#000); background:#eee5fc; }
 .crypto-position-label { font-size:11px; font-weight:700; }
 #crypto-total { display:block; margin-top:4px; font-size:clamp(22px,6vw,28px); font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
@@ -1146,7 +1147,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     <div id="crypto-body" class="accordion-content bg-[#FDF9F1] dark:bg-[#24262d]" inert>
                         <div class="accordion-inner">
                             <div class="crypto-content">
-                                <div class="crypto-asset-title"><strong>Bitcoin</strong><span>BTC / IDR</span></div>
+                                <div class="crypto-asset-title"><strong>Bitcoin (BTC/IDR)</strong><span id="crypto-price" aria-label="Harga BTC saat ini">Belum tersedia</span></div>
                                 <div class="crypto-position">
                                     <span class="crypto-position-label">NILAI TOTAL</span>
                                     <strong id="crypto-total">—</strong>
@@ -1156,7 +1157,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                 <label>Jumlah BTC<input id="crypto-quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00000000" maxlength="24"></label>
                                 <label>Modal<input id="crypto-capital" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp" maxlength="24"></label>
                                 </div>
-                                <dl><div><dt>Harga BTC saat ini</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt><label for="crypto-avg">Avg beli / BTC</label></dt><dd class="crypto-average-edit"><input id="crypto-avg" type="text" inputmode="decimal" autocomplete="off" aria-label="Avg beli per BTC" maxlength="28" placeholder="—"><span class="crypto-average-actions"><button id="crypto-avg-auto" type="button" hidden>Otomatis</button><button id="crypto-avg-save" type="button">Simpan</button></span></dd></div></dl>
+                                <dl><div><dt><label for="crypto-avg">Avg beli / BTC</label></dt><dd class="crypto-average-edit"><input id="crypto-avg" type="text" inputmode="decimal" autocomplete="off" aria-label="Avg beli per BTC" maxlength="28" placeholder="—"><span class="crypto-average-actions"><button id="crypto-avg-auto" type="button" hidden>Otomatis</button><button id="crypto-avg-save" type="button">Simpan</button></span></dd></div></dl>
                                 <p id="crypto-avg-feedback" role="status" hidden></p>
                                 <p id="crypto-status" class="crypto-status" role="status">Harga BTC belum tersedia.</p>
                                 <button id="crypto-add-buy" type="button" class="crypto-buy-button">+ Tambah pembelian</button>
@@ -4670,9 +4671,13 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const feedback = document.getElementById('crypto-avg-feedback');
             try {
                 setCryptoAverage(parseCryptoAverageInput(input.value));
-                feedback.textContent = 'Avg tersimpan. P/L dan nilai total diperbarui.';
-            } catch (error) { feedback.textContent = error.message; }
-            feedback.hidden = false;
+                feedback.textContent = '';
+                feedback.hidden = true;
+                showToast('Avg tersimpan. P/L dan nilai total diperbarui.', 'success');
+            } catch (error) {
+                feedback.textContent = error.message;
+                feedback.hidden = false;
+            }
         }
         document.getElementById('crypto-avg').addEventListener('input', () => {
             if (isCensored) return;
