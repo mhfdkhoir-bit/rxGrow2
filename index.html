@@ -42,7 +42,7 @@
 
 
         #home-tab #grand-total-flipper > :first-child {
-            background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20150%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20stroke-width%3D%2231%22%20opacity%3D%220.3%22%20d%3D%22M-14%2030L43-27%22%2F%3E%3Cpath%20stroke-width%3D%2233%22%20opacity%3D%220.16%22%20d%3D%22M9%2057L74-8%22%2F%3E%3Cpath%20stroke-width%3D%2231%22%20opacity%3D%220.34%22%20d%3D%22M352%20165L390%20127%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20150%22%3E%3Cg%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%2231%22%20opacity%3D%22.30%22%20d%3D%22M-14%2030L43-27%22%2F%3E%3Cpath%20stroke%3D%22%23a5c8ff%22%20stroke-width%3D%2233%22%20opacity%3D%22.25%22%20d%3D%22M9%2057L74-8%22%2F%3E%3Cpath%20stroke%3D%22%23dbeafe%22%20stroke-width%3D%2214%22%20opacity%3D%22.12%22%20d%3D%22M-8%2091L90-7%22%2F%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%2231%22%20opacity%3D%22.34%22%20d%3D%22M352%20165L390%20127%22%2F%3E%3Cpath%20stroke%3D%22%239dc6ff%22%20stroke-width%3D%2218%22%20opacity%3D%22.19%22%20d%3D%22M315%20165L406%2074%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
             padding-bottom: calc(1.25rem + 10px);
             background-size: cover;
             background-position: center;
@@ -746,6 +746,9 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 .crypto-content dl { margin:0; display:grid; gap:12px; font-size:11px; border-top:2px dashed #0003; padding-top:16px; }
 .crypto-content dl div { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
 .crypto-content dd { margin:0; font-size:13px; font-weight:700; text-align:right; overflow-wrap:anywhere; }
+.crypto-average-edit { display:grid; justify-items:end; gap:4px; min-width:0; }
+.crypto-content #crypto-avg { width:min(100%,210px); min-height:36px; padding:6px 8px; font-size:13px; text-align:right; box-shadow:none; border-width:2px; }
+#crypto-avg-auto { padding:2px 0; background:none; border:0; color:inherit; text-decoration:underline; font-size:11px; cursor:pointer; }
 .crypto-status { margin:0; color:#625b70; font-size:11px; line-height:1.5; }
 .dark .crypto-position { background:#32353e; }
 .dark .crypto-content input { background:#404450; color:#fff; }
@@ -803,11 +806,11 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
     .crypto-title small { font-size:10px; }
 }
 </style><style>#crypto-toggle {
-            background-image: url("data:image/svg+xml,%3Csvg%20preserveAspectRatio%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20130%2068%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23153559%22%20stroke-opacity%3D%22.24%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke-width%3D%221.45%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M-5%2073C59%2073%2079%2064%2099%2044S121%2024%20137%2018%20M-5%2084C62%2084%2084%2077%20105%2055S126%2036%20137%2031%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20130%2068%22%3E%3Cg%20transform%3D%22translate(130%2068)%20rotate(180)%22%20opacity%3D%221%22%20fill%3D%22none%22%20stroke%3D%22%23153559%22%20stroke-opacity%3D%22.39%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke-width%3D%221.45%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M-8%2062H26Q38%2062%2046%2052L55%2042Q62%2034%2074%2034H81Q91%2034%2099%2025L107%2016Q116%207%20138%207%20M-8%2076H22Q48%2076%2063%2055T85%2046H90Q103%2046%20112%2034T138%2025%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-            background-size: 100% 100%, min(34%, 62px) auto;
-            background-position: right bottom, left top;
-            background-repeat: no-repeat;
-        }</style></head>
+ background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%2064%22%20preserveAspectRatio%3D%22none%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23593b86%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20opacity%3D%22.20%22%20d%3D%22M-12%2010H52Q58%2010%2062%2014L78%2030Q82%2034%2089%2034H126%22%2F%3E%3Cpath%20opacity%3D%22.13%22%20d%3D%22M-12%2020H46Q52%2020%2056%2024L72%2040Q76%2044%2083%2044H108%22%2F%3E%3Cpath%20opacity%3D%22.24%22%20d%3D%22M250%2072V54Q250%2048%20256%2048H288Q294%2048%20298%2044L323%2019Q327%2015%20334%2015H412%22%2F%3E%3Cpath%20opacity%3D%22.15%22%20d%3D%22M270%2072V61Q270%2058%20276%2058H294Q300%2058%20304%2054L329%2029Q333%2025%20340%2025H412%22%2F%3E%3Ccircle%20opacity%3D%22.25%22%20cx%3D%22128%22%20cy%3D%2234%22%20r%3D%223%22%2F%3E%3Ccircle%20opacity%3D%22.18%22%20cx%3D%22110%22%20cy%3D%2244%22%20r%3D%222.5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+ background-size:100% 100%;
+ background-position:center;
+ background-repeat:no-repeat;
+}</style></head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#24262d] transition-colors duration-300 min-h-[640px]">
 
     <div id="ios-status-bar-bg" class="fixed top-0 left-0 w-full bg-[#FDF9F1] dark:bg-[#24262d] z-[99999] transition-colors duration-300 pointer-events-none" style="height: env(safe-area-inset-top, 0px);"></div>
@@ -1149,7 +1152,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                 <label>Jumlah BTC<input id="crypto-quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00000000" maxlength="24"></label>
                                 <label>Modal<input id="crypto-capital" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp" maxlength="24"></label>
                                 </div>
-                                <dl><div><dt>Harga BTC saat ini</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt>Avg beli / BTC</dt><dd id="crypto-avg">—</dd></div></dl>
+                                <dl><div><dt>Harga BTC saat ini</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt><label for="crypto-avg">Avg beli / BTC</label></dt><dd class="crypto-average-edit"><input id="crypto-avg" type="text" inputmode="decimal" autocomplete="off" aria-label="Avg beli per BTC" maxlength="28" placeholder="—"><button id="crypto-avg-auto" type="button" hidden>Otomatis</button></dd></div></dl>
                                 <p id="crypto-status" class="crypto-status" role="status">Harga BTC belum tersedia.</p>
                                 <button id="crypto-add-buy" type="button" class="crypto-buy-button">+ Tambah pembelian</button>
                                 <details class="crypto-purchases"><summary>Riwayat pembelian</summary><div id="crypto-purchase-list"></div></details>
@@ -2523,7 +2526,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const price = value.quote ? formatRp(value.quote.price) : 'Belum tersedia';
             const lines = ['Bitcoin · BTC', 'Jumlah ' + value.quantity.toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC',
                 'Modal ' + (value.capital === null ? 'Belum diisi' : formatRp(value.capital)),
-                'Avg beli/BTC ' + document.getElementById('crypto-avg').textContent,
+                'Avg beli/BTC ' + document.getElementById('crypto-avg').value,
                 'Harga BTC saat ini ' + price, 'Nilai total ' + document.getElementById('crypto-total').textContent,
                 'Total P/L ' + document.getElementById('crypto-profit').textContent,
                 document.getElementById('crypto-status').textContent];
@@ -4495,8 +4498,10 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const capital = Number.isFinite(data.capital) && data.capital >= 0 ? data.capital : null;
             const quote = cryptoQuoteValid(db.cryptoBTCQuote) ? db.cryptoBTCQuote : null;
             const total = quantity === 0 ? 0 : quote ? Math.round(quantity * quote.price) : null;
-            const average = quantity > 0 && capital !== null ? capital / quantity : null;
-            return { quantity, capital, quote, total, average, profit: capital !== null && total !== null ? total - capital : null };
+            const averageAutomatic = quantity > 0 && capital !== null ? capital / quantity : null;
+            const average = quantity > 0 && Number.isFinite(data.averageOverride) && data.averageOverride >= 0
+                ? data.averageOverride : averageAutomatic;
+            return { quantity, capital, quote, total, average, averageAutomatic, profit: capital !== null && total !== null ? total - capital : null };
         }
         async function requestCryptoQuote(url, worker) {
             const response = await fetch(url, {
@@ -4576,8 +4581,13 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             if (document.activeElement !== capital || isCensored)
                 capital.value = data.capital === null ? '' : formatRp(data.capital);
             const value = cryptoValuation();
-            document.getElementById('crypto-avg').textContent = isCensored ? '••••••'
-                : Number.isFinite(value.average) ? 'Rp ' + value.average.toLocaleString('id-ID', { maximumFractionDigits: 2 }) : '—';
+            const averageInput = document.getElementById('crypto-avg');
+            const averageType = isCensored ? 'password' : 'text';
+            if (averageInput.type !== averageType) averageInput.type = averageType;
+            averageInput.disabled = isCensored || value.quantity <= 0;
+            if (document.activeElement !== averageInput || isCensored) averageInput.value = isCensored ? '••••••'
+                : Number.isFinite(value.average) ? 'Rp ' + value.average.toLocaleString('id-ID', { maximumFractionDigits: 2 }) : '';
+            document.getElementById('crypto-avg-auto').hidden = isCensored || !Number.isFinite(data.averageOverride);
             document.getElementById('crypto-price').textContent = value.quote ? formatRp(value.quote.price) : 'Belum tersedia';
             document.getElementById('crypto-total').textContent = isCensored ? '••••••' : value.total === null ? '—' : formatRp(value.total);
             const profit = document.getElementById('crypto-profit');
@@ -4594,7 +4604,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             status.textContent = value.quote
                 ? (oldQuote ? 'Data tersimpan' : 'Update') + ' · ' + new Intl.DateTimeFormat('id-ID', {
                     day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
-                }).format(Date.parse(value.quote.priceAt)) + ' WIB · Harga tengah Pluang'
+                }).format(Date.parse(value.quote.priceAt)) + ' WIB · ' + (value.quote.via === 'worker' ? 'Worker' : 'Pluang')
                 : cryptoQuoteFailed ? 'Harga BTC belum tersedia. Coba perbarui lagi.' : 'Memuat harga BTC dari Pluang…';
             document.getElementById('crypto-add-buy').disabled = isCensored;
             if (isCensored) {
@@ -4603,6 +4613,28 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }
             renderCryptoPurchases();
         }
+
+        function setCryptoAverage(override) {
+            if (isCensored || cryptoValuation().quantity <= 0) return;
+            if (override !== null && (!Number.isFinite(override) || override < 0 || override > Number.MAX_SAFE_INTEGER))
+                throw new Error('Masukkan Avg rupiah yang valid.');
+            const previous = db.cryptoBTC;
+            db.cryptoBTC = { ...previous, averageOverride:override };
+            try { saveDB(); } catch (error) { db.cryptoBTC = previous;throw new Error('Avg belum tersimpan. Coba lagi.'); }
+            calculateTotals();
+        }
+        document.getElementById('crypto-avg').addEventListener('change', event => {
+            if (isCensored) return;
+            const input = event.target, raw = input.value.trim().replace(/^Rp\s*/i, '');
+            try {
+                if (raw && !/^(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d{1,2})?$/.test(raw)) throw new Error('Gunakan rupiah dan koma untuk desimal, misalnya 1.100.000.000,50.');
+                setCryptoAverage(raw ? Number(raw.replace(/\./g,'').replace(',','.')) : null);
+            } catch (error) { showToast(error.message,'error'); }
+            input.blur();renderCryptoCard();
+        });
+        document.getElementById('crypto-avg-auto').addEventListener('click', () => {
+            try { setCryptoAverage(null); } catch (error) { showToast(error.message,'error'); }
+        });
 
         function cryptoOpeningBalance() {
             const data = db.cryptoBTC ?? {};
@@ -4632,7 +4664,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const oldData = db.cryptoBTC;
             const purchases = Array.isArray(oldData?.purchases) ? oldData.purchases : [];
             const record = { id: crypto.randomUUID(), day:purchaseDay, capital, satoshis, recordedAt: new Date().toISOString() };
-            const next = { ...oldData, quantity: totalSatoshis / 1e8, capital: totalCapital,
+            const next = { ...oldData, quantity: totalSatoshis / 1e8, capital: totalCapital, averageOverride:null,
                 opening: purchases.length ? oldData.opening : opening, purchases: [...purchases, record] };
             const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
             db.cryptoBTC = next;
@@ -4660,7 +4692,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }
             if (!Number.isSafeInteger(satoshis) || !Number.isSafeInteger(capital)) throw new Error('Total pembelian tidak valid.');
             const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
-            db.cryptoBTC = { ...oldData, quantity:satoshis / 1e8, capital, opening:{ quantity:opening.quantity, capital:opening.capital }, purchases:remaining };
+            db.cryptoBTC = { ...oldData, quantity:satoshis / 1e8, capital, averageOverride:null, opening:{ quantity:opening.quantity, capital:opening.capital }, purchases:remaining };
             try { capturePortfolioGrowth();localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
             catch (error) { db.cryptoBTC = oldData;db.portfolioGrowth = oldGrowth;throw new Error('Gagal menyimpan penghapusan. Coba lagi.'); }
             calculateTotals();renderPortfolioGrowth();return true;
@@ -4766,7 +4798,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     return;
                 }
                 input.setCustomValidity('');
-                db.cryptoBTC = { quantity: null, capital: null, ...db.cryptoBTC, [field]: amount };
+                db.cryptoBTC = { quantity: null, capital: null, ...db.cryptoBTC, averageOverride:null, [field]: amount };
                 saveDB();
                 calculateTotals();
             });
