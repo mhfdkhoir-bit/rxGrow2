@@ -2589,7 +2589,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             return { symbol:'BTC', quantity:value.quantity, capital_idr:value.capital, average_idr:value.average,
                 value_idr:value.total, unrealized_pnl_idr:value.profit, price_idr:value.quote?.price ?? null,
                 price_at:value.quote?.priceAt ?? null, price_type:'mid', source:'Pluang',
-                status:document.getElementById('crypto-status').textContent, daily_change_excludes_crypto:true };
+                status:document.getElementById('crypto-status').textContent, daily_change_excludes_crypto:false };
         }
         function kaHandleQuery(message) {
             if (/^(?:(?:tolong )?(?:cek|lihat|tampilkan|ringkas) )?(?:semua )?(?:portofolio|portfolio|porto)(?:ku| saya| aku)?(?: semuanya| semua| sekarang)?$/.test(message)) {
@@ -3143,7 +3143,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const prices = {
                 gold: parseNum(db.lastGoldPrice),
                 fund: reksaNavRecord(db.reksaNav) ? db.reksaNav.value : null,
-                stocks: {}
+                stocks: {},
+                crypto:cryptoValuation().quote?.price ?? null
             };
             for (const stock of db.saham) {
                 const code = stock.kode?.trim().toUpperCase();
@@ -3203,15 +3204,21 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const goldPrice = validPrice(current.gold) ? current.gold : 0;
             const goldBase = validPrice(previous.gold) ? previous.gold : goldPrice;
             if ((gold > 0 && !validPrice(current.gold)) || (units > 0 && !fund.automatic)) return {};
+            const btc = cryptoValuation();
+            if (btc.quantity > 0 && !validPrice(current.crypto)) return {};
+            const cryptoBefore = cryptoValueAtPrice(validPrice(previous.crypto) ? previous.crypto : current.crypto);
+            const cryptoAfter = cryptoValueAtPrice(current.crypto);
             const beforeValues = {
                 gold: Math.round(gold * goldBase),
                 fund: fund.automatic && validPrice(previous.fund)
                     ? Math.round(units * previous.fund) : fund.total,
-                stock: 0
+                stock: 0,
+                crypto:cryptoBefore
             };
-            const afterValues = { gold: Math.round(gold * goldPrice), fund: fund.total, stock: 0 };
+            const afterValues = { gold: Math.round(gold * goldPrice), fund: fund.total, stock: 0, crypto:cryptoAfter };
             let comparable = gold > 0 && validPrice(previous.gold)
-                || units > 0 && fund.automatic && validPrice(previous.fund);
+                || units > 0 && fund.automatic && validPrice(previous.fund)
+                || btc.quantity > 0 && validPrice(previous.crypto);
             for (const stock of db.saham) {
                 const lot = parseNum(stock.lot);
                 if (!(lot > 0)) continue;
@@ -3224,7 +3231,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 afterValues.stock += lot * 100 * price;
             }
             if (!comparable) return {};
-            const total = values => values.gold + values.fund + values.stock;
+            const total = values => values.gold + values.fund + values.stock + values.crypto;
             return {
                 before: { at: baseline.at, total: total(beforeValues), values: beforeValues },
                 after: { at: daily.latest.at, total: total(afterValues), values: afterValues }
@@ -3241,7 +3248,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             if (marketChangeButton.hidden) {
                 marketChangeButton.textContent = '';
                 if (dialog.open) dialog.close();
-                for (const id of ['market-before','market-after','market-gold','market-fund','market-stock']) document.getElementById(id).textContent = '';
+                for (const id of ['market-before','market-after','market-gold','market-fund','market-stock','market-crypto']) document.getElementById(id).textContent = '';
                 return;
             }
             const delta = after.total - before.total;
@@ -3256,9 +3263,10 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             for (const [id, entry] of [['market-before', before], ['market-after', after]]) {
                 document.getElementById(id).textContent = formatTime.format(entry.at) + '\n' + formatRp(entry.total);
             }
-            for (const key of ['gold', 'fund', 'stock']) {
+            for (const key of ['gold', 'fund', 'stock', 'crypto']) {
                 const change = after.values?.[key] - before.values?.[key];
-                document.getElementById('market-' + key).textContent = Number.isFinite(change)
+                const missingCryptoBase = key === 'crypto' && cryptoValuation().quantity > 0 && !(db.dailyMarketComparison?.previous?.prices?.crypto > 0);
+                document.getElementById('market-' + key).textContent = Number.isFinite(change) && !missingCryptoBase
                     ? (change > 0 ? '+' : change < 0 ? '−' : '') + formatRp(Math.abs(change))
                     : '—';
             }
@@ -4524,6 +4532,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 ? manual && quote ? Math.round((quote.price - average) * quantity) : marketValue - capital : null;
             const total = manual && profit !== null ? capital + profit : marketValue;
             return { quantity, capital, quote, total, marketValue, average, averageAutomatic, profit };
+        }
+        function cryptoValueAtPrice(price) {
+            const value = cryptoValuation();
+            if (value.quantity === 0) return 0;
+            if (!Number.isFinite(price) || price <= 0) return null;
+            if (value.capital !== null && Number.isFinite(db.cryptoBTC?.averageOverride))
+                return value.capital + Math.round((price - value.average) * value.quantity);
+            return Math.round(price * value.quantity);
         }
         async function requestCryptoQuote(url, worker) {
             const response = await fetch(url, {
@@ -5839,6 +5855,7 @@ $('finder').addEventListener('submit',async e=>{
             <div class="market-asset"><dt>Emas</dt><dd id="market-gold"></dd></div>
             <div class="market-asset"><dt>Reksadana</dt><dd id="market-fund"></dd></div>
             <div class="market-asset"><dt>Saham</dt><dd id="market-stock"></dd></div>
+            <div class="market-asset"><dt>Kripto</dt><dd id="market-crypto"></dd></div>
         </dl>
     </form>
 </dialog>
