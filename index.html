@@ -3607,8 +3607,19 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }
         });
 
+        function allocationBasisPoints(values) {
+            const total = values.reduce((sum, value) => sum + value, 0);
+            if (!(total > 0) || !Number.isFinite(total)) return values.map(() => 0);
+            const exact = values.map(value => value / total * 10000);
+            const rounded = exact.map(Math.floor);
+            const remaining = 10000 - rounded.reduce((sum, value) => sum + value, 0);
+            const order = exact.map((value, index) => ({ index, remainder:value - rounded[index] }))
+                .sort((a,b) => b.remainder - a.remainder || a.index - b.index);
+            for (let index = 0; index < remaining; index++) rounded[order[index % order.length].index]++;
+            return rounded;
+        }
         function updatePieChart(totE, totR, totS, noValuation, totCrypto = 0) {
-            const allocationPercent = fraction => (fraction * 100).toLocaleString('id-ID', { minimumFractionDigits:2, maximumFractionDigits:2 }) + '%';
+            const allocationPercent = basisPoints => (basisPoints / 100).toLocaleString('id-ID', { minimumFractionDigits:2, maximumFractionDigits:2 }) + '%';
             const pieE = document.getElementById('pie-emas');
             const pieR = document.getElementById('pie-reksa');
             const pieS = document.getElementById('pie-saham');
@@ -3638,12 +3649,13 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const pe = totE / safeGrand;
             const pr = totR / safeGrand;
             const ps = valS / safeGrand;
-            pctCrypto.textContent = isCensored ? '••%' : allocationPercent(totCrypto / safeGrand);
+            const [percentE, percentR, percentS, percentCrypto] = allocationBasisPoints([totE, totR, valS, totCrypto]);
+            pctCrypto.textContent = isCensored ? '••%' : allocationPercent(percentCrypto);
             pieCrypto.style.width = (totCrypto / safeGrand * 100) + "%";
 
-            pctE.textContent = isCensored ? '••%' : allocationPercent(pe);
-            pctR.textContent = isCensored ? '••%' : allocationPercent(pr);
-            pctS.textContent = isCensored ? '••%' : allocationPercent(ps);
+            pctE.textContent = isCensored ? '••%' : allocationPercent(percentE);
+            pctR.textContent = isCensored ? '••%' : allocationPercent(percentR);
+            pctS.textContent = isCensored ? '••%' : allocationPercent(percentS);
             pieE.style.width = `${pe * 100}%`;
             pieR.style.width = `${pr * 100}%`;
             pieS.style.width = `${ps * 100}%`;
