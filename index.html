@@ -749,6 +749,10 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 .crypto-average-edit { display:grid; justify-items:end; gap:4px; min-width:0; }
 .crypto-content #crypto-avg { width:min(100%,210px); min-height:36px; padding:6px 8px; font-size:13px; text-align:right; box-shadow:none; border-width:2px; }
 #crypto-avg-auto { padding:2px 0; background:none; border:0; color:inherit; text-decoration:underline; font-size:11px; cursor:pointer; }
+.crypto-average-actions { display:flex; align-items:center; gap:12px; }
+#crypto-avg-save { padding:4px 12px; border:2px solid #000; border-radius:6px; background:#c4a2f4; color:#171717; font-size:11px; font-weight:700; cursor:pointer; }
+#crypto-avg-save:disabled { opacity:.5; cursor:default; }
+#crypto-avg-feedback { margin:0; font-size:11px; line-height:1.5; }
 .crypto-status { margin:0; color:#625b70; font-size:11px; line-height:1.5; }
 .dark .crypto-position { background:#32353e; }
 .dark .crypto-content input { background:#404450; color:#fff; }
@@ -806,7 +810,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
     .crypto-title small { font-size:10px; }
 }
 </style><style>#crypto-toggle {
- background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%2064%22%20preserveAspectRatio%3D%22none%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23593b86%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20opacity%3D%22.20%22%20d%3D%22M-12%2010H52Q58%2010%2062%2014L78%2030Q82%2034%2089%2034H126%22%2F%3E%3Cpath%20opacity%3D%22.13%22%20d%3D%22M-12%2020H46Q52%2020%2056%2024L72%2040Q76%2044%2083%2044H108%22%2F%3E%3Cpath%20opacity%3D%22.24%22%20d%3D%22M250%2072V54Q250%2048%20256%2048H288Q294%2048%20298%2044L323%2019Q327%2015%20334%2015H412%22%2F%3E%3Cpath%20opacity%3D%22.15%22%20d%3D%22M270%2072V61Q270%2058%20276%2058H294Q300%2058%20304%2054L329%2029Q333%2025%20340%2025H412%22%2F%3E%3Ccircle%20opacity%3D%22.25%22%20cx%3D%22128%22%20cy%3D%2234%22%20r%3D%223%22%2F%3E%3Ccircle%20opacity%3D%22.18%22%20cx%3D%22110%22%20cy%3D%2244%22%20r%3D%222.5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+ background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%2064%22%20preserveAspectRatio%3D%22none%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23593b86%22%20stroke-width%3D%221.35%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20opacity%3D%22.17%22%20d%3D%22M-35%2038C32%2044%2072%2025%2079-5S47-45-30-30%22%2F%3E%3Cpath%20opacity%3D%22.11%22%20d%3D%22M-35%2049C42%2055%2084%2033%2091-3S52-54-30-40%22%2F%3E%3Cpath%20opacity%3D%22.23%22%20d%3D%22M225%2085C216%2040%20253%2019%20315%2024S396%2041%20432-12%22%2F%3E%3Cpath%20opacity%3D%22.15%22%20d%3D%22M238%2086C228%2049%20262%2031%20319%2036S405%2052%20443-10%22%2F%3E%3Cpath%20opacity%3D%22.09%22%20d%3D%22M251%2088C243%2060%20273%2044%20324%2048S418%2065%20455-8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
  background-size:100% 100%;
  background-position:center;
  background-repeat:no-repeat;
@@ -1152,7 +1156,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                                 <label>Jumlah BTC<input id="crypto-quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00000000" maxlength="24"></label>
                                 <label>Modal<input id="crypto-capital" type="text" inputmode="numeric" autocomplete="off" placeholder="Rp" maxlength="24"></label>
                                 </div>
-                                <dl><div><dt>Harga BTC saat ini</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt><label for="crypto-avg">Avg beli / BTC</label></dt><dd class="crypto-average-edit"><input id="crypto-avg" type="text" inputmode="decimal" autocomplete="off" aria-label="Avg beli per BTC" maxlength="28" placeholder="—"><button id="crypto-avg-auto" type="button" hidden>Otomatis</button></dd></div></dl>
+                                <dl><div><dt>Harga BTC saat ini</dt><dd id="crypto-price">Belum tersedia</dd></div><div><dt><label for="crypto-avg">Avg beli / BTC</label></dt><dd class="crypto-average-edit"><input id="crypto-avg" type="text" inputmode="decimal" autocomplete="off" aria-label="Avg beli per BTC" maxlength="28" placeholder="—"><span class="crypto-average-actions"><button id="crypto-avg-auto" type="button" hidden>Otomatis</button><button id="crypto-avg-save" type="button">Simpan</button></span></dd></div></dl>
+                                <p id="crypto-avg-feedback" role="status" hidden></p>
                                 <p id="crypto-status" class="crypto-status" role="status">Harga BTC belum tersedia.</p>
                                 <button id="crypto-add-buy" type="button" class="crypto-buy-button">+ Tambah pembelian</button>
                                 <details class="crypto-purchases"><summary>Riwayat pembelian</summary><div id="crypto-purchase-list"></div></details>
@@ -2538,7 +2543,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const lines = rows.filter(row => Number.isSafeInteger(row.capital) && Number.isSafeInteger(row.satoshis) && row.satoshis > 0)
                 .map(row => row.day + ' · ' + formatRp(row.capital) + ' · ' + (row.satoshis / 1e8).toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC\nAvg Rp '
                     + (row.capital / (row.satoshis / 1e8)).toLocaleString('id-ID', { maximumFractionDigits:2 }) + '/BTC');
-            const opening = rows.length ? db.cryptoBTC.opening : db.cryptoBTC;
+            const opening = rows.length ? db.cryptoBTC.opening : { ...db.cryptoBTC, capital:(db.cryptoBTC?.capital || 0) - (db.cryptoBTC?.capitalAdjustment || 0) };
             if (opening?.quantity > 0 && Number.isFinite(opening.capital)) lines.push('Saldo awal · tanggal belum tercatat · ' + formatRp(opening.capital) + ' · '
                 + opening.quantity.toLocaleString('id-ID', { maximumFractionDigits:8 }) + ' BTC');
             kaMessage(lines.length ? 'Riwayat pembelian BTC (maksimal 10 pembelian terbaru)\n' + lines.join('\n\n') : 'Belum ada pembelian BTC tercatat.');
@@ -4487,6 +4492,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         let cryptoQuoteRequest = null;
         let cryptoWorkerRetryAt = 0;
         let cryptoQuoteFailed = false;
+        let cryptoAverageDirty = false;
         function cryptoQuoteValid(quote) {
             return Number.isFinite(quote?.price) && quote.price > 0 && quote.price <= Number.MAX_SAFE_INTEGER
                 && typeof quote.priceAt === 'string' && Number.isFinite(Date.parse(quote.priceAt))
@@ -4585,9 +4591,12 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const averageType = isCensored ? 'password' : 'text';
             if (averageInput.type !== averageType) averageInput.type = averageType;
             averageInput.disabled = isCensored || value.quantity <= 0;
-            if (document.activeElement !== averageInput || isCensored) averageInput.value = isCensored ? '••••••'
+            if (isCensored) cryptoAverageDirty = false;
+            if (!cryptoAverageDirty || isCensored) averageInput.value = isCensored ? '••••••'
                 : Number.isFinite(value.average) ? 'Rp ' + value.average.toLocaleString('id-ID', { maximumFractionDigits: 2 }) : '';
-            document.getElementById('crypto-avg-auto').hidden = isCensored || !Number.isFinite(data.averageOverride);
+            document.getElementById('crypto-avg-auto').hidden = isCensored || (!Number.isFinite(data.averageOverride) && !data.capitalAdjustment);
+            document.getElementById('crypto-avg-save').disabled = isCensored || value.quantity <= 0 || !cryptoAverageDirty;
+            if (isCensored) document.getElementById('crypto-avg-feedback').hidden = true;
             document.getElementById('crypto-price').textContent = value.quote ? formatRp(value.quote.price) : 'Belum tersedia';
             document.getElementById('crypto-total').textContent = isCensored ? '••••••' : value.total === null ? '—' : formatRp(value.total);
             const profit = document.getElementById('crypto-profit');
@@ -4619,18 +4628,39 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             if (override !== null && (!Number.isFinite(override) || override < 0 || override > Number.MAX_SAFE_INTEGER))
                 throw new Error('Masukkan Avg rupiah yang valid.');
             const previous = db.cryptoBTC;
-            db.cryptoBTC = { ...previous, averageOverride:override };
-            try { saveDB(); } catch (error) { db.cryptoBTC = previous;throw new Error('Avg belum tersimpan. Coba lagi.'); }
+            const adjustment = Number.isSafeInteger(previous.capitalAdjustment) ? previous.capitalAdjustment : 0;
+            const originalCapital = previous.capital - adjustment;
+            const capital = override === null ? originalCapital : Math.round(override * previous.quantity);
+            if (!Number.isSafeInteger(capital) || capital < 0 || !Number.isSafeInteger(originalCapital) || originalCapital < 0)
+                throw new Error('Modal dari Avg tersebut terlalu besar atau tidak valid.');
+            const oldGrowth = structuredClone(db.portfolioGrowth);
+            db.cryptoBTC = { ...previous, capital, capitalAdjustment:capital - originalCapital, averageOverride:override };
+            try { capturePortfolioGrowth();localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
+            catch (error) { db.cryptoBTC = previous;db.portfolioGrowth = oldGrowth;throw new Error('Avg belum tersimpan. Coba lagi.'); }
+            cryptoAverageDirty = false;
             calculateTotals();
+            renderPortfolioGrowth();
         }
-        document.getElementById('crypto-avg').addEventListener('change', event => {
+        function saveCryptoAverageInput() {
             if (isCensored) return;
-            const input = event.target, raw = input.value.trim().replace(/^Rp\s*/i, '');
+            const input = document.getElementById('crypto-avg'), raw = input.value.trim().replace(/^Rp\s*/i, '');
+            const feedback = document.getElementById('crypto-avg-feedback');
             try {
                 if (raw && !/^(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d{1,2})?$/.test(raw)) throw new Error('Gunakan rupiah dan koma untuk desimal, misalnya 1.100.000.000,50.');
                 setCryptoAverage(raw ? Number(raw.replace(/\./g,'').replace(',','.')) : null);
-            } catch (error) { showToast(error.message,'error'); }
-            input.blur();renderCryptoCard();
+                feedback.textContent = 'Avg tersimpan. Modal perhitungan dan P/L diperbarui.';
+            } catch (error) { feedback.textContent = error.message; }
+            feedback.hidden = false;
+        }
+        document.getElementById('crypto-avg').addEventListener('input', () => {
+            if (isCensored) return;
+            cryptoAverageDirty = true;
+            document.getElementById('crypto-avg-save').disabled = false;
+            document.getElementById('crypto-avg-feedback').hidden = true;
+        });
+        document.getElementById('crypto-avg-save').addEventListener('click', saveCryptoAverageInput);
+        document.getElementById('crypto-avg').addEventListener('keydown', event => {
+            if (event.key === 'Enter') { event.preventDefault();saveCryptoAverageInput(); }
         });
         document.getElementById('crypto-avg-auto').addEventListener('click', () => {
             try { setCryptoAverage(null); } catch (error) { showToast(error.message,'error'); }
@@ -4665,11 +4695,12 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const purchases = Array.isArray(oldData?.purchases) ? oldData.purchases : [];
             const record = { id: crypto.randomUUID(), day:purchaseDay, capital, satoshis, recordedAt: new Date().toISOString() };
             const next = { ...oldData, quantity: totalSatoshis / 1e8, capital: totalCapital, averageOverride:null,
-                opening: purchases.length ? oldData.opening : opening, purchases: [...purchases, record] };
+                opening: purchases.length ? oldData.opening : { ...opening, capital:opening.capital - (oldData?.capitalAdjustment || 0) }, purchases: [...purchases, record] };
             const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
             db.cryptoBTC = next;
             try { capturePortfolioGrowth(); localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
             catch (error) { db.cryptoBTC = oldData; db.portfolioGrowth = oldGrowth; throw new Error('Pembelian belum tersimpan. Periksa ruang penyimpanan perangkat.'); }
+            cryptoAverageDirty = false;
             calculateTotals();
             renderPortfolioGrowth();
         }
@@ -4680,7 +4711,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const purchases = Array.isArray(oldData.purchases) ? oldData.purchases : [];
             if (id !== 'opening' && !purchases.some(purchase => purchase.id === id)) return false;
             const opening = id === 'opening' ? { quantity:0, capital:0 }
-                : purchases.length ? oldData.opening : oldData;
+                : purchases.length ? oldData.opening : { ...oldData, capital:oldData.capital - (oldData.capitalAdjustment || 0) };
             if (!Number.isFinite(opening?.quantity) || opening.quantity < 0 || !Number.isSafeInteger(opening?.capital) || opening.capital < 0)
                 throw new Error('Saldo awal tidak valid. Riwayat belum dihapus.');
             const remaining = id === 'opening' ? purchases : purchases.filter(purchase => purchase.id !== id);
@@ -4692,9 +4723,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }
             if (!Number.isSafeInteger(satoshis) || !Number.isSafeInteger(capital)) throw new Error('Total pembelian tidak valid.');
             const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
-            db.cryptoBTC = { ...oldData, quantity:satoshis / 1e8, capital, averageOverride:null, opening:{ quantity:opening.quantity, capital:opening.capital }, purchases:remaining };
+            const adjustment = satoshis > 0 && oldData.quantity > 0 ? Math.round((oldData.capitalAdjustment || 0) * (satoshis / 1e8) / oldData.quantity) : 0;
+            const appliedAdjustment = Math.max(-capital, adjustment);
+            capital += appliedAdjustment;
+            if (!Number.isSafeInteger(capital)) throw new Error('Total modal tidak valid.');
+            db.cryptoBTC = { ...oldData, quantity:satoshis / 1e8, capital, capitalAdjustment:appliedAdjustment, averageOverride:null, opening:{ quantity:opening.quantity, capital:opening.capital }, purchases:remaining };
             try { capturePortfolioGrowth();localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
             catch (error) { db.cryptoBTC = oldData;db.portfolioGrowth = oldGrowth;throw new Error('Gagal menyimpan penghapusan. Coba lagi.'); }
+            cryptoAverageDirty = false;
             calculateTotals();renderPortfolioGrowth();return true;
         }
         function renderCryptoPurchases() {
@@ -4730,7 +4766,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     || !/^\d{4}-\d{2}-\d{2}$/.test(purchase.day) || !Number.isFinite(Date.parse(purchase.day))) continue;
                 row(new Intl.DateTimeFormat('id-ID', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Jakarta' }).format(new Date(purchase.day)), purchase.capital, purchase.satoshis / 1e8, purchase.id);
             }
-            const opening = purchases.length ? data.opening : data;
+            const opening = purchases.length ? data.opening : { ...data, capital:(data.capital || 0) - (data.capitalAdjustment || 0) };
             if (Number.isFinite(opening?.quantity) && Number.isFinite(opening?.capital) && (opening.quantity > 0 || opening.capital > 0))
                 row('Saldo awal · tanggal belum tercatat', opening.capital, opening.quantity, 'opening');
             if (!list.childNodes.length) list.textContent = 'Belum ada pembelian tercatat.';
@@ -4798,7 +4834,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     return;
                 }
                 input.setCustomValidity('');
-                db.cryptoBTC = { quantity: null, capital: null, ...db.cryptoBTC, averageOverride:null, [field]: amount };
+                db.cryptoBTC = { quantity: null, capital: null, ...db.cryptoBTC, averageOverride:null, capitalAdjustment:0, [field]: amount };
                 saveDB();
                 calculateTotals();
             });
