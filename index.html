@@ -2110,7 +2110,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     'Modal pembelian (termasuk biaya) ' + formatRp(amount),
                     'Total modal ' + formatRp(plan.totalCapital),
                     'Total BTC ' + (plan.totalSatoshis / 1e8).toLocaleString('id-ID', { maximumFractionDigits:8 }),
-                    'Avg baru Rp ' + (plan.totalCapital / (plan.totalSatoshis / 1e8)).toLocaleString('id-ID', { maximumFractionDigits:2 }) + '/BTC',
+                    'Avg baru Rp ' + plan.nextAverage.toLocaleString('id-ID', { maximumFractionDigits:2 }) + '/BTC',
                     'Tanggal ' + plan.day].join('\n') };
             }
             if (type === 'beli' || type === 'jual') {
@@ -2849,6 +2849,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 try {
                     const parsed = JSON.parse(saved);
                     db = { ...db, ...parsed, portfolioGrowth: normalizePortfolioGrowth(parsed?.portfolioGrowth) };
+                    normalizeCryptoAverageAccounting();
                     if(!db.reksaHistory) db.reksaHistory = [];
                     if (!Array.isArray(db.reksaNavHistory)) db.reksaNavHistory = [];
                     if(!db.sahamHistory) db.sahamHistory = []; 
@@ -4498,16 +4499,30 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                 && typeof quote.priceAt === 'string' && Number.isFinite(Date.parse(quote.priceAt))
                 && Date.parse(quote.priceAt) <= Date.now() + 300000;
         }
+        function normalizeCryptoAverageAccounting() {
+            const data = db.cryptoBTC;
+            if (!data || data.averageAccountingVersion === 2) return;
+            const adjustment = Number.isSafeInteger(data.capitalAdjustment) ? data.capitalAdjustment : 0;
+            const originalCapital = data.capital - adjustment;
+            if (adjustment && Number.isSafeInteger(originalCapital) && originalCapital >= 0) data.capital = originalCapital;
+            data.capitalAdjustment = 0;
+            data.averageAccountingVersion = 2;
+        }
         function cryptoValuation() {
+            normalizeCryptoAverageAccounting();
             const data = db.cryptoBTC ?? {};
             const quantity = Number.isFinite(data.quantity) && data.quantity > 0 ? data.quantity : 0;
             const capital = Number.isFinite(data.capital) && data.capital >= 0 ? data.capital : null;
             const quote = cryptoQuoteValid(db.cryptoBTCQuote) ? db.cryptoBTCQuote : null;
-            const total = quantity === 0 ? 0 : quote ? Math.round(quantity * quote.price) : null;
+            const marketValue = quantity === 0 ? 0 : quote ? Math.round(quantity * quote.price) : null;
             const averageAutomatic = quantity > 0 && capital !== null ? capital / quantity : null;
             const average = quantity > 0 && Number.isFinite(data.averageOverride) && data.averageOverride >= 0
                 ? data.averageOverride : averageAutomatic;
-            return { quantity, capital, quote, total, average, averageAutomatic, profit: capital !== null && total !== null ? total - capital : null };
+            const manual = quantity > 0 && Number.isFinite(data.averageOverride) && data.averageOverride >= 0;
+            const profit = capital !== null && marketValue !== null
+                ? manual && quote ? Math.round((quote.price - average) * quantity) : marketValue - capital : null;
+            const total = manual && profit !== null ? capital + profit : marketValue;
+            return { quantity, capital, quote, total, marketValue, average, averageAutomatic, profit };
         }
         async function requestCryptoQuote(url, worker) {
             const response = await fetch(url, {
@@ -4628,27 +4643,34 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             if (override !== null && (!Number.isFinite(override) || override < 0 || override > Number.MAX_SAFE_INTEGER))
                 throw new Error('Masukkan Avg rupiah yang valid.');
             const previous = db.cryptoBTC;
-            const adjustment = Number.isSafeInteger(previous.capitalAdjustment) ? previous.capitalAdjustment : 0;
-            const originalCapital = previous.capital - adjustment;
-            const capital = override === null ? originalCapital : Math.round(override * previous.quantity);
-            if (!Number.isSafeInteger(capital) || capital < 0 || !Number.isSafeInteger(originalCapital) || originalCapital < 0)
-                throw new Error('Modal dari Avg tersebut terlalu besar atau tidak valid.');
+            if (override !== null && !Number.isSafeInteger(Math.round(override * previous.quantity)))
+                throw new Error('Avg tersebut terlalu besar untuk jumlah BTC yang dimiliki.');
             const oldGrowth = structuredClone(db.portfolioGrowth);
-            db.cryptoBTC = { ...previous, capital, capitalAdjustment:capital - originalCapital, averageOverride:override };
+            db.cryptoBTC = { ...previous, capitalAdjustment:0, averageAccountingVersion:2, averageOverride:override };
             try { capturePortfolioGrowth();localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
             catch (error) { db.cryptoBTC = previous;db.portfolioGrowth = oldGrowth;throw new Error('Avg belum tersimpan. Coba lagi.'); }
             cryptoAverageDirty = false;
             calculateTotals();
             renderPortfolioGrowth();
         }
+        function parseCryptoAverageInput(value) {
+            const raw = String(value).normalize('NFKC').replace(/[\s\u200B\u2060]/g, '').replace(/^(?:Rp|IDR)\.?/i, '');
+            if (!raw) return null;
+            // Dots group rupiah; a comma marks decimals. Accept pasted grouping without requiring exactly three digits.
+            if (!/^\d+(?:\.\d+)*(?:,\d{1,8})?$/.test(raw))
+                throw new Error('Masukkan Avg dalam rupiah. Gunakan koma jika ada angka desimal.');
+            const amount = Number(raw.replace(/\./g, '').replace(',', '.'));
+            if (!Number.isFinite(amount) || amount < 0 || amount > Number.MAX_SAFE_INTEGER)
+                throw new Error('Angka Avg terlalu besar atau tidak valid.');
+            return amount;
+        }
         function saveCryptoAverageInput() {
             if (isCensored) return;
-            const input = document.getElementById('crypto-avg'), raw = input.value.trim().replace(/^Rp\s*/i, '');
+            const input = document.getElementById('crypto-avg');
             const feedback = document.getElementById('crypto-avg-feedback');
             try {
-                if (raw && !/^(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d{1,2})?$/.test(raw)) throw new Error('Gunakan rupiah dan koma untuk desimal, misalnya 1.100.000.000,50.');
-                setCryptoAverage(raw ? Number(raw.replace(/\./g,'').replace(',','.')) : null);
-                feedback.textContent = 'Avg tersimpan. Modal perhitungan dan P/L diperbarui.';
+                setCryptoAverage(parseCryptoAverageInput(input.value));
+                feedback.textContent = 'Avg tersimpan. P/L dan nilai total diperbarui.';
             } catch (error) { feedback.textContent = error.message; }
             feedback.hidden = false;
         }
@@ -4667,6 +4689,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         });
 
         function cryptoOpeningBalance() {
+            normalizeCryptoAverageAccounting();
             const data = db.cryptoBTC ?? {};
             if (data.quantity == null && data.capital == null) return { quantity: 0, capital: 0 };
             if (!Number.isFinite(data.quantity) || data.quantity < 0 || !Number.isSafeInteger(data.capital) || data.capital < 0)
@@ -4686,16 +4709,22 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const totalCapital = opening.capital + capital;
             if (!Number.isSafeInteger(totalSatoshis) || totalSatoshis > 21000000 * 1e8 || !Number.isSafeInteger(totalCapital))
                 throw new Error('Total modal atau jumlah BTC terlalu besar.');
-            return { opening, totalSatoshis, totalCapital, satoshis, day };
+            const previousAverage = cryptoValuation().average;
+            const manualAverage = Number.isFinite(db.cryptoBTC?.averageOverride) && opening.quantity > 0;
+            const nextAverage = manualAverage ? (previousAverage * opening.quantity + capital) / (totalSatoshis / 1e8)
+                : totalCapital / (totalSatoshis / 1e8);
+            return { opening, totalSatoshis, totalCapital, satoshis, day, nextAverage, manualAverage };
         }
         function addCryptoPurchase(capital, quantity, day) {
             if (isCensored) throw new Error('Matikan mode privasi terlebih dahulu.');
-            const { opening, totalSatoshis, totalCapital, satoshis, day:purchaseDay } = planCryptoPurchase(capital, quantity, day);
+            const { opening, totalSatoshis, totalCapital, satoshis, day:purchaseDay, nextAverage, manualAverage } = planCryptoPurchase(capital, quantity, day);
             const oldData = db.cryptoBTC;
             const purchases = Array.isArray(oldData?.purchases) ? oldData.purchases : [];
             const record = { id: crypto.randomUUID(), day:purchaseDay, capital, satoshis, recordedAt: new Date().toISOString() };
-            const next = { ...oldData, quantity: totalSatoshis / 1e8, capital: totalCapital, averageOverride:null,
-                opening: purchases.length ? oldData.opening : { ...opening, capital:opening.capital - (oldData?.capitalAdjustment || 0) }, purchases: [...purchases, record] };
+            const weightedAverage = manualAverage ? nextAverage : null;
+            const next = { ...oldData, quantity: totalSatoshis / 1e8, capital: totalCapital, averageOverride:weightedAverage,
+                capitalAdjustment:0, averageAccountingVersion:2,
+                opening: purchases.length ? oldData.opening : opening, purchases: [...purchases, record] };
             const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
             db.cryptoBTC = next;
             try { capturePortfolioGrowth(); localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
@@ -4711,7 +4740,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             const purchases = Array.isArray(oldData.purchases) ? oldData.purchases : [];
             if (id !== 'opening' && !purchases.some(purchase => purchase.id === id)) return false;
             const opening = id === 'opening' ? { quantity:0, capital:0 }
-                : purchases.length ? oldData.opening : { ...oldData, capital:oldData.capital - (oldData.capitalAdjustment || 0) };
+                : purchases.length ? oldData.opening : oldData;
             if (!Number.isFinite(opening?.quantity) || opening.quantity < 0 || !Number.isSafeInteger(opening?.capital) || opening.capital < 0)
                 throw new Error('Saldo awal tidak valid. Riwayat belum dihapus.');
             const remaining = id === 'opening' ? purchases : purchases.filter(purchase => purchase.id !== id);
@@ -4723,11 +4752,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             }
             if (!Number.isSafeInteger(satoshis) || !Number.isSafeInteger(capital)) throw new Error('Total pembelian tidak valid.');
             const oldGrowth = JSON.parse(JSON.stringify(db.portfolioGrowth));
-            const adjustment = satoshis > 0 && oldData.quantity > 0 ? Math.round((oldData.capitalAdjustment || 0) * (satoshis / 1e8) / oldData.quantity) : 0;
-            const appliedAdjustment = Math.max(-capital, adjustment);
-            capital += appliedAdjustment;
             if (!Number.isSafeInteger(capital)) throw new Error('Total modal tidak valid.');
-            db.cryptoBTC = { ...oldData, quantity:satoshis / 1e8, capital, capitalAdjustment:appliedAdjustment, averageOverride:null, opening:{ quantity:opening.quantity, capital:opening.capital }, purchases:remaining };
+            db.cryptoBTC = { ...oldData, quantity:satoshis / 1e8, capital, capitalAdjustment:0, averageAccountingVersion:2, averageOverride:null, opening:{ quantity:opening.quantity, capital:opening.capital }, purchases:remaining };
             try { capturePortfolioGrowth();localStorage.setItem('rxGrow_db', JSON.stringify(db)); }
             catch (error) { db.cryptoBTC = oldData;db.portfolioGrowth = oldGrowth;throw new Error('Gagal menyimpan penghapusan. Coba lagi.'); }
             cryptoAverageDirty = false;
