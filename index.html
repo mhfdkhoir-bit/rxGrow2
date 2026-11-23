@@ -619,7 +619,7 @@ body:not(:has(#dashboard-view:not(.hidden) #home-tab.tab-active:not(.hidden))) >
 @media (max-width: 540px) {
     .stock-card-header { position:relative; }
     #crypto-toggle { padding-right:72px; }
-    #assistant-launch { position:absolute; right:6px; top:50%; bottom:auto; transform:translateY(-50%); z-index:1; }
+    #assistant-launch { position:absolute; right:6px; top:calc(50% - 2px); bottom:auto; transform:translateY(-50%); z-index:1; }
     body > #assistant-launch {
         position:fixed;
         top:var(--assistant-launch-top);
@@ -3318,9 +3318,12 @@ html.theme-mix #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hid
             }
             const delta = valid ? after.total - before.total : 0;
             const label = (delta > 0 ? '+' : delta < 0 ? '−' : '') + formatRp(Math.abs(delta));
+            const percent = valid && before.total > 0 ? delta / before.total * 100 : null;
+            const percentLabel = percent === null || !Number.isFinite(percent) ? '—%'
+                : (percent > 0 ? '+' : percent < 0 ? '−' : '') + Math.abs(percent).toLocaleString('id-ID', { minimumFractionDigits:2, maximumFractionDigits:2 }) + '%';
             const amount = document.createElement('span');
             amount.className = 'market-change-amount';
-            amount.textContent = isCensored ? 'Rp ••••••' : label;
+            amount.textContent = isCensored ? 'Rp •••••• (••%)' : label + ' (' + percentLabel + ')';
             const sparkle = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             sparkle.setAttribute('viewBox', '0 0 24 24');sparkle.setAttribute('aria-hidden', 'true');sparkle.classList.add('market-insight-icon');
             const star = document.createElementNS('http://www.w3.org/2000/svg', 'path');
