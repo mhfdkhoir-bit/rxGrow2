@@ -311,7 +311,7 @@
 #gold-price-context > span,#reksa-price-context > span { display:inline; }
 #home-tab :is(#gold-front,#reksa-front) { --asset-value-height:48px; }
 #home-tab :is(#gold-front,#reksa-front) .card-grid-container > :is(:nth-child(4),:nth-child(6)) { height:var(--asset-value-height); align-self:start; }
-#home-tab #saham-toggle,#crypto-toggle { min-height:72px; }
+#home-tab #saham-toggle,#crypto-toggle { min-height:68px; }
 #grand-total-context:empty,#stock-total-context:empty{display:none}
 #reksa-front,#gold-front{min-height:100%}
 #gold-capital-status:empty { display:none; }
@@ -725,7 +725,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
 #market-change-dialog .market-asset { display:flex; justify-content:space-between; gap:12px; }
 </style><style id="rxgrow-crypto">
 .crypto-card-header { position:relative; }
-#crypto-toggle { width:100%; min-height:72px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 72px 10px 16px; background:#c4a2f4; color:#171717; }
+#crypto-toggle { width:100%; min-height:68px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 72px 10px 16px; background:#c4a2f4; color:#171717; }
 .crypto-title { display:flex; align-items:center; gap:12px; text-align:left; }
 .crypto-title strong { display:block; font-size:16px; line-height:1.2; }
 .crypto-title small { display:block; font-size:11px; font-weight:600; margin-top:2px; }
@@ -805,8 +805,8 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
     #home-tab :is(#gold-front,#gold-back,#reksa-front,#reksa-back) { padding:10px; }
     #home-tab .card-grid-container > :is(:nth-child(3),:nth-child(5)) { transform:translateY(3px); }
     #home-tab .card-grid-container input,#gold-price-txt,#emas-total,#reksa-total,#reksa-profit { font-size:clamp(11px,3.5vw,14px); }
-    #home-tab #saham-toggle { min-height:60px; padding-block:10px; }
-    #crypto-toggle { min-height:60px; padding-block:10px; }
+    #home-tab #saham-toggle { min-height:56px; padding-block:8px; }
+    #crypto-toggle { min-height:56px; padding-block:8px; }
     #crypto-toggle .crypto-title strong { font-size:14px; }
     #assistant-launch { width:48px; height:48px; }
     #crypto-card .crypto-coin { width:32px; height:32px; }
@@ -818,7 +818,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
     #grand-total-flipper > :first-child .text-2xl { font-size:20px; }
     #home-tab .card-grid-container { grid-template-rows:34px 32px 16px 36px 16px 32px; gap:5px; }
     #home-tab :is(#gold-front,#reksa-front) { --asset-value-height:32px; }
-    #home-tab #saham-toggle,#crypto-toggle { min-height:56px; padding-block:8px; }
+    #home-tab #saham-toggle,#crypto-toggle { min-height:54px; padding-block:7px; }
     .crypto-title small { font-size:10px; }
 }
 </style><style>#crypto-toggle {
