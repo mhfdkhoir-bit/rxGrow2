@@ -924,7 +924,7 @@ html.theme-mix #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hid
                         <summary class="rx-menu-button rx-menu-history"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span class="rx-menu-label">Riwayat</span><i class="fa-solid fa-chevron-down rx-menu-chevron" aria-hidden="true"></i></summary>
                         <div class="rx-menu-submenu">
                             <button id="nav-emas" type="button" class="rx-menu-button rx-menu-gold" data-menu-tab="emas"><svg class="rx-menu-asset-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="#FDE047" stroke="black" stroke-width="2" stroke-linejoin="round"><polygon points="5,9 19,9 22,14 2,14" /><rect x="2" y="14" width="20" height="4" /></svg><span class="rx-menu-label">Emas</span><i class="fa-solid fa-check rx-menu-check" aria-hidden="true"></i></button>
-                            <button id="nav-riwayat" type="button" class="rx-menu-button rx-menu-fund" data-menu-tab="riwayat"><svg class="rx-menu-asset-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" /><circle cx="12" cy="12" r="3" /></svg><span class="rx-menu-label">Reksadana</span><i class="fa-solid fa-check rx-menu-check" aria-hidden="true"></i></button>
+                            <button id="nav-riwayat" type="button" class="rx-menu-button rx-menu-fund" data-menu-tab="riwayat"><svg data-fund-icon="sprout" class="rx-menu-asset-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v13" fill="none"/><path d="M12 20C5.8 20.8 2.5 17 2 12C8 11.5 12 14.5 12 20Z"/><path d="M12 20C18.2 20.8 21.5 17 22 12C16 11.5 12 14.5 12 20Z"/><circle cx="12" cy="5.5" r="3.5"/></svg><span class="rx-menu-label">Reksadana</span><i class="fa-solid fa-check rx-menu-check" aria-hidden="true"></i></button>
                             <button id="nav-saham-history" type="button" class="rx-menu-button rx-menu-stock" data-menu-tab="saham-history"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span class="rx-menu-label">Saham</span><i class="fa-solid fa-check rx-menu-check" aria-hidden="true"></i></button>
                         </div>
                     </details>
@@ -1093,10 +1093,7 @@ html.theme-mix #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hid
                                             <span class="text-[10px] font-semibold opacity-80">(Majoris Syariah)</span>
                                         </div>
                                         <button id="reksa-front-toggle" type="button" aria-label="Lihat NAB dan unit penyertaan" title="Lihat NAB dan unit penyertaan" class="w-8 h-8 shrink-0 rounded-full bg-[#A7F3D0] border-[2px] border-black flex items-center justify-center shadow-brutal-sm">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="2" y="6" width="20" height="12" rx="2" />
-                                                <circle cx="12" cy="12" r="3" />
-                                            </svg>
+                                            <svg data-fund-icon="sprout" width="18" height="18" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v13" fill="none"/><path d="M12 20C5.8 20.8 2.5 17 2 12C8 11.5 12 14.5 12 20Z"/><path d="M12 20C18.2 20.8 21.5 17 22 12C16 11.5 12 14.5 12 20Z"/><circle cx="12" cy="5.5" r="3.5"/></svg>
                                         </button>
                                     </div>
                                     <div class="w-full h-full relative">
@@ -1271,7 +1268,7 @@ html.theme-mix #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hid
             <div id="riwayat-tab" class="hidden flex-col gap-4 mt-2">
                 <div class="flex items-center gap-3 px-1 mb-2 text-black dark:text-white">
                     <div class="w-10 h-10 rounded-full bg-[#FBCFE8] border-[3px] border-black shadow-brutal-sm flex items-center justify-center text-black">
-                        <svg  aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" /><circle cx="12" cy="12" r="3" /></svg>
+                        <svg data-fund-icon="sprout"  aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="#86EFAC" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v13" fill="none"/><path d="M12 20C5.8 20.8 2.5 17 2 12C8 11.5 12 14.5 12 20Z"/><path d="M12 20C18.2 20.8 21.5 17 22 12C16 11.5 12 14.5 12 20Z"/><circle cx="12" cy="5.5" r="3.5"/></svg>
                     </div>
                     <div>
                         <h2 class="font-black text-lg">Riwayat Reksadana</h2>
