@@ -12,9 +12,12 @@
     
     <script id="rxgrow-initial-theme">
         try {
-            const dark = JSON.parse(localStorage.getItem('rxGrow_db'))?.darkMode;
-            document.documentElement.classList.toggle('dark', Boolean(dark));
-            document.getElementById('meta-theme-color').content = dark ? '#24262d' : '#FDF9F1';
+            const saved = JSON.parse(localStorage.getItem('rxGrow_db'));
+            const mode = ['light','dark','mix'].includes(saved?.themeMode) ? saved.themeMode : saved?.darkMode ? 'dark' : 'light';
+            document.documentElement.classList.toggle('dark', mode === 'dark');
+            document.documentElement.classList.toggle('theme-mix', mode === 'mix');
+            document.documentElement.dataset.mode = mode;
+            document.getElementById('meta-theme-color').content = mode === 'light' ? '#FDF9F1' : '#24262d';
         } catch {}
     </script>
     <title>rxGrow - Finance Tracker</title>
@@ -93,15 +96,7 @@
             min-height: 100dvh;
             padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
         }
-        html.dark #dashboard-view:has(#home-tab.tab-active:not(.hidden)) {
-            background-color: #191b20;
-            background-image: linear-gradient(#24262d, #24262d00 70%, #24262d),
-                url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22144%22%20height%3D%22112%22%20viewBox%3D%220%200%20144%20112%22%3E%3Cdefs%3E%3Cfilter%20id%3D%22soft%22%3E%3CfeGaussianBlur%20stdDeviation%3D%222.4%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cg%20opacity%3D%22.20%22%20filter%3D%22url(%23soft)%22%20font-family%3D%22Apple%20Color%20Emoji%2C%20Segoe%20UI%20Emoji%2C%20sans-serif%22%20font-size%3D%2218%22%3E%3Ctext%20x%3D%2213%22%20y%3D%2231%22%20transform%3D%22rotate(-19%2013%2031)%22%3E%26%23128184%3B%3C%2Ftext%3E%3Ctext%20x%3D%2284%22%20y%3D%2247%22%20transform%3D%22rotate(-19%2084%2047)%22%3E%26%23128176%3B%3C%2Ftext%3E%3Ctext%20x%3D%2247%22%20y%3D%2288%22%20transform%3D%22rotate(-19%2047%2088)%22%3E%26%23129689%3B%3C%2Ftext%3E%3Ctext%20x%3D%22116%22%20y%3D%22101%22%20transform%3D%22rotate(-19%20116%20101)%22%3E%26%23128181%3B%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E"),
-                linear-gradient(#24262d 75%, #24262d00),
-                url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22144%22%20height%3D%22112%22%20viewBox%3D%220%200%20144%20112%22%3E%3Cdefs%3E%3Cfilter%20id%3D%22soft%22%3E%3CfeGaussianBlur%20stdDeviation%3D%222.4%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cg%20opacity%3D%22.27%22%20%20font-family%3D%22Apple%20Color%20Emoji%2C%20Segoe%20UI%20Emoji%2C%20sans-serif%22%20font-size%3D%2218%22%3E%3Ctext%20x%3D%2213%22%20y%3D%2231%22%20transform%3D%22rotate(-19%2013%2031)%22%3E%26%23128184%3B%3C%2Ftext%3E%3Ctext%20x%3D%2284%22%20y%3D%2247%22%20transform%3D%22rotate(-19%2084%2047)%22%3E%26%23128176%3B%3C%2Ftext%3E%3Ctext%20x%3D%2247%22%20y%3D%2288%22%20transform%3D%22rotate(-19%2047%2088)%22%3E%26%23129689%3B%3C%2Ftext%3E%3Ctext%20x%3D%22116%22%20y%3D%22101%22%20transform%3D%22rotate(-19%20116%20101)%22%3E%26%23128181%3B%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E"), linear-gradient(#24262d, #191b20);
-            background-size: 100% 168px, 144px 168px, 100% 168px, 144px 112px, 100% 100%;
-            background-repeat: no-repeat, repeat-x, no-repeat, repeat, no-repeat;
-        }
+        html.dark #dashboard-view:has(#home-tab.tab-active:not(.hidden)) { background-color:#24262d; background-image:none; }
         html.dark #dashboard-view:has(#home-tab.tab-active:not(.hidden)) > .sticky {
             background-color: #24262df0;
         }
@@ -828,7 +823,32 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
  background-size:100% 100%;
  background-position:center;
  background-repeat:no-repeat;
-}</style></head>
+}</style>
+<style id="rxgrow-theme-modes">
+#settings-tab .rx-theme-mode-row { cursor:default; gap:8px; }
+.rx-theme-mode-label { margin-right:auto; }
+.rx-theme-options { border:0; padding:0; margin:0; min-width:0; display:flex; flex-wrap:wrap; gap:12px; }
+.rx-theme-options label { display:flex; align-items:center; gap:4px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.rx-theme-options input { width:14px; height:14px; margin:0; accent-color:#171717; cursor:pointer; }
+.dark .rx-theme-options input { accent-color:#86efac; }
+.rx-theme-options input:focus-visible { outline:2px solid #60a5fa; outline-offset:3px; }
+html.theme-mix,html.theme-mix #ios-status-bar-bg { background-color:#24262d; }
+html.theme-mix #login-view:not([data-wallpaper]) { background:#24262d; }
+html.theme-mix #dashboard-view { background-color:#f8f5ff; }
+html.theme-mix #dashboard-view:has(#home-tab.tab-active:not(.hidden)):not([data-wallpaper]) { background:linear-gradient(to bottom,#24262d 0px,#24262d calc(var(--mix-page-panel-top,300px) + 24px),#f8f5ff calc(var(--mix-page-panel-top,300px) + 24px),#f8f5ff 100%); }
+html.theme-mix #dashboard-view > .sticky { background:#24262d; }
+html.theme-mix #dashboard-view :is(#hamburger-btn,#toggle-censor-btn) { background:#32353e; color:#fff; }
+html.theme-mix #home-tab { position:relative; isolation:isolate; }
+html.theme-mix #dashboard-view:not([data-wallpaper]) #home-tab::before {
+    content:''; position:absolute; z-index:-1; left:-16px; right:-16px;
+    top:var(--mix-panel-top,190px); bottom:-16px; background:#f8f5ff; border-radius:24px 24px 0 0; pointer-events:none;
+}
+html.theme-mix #home-tab #grand-total-flipper > :first-child { background-color:#2563eb; }
+html.theme-mix #home-tab :is(#gold-front,#reksa-front) input { background:#404450; color:#fff; }
+html.theme-mix #login-view[data-wallpaper],
+html.theme-mix #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) { --wallpaper-shade:36 38 45; }
+</style>
+</head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#24262d] transition-colors duration-300 min-h-[640px]">
 
     <div id="ios-status-bar-bg" class="fixed top-0 left-0 w-full bg-[#FDF9F1] dark:bg-[#24262d] z-[99999] transition-colors duration-300 pointer-events-none" style="height: env(safe-area-inset-top, 0px);"></div>
@@ -1403,10 +1423,14 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     <section class="rx-settings-group rx-settings-appearance" aria-labelledby="settings-appearance-title">
                         <h3 id="settings-appearance-title">Tampilan</h3>
                         <div class="rx-settings-list">
-                            <button id="toggle-dark-mode" type="button" class="rx-settings-row">
-                                <span id="theme-text-span" class="rx-settings-theme-label"><i class="fa-solid fa-moon" aria-hidden="true"></i><span>Mode gelap</span></span>
-                                <span id="dark-toggle-track" class="rx-menu-toggle bg-gray-300 dark:bg-[#404450]" aria-hidden="true"><span id="dark-toggle-indicator" class="rx-menu-toggle-thumb"></span></span>
-                            </button>
+                            <div class="rx-settings-row rx-theme-mode-row">
+                                <i class="fa-solid fa-moon" aria-hidden="true"></i><span class="rx-theme-mode-label">Mode</span>
+                                <fieldset class="rx-theme-options" aria-label="Mode tampilan">
+                                    <label><input id="theme-mode-light" name="theme-mode" type="radio" value="light">Terang</label>
+                                    <label><input id="theme-mode-dark" name="theme-mode" type="radio" value="dark">Gelap</label>
+                                    <label><input id="theme-mode-mix" name="theme-mode" type="radio" value="mix">Mix</label>
+                                </fieldset>
+                            </div>
                             <details class="wallpaper-settings">
                                 <summary class="rx-settings-row"><i class="fa-solid fa-image" aria-hidden="true"></i><span class="rx-settings-label">Background</span><i class="fa-solid fa-chevron-right rx-settings-arrow" aria-hidden="true"></i></summary>
                                 <div class="wallpaper-controls">
@@ -1681,9 +1705,6 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
         const btnExecuteConfirm = document.getElementById('execute-confirm-btn');
         let confirmAction = null;
 
-        const btnToggleDarkMode = document.getElementById('toggle-dark-mode');
-        const darkToggleIndicator = document.getElementById('dark-toggle-indicator');
-        const darkToggleTrack = document.getElementById('dark-toggle-track');
 
         // Modal Elements for Detail Saham
         const modalDetailSaham = document.getElementById('detail-saham-modal');
@@ -2882,28 +2903,43 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
             renderPortfolioGrowth();
         }
         
-        function applyTheme() {
-            const metaThemeColor = document.getElementById('meta-theme-color');
-            if (db.darkMode) {
-                document.documentElement.classList.add('dark');
-                darkToggleIndicator.classList.add('translate-x-[20px]');
-                darkToggleTrack.classList.remove('bg-gray-300', 'dark:bg-[#404450]');
-                darkToggleTrack.classList.add('bg-[#86efac]'); 
-                if (metaThemeColor) metaThemeColor.setAttribute('content', '#24262d');
-            } else {
-                document.documentElement.classList.remove('dark');
-                if (metaThemeColor) metaThemeColor.setAttribute('content', '#FDF9F1');
-                darkToggleIndicator.classList.remove('translate-x-[20px]');
-                darkToggleTrack.classList.remove('bg-[#86efac]');
-                darkToggleTrack.classList.add('bg-gray-300', 'dark:bg-[#404450]'); 
-            }
+        function currentThemeMode() {
+            return ['light','dark','mix'].includes(db.themeMode) ? db.themeMode : db.darkMode ? 'dark' : 'light';
         }
-        
-        btnToggleDarkMode.addEventListener('click', () => {
-            db.darkMode = !db.darkMode;
-            saveDB();
-            applyTheme();
+        function updateMixPanelPosition() {
+            if (currentThemeMode() !== 'mix') return;
+            const home = document.getElementById('home-tab');
+            const grid = document.getElementById('gold-front').closest('.grid');
+            if (!grid || !home.getClientRects().length || !grid.getClientRects().length) return;
+            home.style.setProperty('--mix-panel-top', Math.max(0, grid.getBoundingClientRect().top - home.getBoundingClientRect().top - 12) + 'px');
+            document.getElementById('dashboard-view').style.setProperty('--mix-page-panel-top', Math.max(0, grid.getBoundingClientRect().top - document.getElementById('dashboard-view').getBoundingClientRect().top - 12) + 'px');
+        }
+        function applyTheme() {
+            const mode = currentThemeMode();
+            db.themeMode = mode;
+            db.darkMode = mode === 'dark';
+            const root = document.documentElement;
+            root.classList.toggle('dark', db.darkMode);
+            root.classList.toggle('theme-mix', mode === 'mix');
+            root.dataset.mode = mode;
+            document.getElementById('meta-theme-color')?.setAttribute('content', mode === 'light' ? '#FDF9F1' : '#24262d');
+            for (const radio of document.querySelectorAll('input[name="theme-mode"]')) radio.checked = radio.value === mode;
+            applyBiometricTheme();
+            requestAnimationFrame(updateMixPanelPosition);
+        }
+        for (const radio of document.querySelectorAll('input[name="theme-mode"]')) radio.addEventListener('change', () => {
+            if (!radio.checked) return;
+            const before = currentThemeMode();
+            db.themeMode = radio.value;
+            db.darkMode = radio.value === 'dark';
+            try { saveDB();applyTheme(); }
+            catch (error) { db.themeMode = before;db.darkMode = before === 'dark';applyTheme();showToast('Mode belum tersimpan. Coba lagi.','error'); }
         });
+        const mixPanelObserver = new ResizeObserver(() => requestAnimationFrame(updateMixPanelPosition));
+        mixPanelObserver.observe(document.getElementById('home-tab'));
+        mixPanelObserver.observe(document.getElementById('grand-total-container'));
+        window.addEventListener('resize', updateMixPanelPosition);
+        new MutationObserver(() => requestAnimationFrame(updateMixPanelPosition)).observe(document.getElementById('home-tab'), { attributes:true, attributeFilter:['class'] });
 
         function bufferToBase64url(buffer) {
             const bytes = new Uint8Array(buffer);
@@ -3933,6 +3969,7 @@ html #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hidden)) > .s
                     const importedDb = JSON.parse(ev.target.result);
                     if (importedDb && typeof importedDb === 'object') {
                         db = { ...db, ...importedDb, reksaNavHistory: Array.isArray(importedDb.reksaNavHistory) ? importedDb.reksaNavHistory.slice(0, 50) : [], reksaUnits: importedDb.reksaUnits ?? '', reksaNav: importedDb.reksaNav ?? db.reksaNav, assistantTransactions: Array.isArray(importedDb.assistantTransactions) ? importedDb.assistantTransactions.slice(0, 300) : [], portfolioGrowth: normalizePortfolioGrowth(importedDb.portfolioGrowth) };
+                        db.themeMode = ['light','dark','mix'].includes(importedDb.themeMode) ? importedDb.themeMode : importedDb.darkMode ? 'dark' : 'light';
                         saveDB();
                         kaPrivacy(true);
                         initDashboard();
