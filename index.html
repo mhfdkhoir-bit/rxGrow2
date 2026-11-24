@@ -869,6 +869,8 @@ html.theme-mix #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hid
 </style>
 <style id="home-asset-symbol-sizing">
 #home-tab .home-asset-symbol { display:block; width:20px; height:20px; flex:none; }
+#home-tab .home-asset-symbol[data-gold-icon] { width:22px; height:22px; }
+#home-tab .home-asset-symbol[data-stock-icon] { width:18px; height:18px; }
 </style>
 </head>
 <body class="font-sans antialiased text-black dark:text-white select-none bg-[#FDF9F1] dark:bg-[#24262d] transition-colors duration-300 min-h-[640px]">
@@ -1336,7 +1338,7 @@ html.theme-mix #dashboard-view[data-wallpaper]:has(#home-tab.tab-active:not(.hid
 
             <section id="portfolio-growth-tab" class="hidden flex-col gap-4 mt-2 pb-4" aria-labelledby="portfolio-growth-title">
                 <div class="growth-card">
-                    <header><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><h2 id="portfolio-growth-title">Pertumbuhan Portofolio</h2></header>
+                    <header><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><h2 id="portfolio-growth-title">Portofolio</h2></header>
                     <div class="growth-body">
                         <div class="growth-tabs" role="group" aria-label="Pilih instrumen">
                             <button type="button" data-growth-asset="all" aria-pressed="true" style="--growth-choice:#99F6E4">Semua</button>
